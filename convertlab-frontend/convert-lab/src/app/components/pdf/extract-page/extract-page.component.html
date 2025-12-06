@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="file-uploader-container">
+    <app-file-uploader [allowedTypes]="['pdf']" (onFileSelected)="onFileUploaded($event)"
+      (fileRemoved)="this.selectedFile.set(null)" [isUploading]="isUploading()"></app-file-uploader>
+    <!-- @if (selectedFile()) { -->
+    <app-page-range-input [(ngModel)]="pageRange"></app-page-range-input>
+    <!-- } -->
+    <app-action-button label="Submit" variant="filled" (onClick)="save()">
+    </app-action-button>
+
+  </div>
+</div>

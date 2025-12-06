@@ -1,0 +1,21 @@
+<button [matButton]="variant()" [disabled]="disabled() || loading()" (click)="click()">
+
+  @if (loading()) {
+  <mat-icon class="spin">autorenew</mat-icon>
+  }
+
+  @if (!loading() && icon() && iconPosition() === 'left') {
+  <mat-icon>
+    {{ icon() }}
+  </mat-icon>
+  }
+
+  <span>{{ label() }}</span>
+
+  @if (!loading() && icon() && iconPosition() === 'right') {
+  <mat-icon>
+    {{ icon() }}
+  </mat-icon>
+  }
+
+</button>

@@ -1,0 +1,16 @@
+<div class="range-container">
+
+  <mat-form-field appearance="outline" class="range-field">
+    <mat-label>Pages (e.g., 1,2,4-6)</mat-label>
+
+    <input matInput [(ngModel)]="inputValue" (ngModelChange)="onChange($event)" />
+  </mat-form-field>
+
+  <!-- <button mat-raised-button color="primary" class="action-btn" (click)="submit()">
+    Process
+  </button> -->
+
+  @if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+  }
+</div>

@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: convertlab-backend
+
+server:
+  servlet:
+    context-path: /api
+

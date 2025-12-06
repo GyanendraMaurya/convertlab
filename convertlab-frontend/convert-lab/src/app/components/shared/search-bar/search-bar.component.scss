@@ -1,0 +1,7 @@
+.search-field {
+  width: 250px;
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}

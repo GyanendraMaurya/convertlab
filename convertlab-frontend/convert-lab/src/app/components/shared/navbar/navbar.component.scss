@@ -1,0 +1,32 @@
+.navbar {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center
+}
+
+// .spacer {
+//   flex: 1 1 auto;
+// }
+
+nav {
+  color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 0 2rem;
+
+  // img{
+  //   height: 150px;
+  // }
+}
+
+.right-block{
+  margin-left: auto;
+}

@@ -1,0 +1,36 @@
+<div class="dropzone" [class.dragging]="isDragging()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)">
+
+  <mat-icon class="upload-icon">upload</mat-icon>
+
+  <p>Drag & Drop your file here</p>
+  <p class="or">or</p>
+
+  <!-- <button matButton="filled" class="btn-success" color="primary" (click)="fileInput.click()">
+    Choose File
+  </button> -->
+  <app-action-button label="Choose File" variant="filled" (onClick)="fileInput.click()">
+  </app-action-button>
+
+  <input #fileInput type="file" hidden (change)="onFileInput($event)" [attr.accept]="allowedTypesAttr()" />
+  @if (selectedFileName()) {
+  <div class="file-info">
+    <mat-icon class="file-icon">description</mat-icon>
+
+    <span class="filename" [title]="selectedFileName()">{{ selectedFileName() }}</span>
+
+    <button mat-icon-button color="warn" class="remove-btn" (click)="removeFile()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  }
+  @if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+  }
+  @if (isUploading()) {
+  <mat-progress-bar mode="indeterminate" class="upload-progress">
+  </mat-progress-bar>
+  }
+
+
+</div>

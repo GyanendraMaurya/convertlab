@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.service_web.controllers;
 
+import com.convertlab.convertlab_backend.api.enums.ActionType;
 import com.convertlab.convertlab_backend.service_core.PdfService;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
@@ -35,10 +36,10 @@ public class PdfController {
 
     @PostMapping("/extract")
     public ResponseEntity<Resource> extract(@RequestBody ExtractRequest request) throws Exception {
-        PdfUtils.validateInputRangePattern(request.getPagesToKeep());
+        PdfUtils.validateInputRangePattern(request.getPageRange());
         File pdfFile = storageService.load(request.getFileId());
         int totalPages = PdfUtils.getPageCount(pdfFile);
-        List<Integer> pagesToKeep = PdfUtils.parsePageRanges(request.getPagesToKeep(), totalPages);
+        List<Integer> pagesToKeep = PdfUtils.getPageRanges(request.getPageRange(), totalPages, request.getActionType().equals(ActionType.KEEP));
         ExtractedFile extractedFile = pdfService.extractPages(request, pagesToKeep);
 
         ByteArrayResource resource = new ByteArrayResource(extractedFile.getFileBytes());

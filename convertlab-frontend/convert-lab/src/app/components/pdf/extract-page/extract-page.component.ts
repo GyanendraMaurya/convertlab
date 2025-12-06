@@ -8,10 +8,14 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { ExtractPdfService } from '../../../services/extract-pdf.service';
+import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ActionType } from '../../../models/extract-pdf.model';
 
 @Component({
   selector: 'app-extract-page',
-  imports: [FileUploaderComponent, PageRangeInputComponent, ActionButtonComponent, FormsModule],
+  imports: [FileUploaderComponent, PageRangeInputComponent, ActionButtonComponent, FormsModule,
+    MatButtonToggleModule
+  ],
   templateUrl: './extract-page.component.html',
   styleUrl: './extract-page.component.scss',
 })
@@ -26,6 +30,7 @@ export class ExtractPageComponent {
   public pageRange = signal<string>('');
   isUploading = signal(false); // Set to true when a file is being uploaded
   selectedFile = signal<File | null>(null);
+  actionType = signal<ActionType>(ActionType.KEEP);
 
 
 
@@ -44,7 +49,7 @@ export class ExtractPageComponent {
   }
   save() {
     if (this.uploadedFileId() == null || this.selectedFile() == null) return;
-    this.extractPdfService.extractPdf({ fileId: this.uploadedFileId()!, pagesToKeep: this.pageRange() })
+    this.extractPdfService.extractPdf({ fileId: this.uploadedFileId()!, pageRange: this.pageRange(), actionType: this.actionType() })
       .subscribe(response => {
         const blob = (response.body!) as Blob;
         const contentDisposition = response.headers.get('content-disposition');
@@ -62,6 +67,10 @@ export class ExtractPageComponent {
       });
   }
 
+  actionTypeChange($event: MatButtonToggleChange) {
+    console.log($event);
+    this.actionType.set($event.value);
+  }
 
 
 }

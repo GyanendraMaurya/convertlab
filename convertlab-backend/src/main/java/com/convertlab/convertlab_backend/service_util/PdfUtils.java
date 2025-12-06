@@ -87,6 +87,19 @@ public class PdfUtils {
     }
 
 
+    /**
+     * Parse a string containing page ranges and single page numbers into a list of valid page numbers.
+     * The input string is expected to be a comma-separated list of page ranges (e.g. "1-2, 4-5")
+     * or single page numbers (e.g. "3, 6"). The page ranges can be in any order, and the numbers
+     * do not need to be in increasing order.
+     * The function will return all page numbers from 1 to totalPages (inclusive) that are present in the input string.
+     * If the input string contains invalid page numbers or invalid range formats, an InvalidPageInputException
+     * will be thrown.
+     * @param input The input string that contains the page ranges or single page numbers to be parsed.
+     * @param totalPages The total number of pages in the PDF.
+     * @return A list of valid page numbers that are present in the input string.
+     * @throws InvalidPageInputException If the input string contains invalid page numbers or invalid range formats.
+     */
     public static List<Integer> parsePageRanges(String input, int totalPages) {
         if (totalPages <= 0) {
             throw new InvalidPageInputException("PDF has zero pages or invalid page count.");
@@ -142,6 +155,15 @@ public class PdfUtils {
         return new ArrayList<>(pages);
     }
 
+    /**
+     * Returns a list of page numbers that are not present in the given remove input.
+     * The remove input is expected to be a string of comma-separated page ranges (e.g. "1-2, 4-5").
+     * The page ranges can be in any order, and the numbers do not need to be in increasing order.
+     * The function will return all page numbers from 1 to totalPages (inclusive) that are not present in the remove input.
+     * @param removeInput The input string that contains the page ranges to be removed.
+     * @param totalPages The total number of pages.
+     * @return A list of page numbers that are not present in the given remove input.
+     */
     public static List<Integer> removePages(String removeInput, int totalPages) {
         List<Integer> removeList = parsePageRanges(removeInput, totalPages);
 
@@ -152,6 +174,14 @@ public class PdfUtils {
             }
         }
         return new ArrayList<>(remaining);
+    }
+
+    public static List<Integer> getPageRanges(String input, int totalPages, boolean keep) {
+        if (keep) {
+            return parsePageRanges(input, totalPages);
+        } else {
+            return removePages(input, totalPages);
+        }
     }
 }
 

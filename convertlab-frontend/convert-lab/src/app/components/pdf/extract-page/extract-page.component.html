@@ -3,8 +3,21 @@
     <app-file-uploader [allowedTypes]="['pdf']" (onFileSelected)="onFileUploaded($event)"
       (fileRemoved)="this.selectedFile.set(null)" [isUploading]="isUploading()"></app-file-uploader>
     <!-- @if (selectedFile()) { -->
-    <app-page-range-input [(ngModel)]="pageRange"></app-page-range-input>
+    <div class="filter-container">
+      <div>
+        <app-page-range-input [(ngModel)]="pageRange"></app-page-range-input>
+      </div>
+      <div>
+        <mat-button-toggle-group name="fontStyle" aria-label="Font Style" [value]="actionType()"
+          (change)="actionTypeChange($event)">
+          <mat-button-toggle value="KEEP">Keep Pages</mat-button-toggle>
+          <mat-button-toggle value="REMOVE">Remove Pages</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
     <!-- } -->
+
+
     <app-action-button label="Submit" variant="filled" (onClick)="save()">
     </app-action-button>
 

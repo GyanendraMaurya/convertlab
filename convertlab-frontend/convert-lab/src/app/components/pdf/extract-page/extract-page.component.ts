@@ -10,6 +10,7 @@ import { FileUploadService } from '../../../services/file-upload.service';
 import { ExtractPdfService } from '../../../services/extract-pdf.service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ActionType } from '../../../models/extract-pdf.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-extract-page',
@@ -25,6 +26,7 @@ export class ExtractPageComponent {
   private readonly httpClient = inject(HttpClient);
   private readonly fileUploadService = inject(FileUploadService);
   private readonly extractPdfService = inject(ExtractPdfService);
+  private readonly _snackBar = inject(MatSnackBar);
 
   private uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');
@@ -47,23 +49,31 @@ export class ExtractPageComponent {
       }
     });
   }
-  save() {
+
+  extract(): void {
     if (this.uploadedFileId() == null || this.selectedFile() == null) return;
     this.extractPdfService.extractPdf({ fileId: this.uploadedFileId()!, pageRange: this.pageRange(), actionType: this.actionType() })
-      .subscribe(response => {
-        const blob = (response.body!) as Blob;
-        const contentDisposition = response.headers.get('content-disposition');
-        let fileName = 'downloaded-file';
-        if (contentDisposition) {
-          const match = contentDisposition.match(/filename="([^"]+)"/);
-          if (match?.[1]) fileName = match[1];
+      .subscribe({
+        next: response => {
+          const blob = (response.body!) as Blob;
+          const contentDisposition = response.headers.get('content-disposition');
+          let fileName = 'downloaded-file';
+          if (contentDisposition) {
+            const match = contentDisposition.match(/filename="([^"]+)"/);
+            if (match?.[1]) fileName = match[1];
+          }
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          a.click();
+          URL.revokeObjectURL(url);
+        }, error: err => {
+          this._snackBar.open(err.error.message, 'Close', {
+            duration: 5000,
+            verticalPosition: 'top',
+          });
         }
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        URL.revokeObjectURL(url);
       });
   }
 

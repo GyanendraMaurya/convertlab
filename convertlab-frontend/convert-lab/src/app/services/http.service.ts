@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 
 export interface RequestOptions {
   params?: Record<string, any>;
   headers?: Record<string, any>;
   responseType?: 'json' | 'blob';
   observe?: 'response' | 'body';
+  context?: HttpContext
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,7 +35,8 @@ export class HttpService {
       params: new HttpParams({ fromObject: options?.params }),
       headers: new HttpHeaders(options?.headers),
       responseType: options?.responseType,
-      observe: options?.observe
+      observe: options?.observe,
+      context: options?.context
     } as object);
   }
 

@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.service_core.impl;
 
+import com.convertlab.convertlab_backend.exception.InvalidPageInputException;
 import com.convertlab.convertlab_backend.service_core.PdfService;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
@@ -23,6 +24,7 @@ public class PdfServiceImpl implements PdfService {
 
     @Override
     public UploadResponse uploadPdf(MultipartFile file) throws Exception {
+//        throw new InvalidPageInputException("This is some exception");
         String fileId = storageService.saveTemp(file);
         File savedFile = storageService.load(fileId);
 

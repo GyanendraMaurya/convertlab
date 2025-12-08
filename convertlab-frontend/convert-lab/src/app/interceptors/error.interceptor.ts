@@ -15,7 +15,7 @@ export const errorInterceptor: HttpInterceptorFn = (
 
   const snackBar = inject(MatSnackBar);
 
-  // ⛔ Skip JSON error handling for blob requests
+  // Skip JSON error handling for blob requests
   const isBlobRequest = req.context.get(IS_BLOB_REQUEST);
   if (isBlobRequest) {
     return next(req);
@@ -31,7 +31,7 @@ export const errorInterceptor: HttpInterceptorFn = (
       const code = apiError?.code || "UNKNOWN";
 
       if (!suppress) {
-        snackBar.open(message, "Close", { duration: 3000 });
+        snackBar.open(message, "Close", { duration: 5000, verticalPosition: 'top' });
       }
 
       return throwError(() => ({

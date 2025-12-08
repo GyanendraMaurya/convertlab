@@ -47,7 +47,7 @@ export const blobErrorInterceptor: HttpInterceptorFn = (
                   const code = apiError?.code;
 
                   if (!suppress) {
-                    snackBar.open(message, "Close", { duration: 3000 });
+                    snackBar.open(message, "Close", { duration: 5000, verticalPosition: 'top' });
                   }
 
                   sub.error({

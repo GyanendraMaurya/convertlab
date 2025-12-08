@@ -5,4 +5,14 @@ spring:
 server:
   servlet:
     context-path: /api
+    multipart:
+      enabled: true
+      max-file-size: 5MB     # max size per file
+      max-request-size: 5MB  # max total request size (all files + form fields)
+  tomcat:
+    max-swallow-size: 200MB
 
+temp:
+  folder: temp-files
+  ttl-ms: 3600000
+  cleanup-interval-ms: 1800000

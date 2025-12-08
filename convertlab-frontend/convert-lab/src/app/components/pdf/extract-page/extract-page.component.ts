@@ -2,15 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { FileUploaderComponent } from "../../shared/file-uploader/file-uploader.component";
 import { PageRangeInputComponent } from '../../shared/page-range-input/page-range-input.component';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
-import { HttpService } from '../../../services/http.service';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { HttpClient, HttpResponse } from '@angular/common/http';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { ExtractPdfService } from '../../../services/extract-pdf.service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ActionType } from '../../../models/extract-pdf.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-extract-page',
@@ -22,11 +18,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ExtractPageComponent {
 
-  private readonly http = inject(HttpService);
-  private readonly httpClient = inject(HttpClient);
   private readonly fileUploadService = inject(FileUploadService);
   private readonly extractPdfService = inject(ExtractPdfService);
-  private readonly _snackBar = inject(MatSnackBar);
 
   private uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');
@@ -69,16 +62,11 @@ export class ExtractPageComponent {
           a.click();
           URL.revokeObjectURL(url);
         }, error: err => {
-          this._snackBar.open(err.error.message, 'Close', {
-            duration: 5000,
-            verticalPosition: 'top',
-          });
         }
       });
   }
 
   actionTypeChange($event: MatButtonToggleChange) {
-    console.log($event);
     this.actionType.set($event.value);
   }
 

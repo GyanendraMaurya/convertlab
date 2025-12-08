@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, input, computed, output } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, input, computed, output, viewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,15 +29,15 @@ export class FileUploaderComponent {
   selectedFile = signal<File | null>(null);
   selectedFileName = computed(() => this.selectedFile()?.name);
   isUploading = input(false);
+  fileInput = viewChild<ElementRef>('fileInput')
 
   /** Validate and emit file */
   handleFile(file: File) {
-    ;
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (this.allowedTypes().length > 0 && !this.allowedTypes().includes(extension!)) {
       this.errorMessage.set(`Only ${this.allowedTypes().join(', ')} files are allowed`);
       this.onFileSelected.emit(null);
-      this.selectedFile.set(null);
+      this.clearFileInput();
       return;
     }
 
@@ -71,9 +71,14 @@ export class FileUploaderComponent {
   }
 
   removeFile() {
-    this.selectedFile.set(null);
-    // this.uploadProgress.set(0);
-    // this.isUploading.set(false);
+    this.clearFileInput();
     this.fileRemoved.emit();
+  }
+
+  clearFileInput() {
+    if (this.fileInput()) {
+      this.fileInput()!.nativeElement.value = '';
+    }
+    this.selectedFile.set(null);
   }
 }

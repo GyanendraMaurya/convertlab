@@ -26,6 +26,7 @@ export class ExtractPageComponent {
   isUploading = signal(false); // Set to true when a file is being uploaded
   selectedFile = signal<File | null>(null);
   actionType = signal<ActionType>(ActionType.KEEP);
+  isExtracting = signal(false);
 
 
 
@@ -45,9 +46,11 @@ export class ExtractPageComponent {
 
   extract(): void {
     if (this.uploadedFileId() == null || this.selectedFile() == null) return;
+    this.isExtracting.set(true);
     this.extractPdfService.extractPdf({ fileId: this.uploadedFileId()!, pageRange: this.pageRange(), actionType: this.actionType() })
       .subscribe({
         next: response => {
+          this.isExtracting.set(false);
           const blob = (response.body!) as Blob;
           const contentDisposition = response.headers.get('content-disposition');
           let fileName = 'downloaded-file';
@@ -62,6 +65,7 @@ export class ExtractPageComponent {
           a.click();
           URL.revokeObjectURL(url);
         }, error: err => {
+          this.isExtracting.set(false);
         }
       });
   }

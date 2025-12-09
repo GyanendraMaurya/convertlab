@@ -18,8 +18,9 @@
     <!-- } -->
 
 
-    <app-action-button [disabled]="this.selectedFile() === null" label="Extract" variant="filled"
-      [inputClass]="'big-button-64 w-100'" (onClick)="extract()">
+    <app-action-button [disabled]="this.selectedFile() === null" [loading]="isExtracting()"
+      [label]=" isExtracting() ? 'Extracting...' : 'Extract'" variant="filled" [inputClass]="'big-button-64 w-100'"
+      (onClick)="extract()">
     </app-action-button>
 
   </div>

@@ -1,5 +1,5 @@
 import { Component, signal, input, output } from '@angular/core';
-import { MatButtonAppearance, MatButtonModule } from '@angular/material/button';
+import { MatButtonAppearance, MatButtonModule, MatFabButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({

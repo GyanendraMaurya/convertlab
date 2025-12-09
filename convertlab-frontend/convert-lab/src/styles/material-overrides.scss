@@ -1,0 +1,9 @@
+@use '@angular/material' as mat;
+
+.big-button-64 {
+  @include mat.button-overrides((
+    filled-container-height: 64px,
+    filled-label-text-size: 24px
+  ));
+}
+

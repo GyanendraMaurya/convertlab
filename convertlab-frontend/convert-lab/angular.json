@@ -34,7 +34,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/styles/material-overrides.scss",
+              "src/styles/util.scss"
             ]
           },
           "configurations": {

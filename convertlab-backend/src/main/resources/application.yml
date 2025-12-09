@@ -2,13 +2,15 @@ spring:
   application:
     name: convertlab-backend
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB        # per file limit
+      max-request-size: 25MB    # total body limit
+
 server:
   servlet:
     context-path: /api
-    multipart:
-      enabled: true
-      max-file-size: 5MB     # max size per file
-      max-request-size: 5MB  # max total request size (all files + form fields)
   tomcat:
     max-swallow-size: 200MB
 

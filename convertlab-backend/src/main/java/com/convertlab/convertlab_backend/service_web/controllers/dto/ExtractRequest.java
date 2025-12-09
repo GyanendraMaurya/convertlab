@@ -11,6 +11,5 @@ public class ExtractRequest {
     private String fileId;
     private String pageRange;
     private ActionType actionType;
-
 }
 

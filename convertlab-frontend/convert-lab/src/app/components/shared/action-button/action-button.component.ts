@@ -26,8 +26,9 @@ export class ActionButtonComponent {
 
   loading = input(false);
 
-  /** Disable button */
-  disabled = signal(false);
+  inputClass = input<string>('');
+
+  disabled = input(false);
 
   /** Emits click event */
   onClick = output<void>();

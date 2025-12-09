@@ -1,4 +1,4 @@
-<button [matButton]="variant()" [disabled]="disabled() || loading()" (click)="click()">
+<button [matButton]="variant()" [disabled]="disabled() || loading()" [class]="inputClass()" (click)="click()">
 
   @if (loading()) {
   <mat-icon class="spin">autorenew</mat-icon>

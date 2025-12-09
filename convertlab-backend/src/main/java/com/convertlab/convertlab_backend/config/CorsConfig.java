@@ -1,21 +1,12 @@
 package com.convertlab.convertlab_backend.config;
 
-//import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.*;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import jakarta.servlet.DispatcherType;
-
-import java.util.EnumSet;
 
 import java.util.EnumSet;
 

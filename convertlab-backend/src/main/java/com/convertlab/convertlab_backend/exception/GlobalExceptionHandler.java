@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @Value("${server.servlet.multipart.max-file-size}")
+    @Value("${spring.servlet.multipart.max-file-size}")
     private String maxUploadSize;
 
     @ExceptionHandler(InvalidPageInputException.class)

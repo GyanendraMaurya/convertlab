@@ -1,0 +1,9 @@
+<div class="thumbnail-list">
+  @for (pdf of thumbnails(); track pdf.fileId) {
+  <app-thumbnail [id]="pdf.fileId" [thumbnailUrl]="pdf.thumbnailUrl" [pageCount]="pdf.pageCount"
+    [fileName]="pdf.fileName" (remove)="removePdf($event)">
+  </app-thumbnail>
+  }
+</div>
+<app-file-uploader [allowedTypes]="['pdf']" [isUploading]="isUploading()"
+  (onFileSelected)="onFileUploaded($event)"></app-file-uploader>

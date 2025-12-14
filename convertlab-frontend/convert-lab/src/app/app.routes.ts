@@ -3,11 +3,16 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'pdf',
+    redirectTo: 'extract-pdf',
     pathMatch: 'full'
   },
   {
-    path: 'pdf',
+    path: 'extract-pdf',
     loadComponent: () => import('./components/pdf/extract-page/extract-page.component').then(m => m.ExtractPageComponent)
+  },
+  {
+    path: 'merge-pdf',
+    loadComponent: () => import('./components/pdf/merge-pdf/merge-pdf.component').then(m => m.MergePdfComponent)
   }
+
 ];

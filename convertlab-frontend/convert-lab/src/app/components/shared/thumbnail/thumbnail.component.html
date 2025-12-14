@@ -1,0 +1,19 @@
+<div class="thumbnail-card" [class.disabled]="disabled()">
+
+  <div class="thumbnail-wrapper">
+    <img [src]="'http://localhost:8080' + thumbnailUrl()" alt="PDF thumbnail" loading="lazy" />
+
+    <button type="button" class="delete-btn" (click)="onRemoveClick($event)" aria-label="Remove PDF">
+      ✕
+    </button>
+  </div>
+
+  <div class="file-name" [title]="fileName()">
+    {{ fileName() || 'PDF File' }}
+  </div>
+  <div class="page-count" [title]="pageCount()">
+    ({{ pageCount() || '0' }} pages)
+
+  </div>
+
+</div>

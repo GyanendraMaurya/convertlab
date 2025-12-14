@@ -1,5 +1,5 @@
 export class PdfUploadResponse {
-  constructor(public fileId: string, public pageCount: number) {
+  constructor(public fileId: string, public pageCount: number, fileName: string, thumbnailUrl: string) {
   }
 }
 

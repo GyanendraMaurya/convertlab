@@ -9,6 +9,12 @@ export interface RequestOptions {
   context?: HttpContext
 }
 
+export interface ApiResponse<T> {
+  data: T,
+  success: boolean
+  error: any
+}
+
 @Injectable({ providedIn: 'root' })
 export class HttpService {
 

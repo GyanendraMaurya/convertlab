@@ -35,7 +35,7 @@ export class ExtractPageComponent {
     this.selectedFile.set($event);
     this.fileUploadService.uploadPdf(this.selectedFile()!).subscribe({
       next: res => {
-        this.uploadedFileId.set(res.fileId);
+        this.uploadedFileId.set(res.data.fileId);
         this.isUploading.set(false);
       },
       error: err => {

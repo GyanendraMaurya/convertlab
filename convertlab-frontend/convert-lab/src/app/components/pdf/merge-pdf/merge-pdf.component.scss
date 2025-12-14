@@ -143,3 +143,20 @@
     }
   }
 }
+
+.thumbnail-wrapper {
+  cursor: grab;
+}
+
+.thumbnail-wrapper.cdk-drag-preview {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.thumbnail-wrapper.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.thumbnail-wrapper.cdk-drag-animating {
+  transition: transform 200ms ease;
+}

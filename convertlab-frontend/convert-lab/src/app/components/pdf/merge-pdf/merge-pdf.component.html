@@ -1,9 +1,7 @@
-<div class="thumbnail-list">
+<div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
   @for (pdf of thumbnails(); track pdf.fileId; let i = $index) {
-  <div class="thumbnail-wrapper" [class.dragging]="draggedIndex() === i" [class.drag-over]="dragOverIndex() === i"
-    [class.touch-dragging]="isDraggingTouch() && draggedIndex() === i" draggable="true" (dragstart)="onDragStart(i)"
-    (dragover)="onDragOver($event, i)" (dragleave)="onDragLeave()" (drop)="onDrop($event, i)" (dragend)="onDragEnd()"
-    (touchstart)="onTouchStart($event, i)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+
+  <div class="thumbnail-wrapper" cdkDrag>
     <app-thumbnail [id]="pdf.fileId" [thumbnailUrl]="pdf.thumbnailUrl" [pageCount]="pdf.pageCount"
       [fileName]="pdf.fileName" (remove)="removePdf($event)">
     </app-thumbnail>
@@ -11,10 +9,11 @@
     <!-- Order indicator -->
     <div class="order-badge">{{ i + 1 }}</div>
 
-    <!-- Drag handle hint (mobile) -->
+    <!-- Drag handle (important for mobile UX) -->
     <div class="drag-hint">
       <mat-icon>drag_indicator</mat-icon>
     </div>
+
   </div>
   }
 </div>

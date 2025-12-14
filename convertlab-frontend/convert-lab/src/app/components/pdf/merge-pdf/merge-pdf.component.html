@@ -1,9 +1,23 @@
 <div class="thumbnail-list">
-  @for (pdf of thumbnails(); track pdf.fileId) {
-  <app-thumbnail [id]="pdf.fileId" [thumbnailUrl]="pdf.thumbnailUrl" [pageCount]="pdf.pageCount"
-    [fileName]="pdf.fileName" (remove)="removePdf($event)">
-  </app-thumbnail>
+  @for (pdf of thumbnails(); track pdf.fileId; let i = $index) {
+  <div class="thumbnail-wrapper" [class.dragging]="draggedIndex() === i" [class.drag-over]="dragOverIndex() === i"
+    [class.touch-dragging]="isDraggingTouch() && draggedIndex() === i" draggable="true" (dragstart)="onDragStart(i)"
+    (dragover)="onDragOver($event, i)" (dragleave)="onDragLeave()" (drop)="onDrop($event, i)" (dragend)="onDragEnd()"
+    (touchstart)="onTouchStart($event, i)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+    <app-thumbnail [id]="pdf.fileId" [thumbnailUrl]="pdf.thumbnailUrl" [pageCount]="pdf.pageCount"
+      [fileName]="pdf.fileName" (remove)="removePdf($event)">
+    </app-thumbnail>
+
+    <!-- Order indicator -->
+    <div class="order-badge">{{ i + 1 }}</div>
+
+    <!-- Drag handle hint (mobile) -->
+    <div class="drag-hint">
+      <mat-icon>drag_indicator</mat-icon>
+    </div>
+  </div>
   }
 </div>
-<app-file-uploader [allowedTypes]="['pdf']" [isUploading]="isUploading()"
-  (onFileSelected)="onFileUploaded($event)"></app-file-uploader>
+
+<app-file-uploader [allowedTypes]="['pdf']" [isUploading]="isUploading()" (onFileSelected)="onFileUploaded($event)">
+</app-file-uploader>

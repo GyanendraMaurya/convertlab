@@ -8,3 +8,33 @@
     )
   );
 }
+
+.snackbar-error {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--mat-sys-error),
+      button-color: #ffffff,
+      supporting-text-color: #ffffff,
+    )
+  );
+}
+
+.snackbar-success {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #4caf50,
+      button-color: #ffffff,
+      supporting-text-color: #ffffff,
+    )
+  );
+}
+
+.snackbar-info {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--mat-sys-on-primary),
+      button-color: #ffffff,
+      supporting-text-color: #ffffff,
+    )
+  );
+}

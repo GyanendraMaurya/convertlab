@@ -7,15 +7,15 @@ import {
 } from '@angular/common/http';
 import { catchError, throwError, from, Observable } from 'rxjs';
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { IS_BLOB_REQUEST, SUPPRESS_ERROR } from './http-context';
+import { SnackbarService } from '../services/snackbar.service';
 
 export const blobErrorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
 
-  const snackBar = inject(MatSnackBar);
+  const snackbarService = inject(SnackbarService);
 
   // ONLY process blob requests
   const isBlobRequest = req.context.get(IS_BLOB_REQUEST);
@@ -47,7 +47,7 @@ export const blobErrorInterceptor: HttpInterceptorFn = (
                   const code = apiError?.code;
 
                   if (!suppress) {
-                    snackBar.open(message, "Close", { duration: 5000, verticalPosition: 'top' });
+                    snackbarService.error(message);
                   }
 
                   sub.error({

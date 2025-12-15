@@ -7,6 +7,7 @@
   border: 2px dashed transparent;
   border-radius: 8px;
   transition: border-color 0.2s;
+  justify-content: center;
 
   &:empty {
     border-color: #e0e0e0;
@@ -112,6 +113,33 @@
       opacity: 1;
     }
   }
+
+  :host {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  .file-uploader-container {
+    display: flex;
+    justify-content: center;
+
+    .file-uploader-content {
+      width: 50%;
+    }
+  }
+
+  .merge-button-container {
+    display: flex;
+    justify-content: center;
+    .merge-button {
+      width: 50%;
+    }
+  }
 }
 
 @keyframes pulse {
@@ -121,26 +149,6 @@
   }
   50% {
     opacity: 0.5;
-  }
-}
-
-/* Mobile optimization */
-@media (max-width: 720px) {
-  .thumbnail-list {
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .thumbnail-wrapper {
-    min-width: 100px;
-
-    /* Make touch target larger on mobile */
-    &::after {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      pointer-events: auto;
-    }
   }
 }
 
@@ -163,4 +171,24 @@
 
 .merge-button {
   padding-bottom: 15px;
+}
+
+/* Mobile optimization */
+@media (max-width: 720px) {
+  .thumbnail-list {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .thumbnail-wrapper {
+    min-width: 100px;
+
+    /* Make touch target larger on mobile */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      pointer-events: auto;
+    }
+  }
 }

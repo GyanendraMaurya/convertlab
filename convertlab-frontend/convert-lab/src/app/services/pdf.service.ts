@@ -5,11 +5,12 @@ import { PdfExtractRequest } from '../models/extract-pdf.model';
 import { HttpContext, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IS_BLOB_REQUEST, SUPPRESS_ERROR } from '../interceptors/http-context';
+import { MergePdfRequest } from '../models/merge-pdf.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ExtractPdfService {
+export class PdfService {
   private readonly apiUrl = environment.apiUrl;
   private readonly httpService = inject(HttpService);
 
@@ -17,5 +18,17 @@ export class ExtractPdfService {
     return this.httpService.post<HttpResponse<Blob>>(`${this.apiUrl}/pdf/extract`,
       request,
       { responseType: 'blob', observe: 'response', context: new HttpContext().set(IS_BLOB_REQUEST, true) });
+  }
+
+  mergePdfs(request: MergePdfRequest): Observable<HttpResponse<Blob>> {
+    return this.httpService.post<HttpResponse<Blob>>(
+      `${this.apiUrl}/pdf/merge`,
+      request,
+      {
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(IS_BLOB_REQUEST, true)
+      }
+    );
   }
 }

@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import com.convertlab.convertlab_backend.exception.InvalidPageInputException;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.*;
 
 public class PdfUtils {
@@ -95,7 +96,8 @@ public class PdfUtils {
      * The function will return all page numbers from 1 to totalPages (inclusive) that are present in the input string.
      * If the input string contains invalid page numbers or invalid range formats, an InvalidPageInputException
      * will be thrown.
-     * @param input The input string that contains the page ranges or single page numbers to be parsed.
+     *
+     * @param input      The input string that contains the page ranges or single page numbers to be parsed.
      * @param totalPages The total number of pages in the PDF.
      * @return A list of valid page numbers that are present in the input string.
      * @throws InvalidPageInputException If the input string contains invalid page numbers or invalid range formats.
@@ -160,8 +162,9 @@ public class PdfUtils {
      * The remove input is expected to be a string of comma-separated page ranges (e.g. "1-2, 4-5").
      * The page ranges can be in any order, and the numbers do not need to be in increasing order.
      * The function will return all page numbers from 1 to totalPages (inclusive) that are not present in the remove input.
+     *
      * @param removeInput The input string that contains the page ranges to be removed.
-     * @param totalPages The total number of pages.
+     * @param totalPages  The total number of pages.
      * @return A list of page numbers that are not present in the given remove input.
      */
     public static List<Integer> removePages(String removeInput, int totalPages) {
@@ -181,6 +184,20 @@ public class PdfUtils {
             return parsePageRanges(input, totalPages);
         } else {
             return removePages(input, totalPages);
+        }
+    }
+
+    public static byte[] mergePdfs(List<File> pdfFiles) throws IOException {
+        PDFMergerUtility merger = new PDFMergerUtility();
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            for (File pdfFile : pdfFiles) {
+                merger.addSource(pdfFile);
+            }
+            merger.setDestinationStream(baos);
+            merger.mergeDocuments(null);
+
+            return baos.toByteArray();
         }
     }
 }

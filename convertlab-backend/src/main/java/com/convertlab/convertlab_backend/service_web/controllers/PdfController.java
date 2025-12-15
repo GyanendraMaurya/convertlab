@@ -7,6 +7,7 @@ import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -60,6 +61,19 @@ public class PdfController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(bytes);
+    }
+
+    @PostMapping("/merge")
+    public ResponseEntity<Resource> merge(@RequestBody MergeRequest request) throws Exception {
+        ExtractedFile mergedFile = pdfService.mergePdfs(request);
+
+        ByteArrayResource resource = new ByteArrayResource(mergedFile.getFileBytes());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + mergedFile.getFileName() + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(mergedFile.getFileBytes().length)
+                .body(resource);
     }
 
 }

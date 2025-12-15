@@ -4,7 +4,7 @@ import { PageRangeInputComponent } from '../../shared/page-range-input/page-rang
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 import { FormsModule } from '@angular/forms';
 import { FileUploadService } from '../../../services/file-upload.service';
-import { ExtractPdfService } from '../../../services/extract-pdf.service';
+import { PdfService } from '../../../services/pdf.service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ActionType } from '../../../models/extract-pdf.model';
 
@@ -19,7 +19,7 @@ import { ActionType } from '../../../models/extract-pdf.model';
 export class ExtractPageComponent {
 
   private readonly fileUploadService = inject(FileUploadService);
-  private readonly extractPdfService = inject(ExtractPdfService);
+  private readonly extractPdfService = inject(PdfService);
 
   private uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');

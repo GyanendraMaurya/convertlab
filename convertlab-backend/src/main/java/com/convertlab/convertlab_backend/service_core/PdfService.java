@@ -4,12 +4,14 @@ import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PdfService {
@@ -49,6 +51,21 @@ public class PdfService {
         byte[] fileBytes = PdfUtils.extractPages(file, pagesToKeep);
         return new ExtractedFile(fileBytes, originalFileName);
     }
+
+    public ExtractedFile mergePdfs(MergeRequest request) throws Exception {
+        // Load all PDF files based on the file IDs in the request
+        List<File> pdfFiles = request.getFileIds().stream()
+                .map(storageService::loadPdf)
+                .collect(Collectors.toList());
+
+        // Merge the PDFs using PdfUtils
+        byte[] mergedBytes = PdfUtils.mergePdfs(pdfFiles);
+
+        // Return the merged PDF with the standard filename
+        return new ExtractedFile(mergedBytes, "ConvertLab_Merge.pdf");
+    }
+
+
 
 
 }

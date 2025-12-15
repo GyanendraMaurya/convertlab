@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Thumbnail } from '../../../models/thumbnail.model';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
+import { PdfService } from '../../../services/pdf.service';
 
 @Component({
   selector: 'app-merge-pdf',
@@ -25,6 +26,7 @@ import { ActionButtonComponent } from '../../shared/action-button/action-button.
 export class MergePdfComponent {
 
   private readonly fileUploadService = inject(FileUploadService);
+  private readonly pdfService = inject(PdfService);
 
   thumbnails = signal<Thumbnail[]>([]);
   isUploading = signal(false);
@@ -58,6 +60,35 @@ export class MergePdfComponent {
   }
 
   merge() {
+    const fileIds = this.thumbnails().map(t => t.fileId);
 
+    if (fileIds.length < 2) {
+      return;
+    }
+
+    this.isMerging.set(true);
+    this.pdfService.mergePdfs({ fileIds }).subscribe({
+      next: response => {
+        this.isMerging.set(false);
+        const blob = response.body as Blob;
+        const contentDisposition = response.headers.get('content-disposition');
+        let fileName = 'ConvertLab_Merge.pdf';
+
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="([^"]+)"/);
+          if (match?.[1]) fileName = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.isMerging.set(false);
+      }
+    });
   }
 }

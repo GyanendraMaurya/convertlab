@@ -1,3 +1,10 @@
+@if (thumbnails().length > 1) {
+<div class="merge-button">
+  <app-action-button [loading]="isMerging()" [label]=" isMerging() ? 'Merging...' : 'Merge'" variant="filled"
+    [inputClass]="'big-button-64 w-100'" (onClick)="merge()">
+  </app-action-button>
+</div>
+}
 <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
   @for (pdf of thumbnails(); track pdf.fileId; let i = $index) {
 

@@ -6,6 +6,7 @@ import { FileUploadService } from '../../../services/file-upload.service';
 import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Thumbnail } from '../../../models/thumbnail.model';
+import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 
 @Component({
   selector: 'app-merge-pdf',
@@ -14,7 +15,8 @@ import { Thumbnail } from '../../../models/thumbnail.model';
     FileUploaderComponent,
     MatIconModule,
     DragDropModule,
-    CdkDrag
+    CdkDrag,
+    ActionButtonComponent
   ],
   templateUrl: './merge-pdf.component.html',
   styleUrl: './merge-pdf.component.scss',
@@ -26,6 +28,7 @@ export class MergePdfComponent {
 
   thumbnails = signal<Thumbnail[]>([]);
   isUploading = signal(false);
+  isMerging = signal(false);
 
   onFileUploaded(file: File | null) {
     if (!file) return;
@@ -52,5 +55,9 @@ export class MergePdfComponent {
       moveItemInArray(updated, event.previousIndex, event.currentIndex);
       return updated;
     });
+  }
+
+  merge() {
+
   }
 }

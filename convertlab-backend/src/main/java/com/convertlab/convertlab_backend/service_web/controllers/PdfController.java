@@ -30,6 +30,10 @@ public class PdfController {
     private final PdfService pdfService;
     private final StorageService storageService;
 
+    @GetMapping("/test/{pathVariable}")
+    public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
+        return ResponseEntity.ok(ApiResponse.success("test, path variable: "+pathVariable ));
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse<UploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {

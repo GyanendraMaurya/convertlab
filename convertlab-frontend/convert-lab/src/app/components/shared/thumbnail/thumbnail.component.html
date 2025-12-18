@@ -1,7 +1,6 @@
 <div class="thumbnail-card" [class.disabled]="disabled()">
-
   <div class="thumbnail-wrapper">
-    <img [src]="'http://localhost:8080' + thumbnailUrl()" alt="PDF thumbnail" loading="lazy" />
+    <img [src]="fullThumbnailUrl()" alt="PDF thumbnail" loading="lazy" />
 
     <button type="button" class="delete-btn" (click)="onRemoveClick($event)" aria-label="Remove PDF">
       ✕

@@ -57,3 +57,7 @@ body {
 .cdk-drag-preview {
   overflow: hidden !important;
 }
+
+.active-link {
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent) !important;
+}

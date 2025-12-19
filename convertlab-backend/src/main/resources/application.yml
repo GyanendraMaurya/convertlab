@@ -16,8 +16,8 @@ server:
 
 temp:
   folder: temp-files
-  ttl-ms: 3600000
-  cleanup-interval-ms: 1800000
+  ttl-ms: 1800_000 #30mins
+  cleanup-interval-ms: 1800_000 #30mins
 
 app:
   cors:

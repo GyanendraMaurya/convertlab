@@ -9,6 +9,15 @@
   );
 }
 
+.active-link {
+  @include mat.button-overrides(
+    (
+      protected-container-color: red,
+      filled-label-text-color: #ffffff,
+    )
+  );
+}
+
 .snackbar-error {
   @include mat.snack-bar-overrides(
     (

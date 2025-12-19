@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
@@ -32,6 +32,8 @@ export class MergePdfComponent {
   isUploading = signal(false);
   isMerging = signal(false);
 
+  fileUploader = viewChild(FileUploaderComponent);
+
   onFileUploaded(file: File | null) {
     if (!file) return;
 
@@ -40,6 +42,7 @@ export class MergePdfComponent {
       next: res => {
         this.thumbnails.update(list => [...list, res.data]);
         this.isUploading.set(false);
+        this.fileUploader()!.removeFile();
       },
       error: () => this.isUploading.set(false)
     });

@@ -8,8 +8,8 @@
     <mat-icon class="medium-icon">home</mat-icon>
     ConvertLab
   </button>
-  <button matButton="text" [routerLink]="['/merge-pdf']">Merge PDF</button>
-  <button matButton="text" [routerLink]="['/extract-pdf']">Extract PDF</button>
+  <a matButton="text" [routerLink]="['/merge-pdf']" routerLinkActive="active-link">Merge PDF</a>
+  <a matButton="text" [routerLink]="['/extract-pdf']" routerLinkActive="active-link">Extract PDF</a>
   <span class="spacer"></span>
   <span class="right-block">
     <!-- <app-search-bar (search)="handleSearch($event)"></app-search-bar> -->

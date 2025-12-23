@@ -21,4 +21,4 @@ temp:
 
 app:
   cors:
-    allowed-origins: http://localhost:4200,http://convert-lab-frontend.s3-website.ap-south-1.amazonaws.com
+    allowed-origins: https://www.easyconvertlab.com,http://localhost:4200

@@ -10,6 +10,7 @@ import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequ
 import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 
+@Log4j2
 @RestController
 @RequestMapping("/pdf")
 @RequiredArgsConstructor
@@ -32,52 +34,104 @@ public class PdfController {
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
-        return ResponseEntity.ok(ApiResponse.success("test, path variable: "+pathVariable ));
+        log.info("Test endpoint called with pathVariable: {}", pathVariable);
+        return ResponseEntity.ok(ApiResponse.success("test, path variable: " + pathVariable));
     }
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse<UploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {
-        System.out.println(file.getOriginalFilename());
-        return ResponseEntity.ok(ApiResponse.success(pdfService.uploadPdf(file)));
+        log.info("Upload request received for file: {} (size: {} bytes)",
+                file.getOriginalFilename(), file.getSize());
+
+        try {
+            UploadResponse response = pdfService.uploadPdf(file);
+            log.info("File uploaded successfully: {} with {} pages, assetId: {}",
+                    file.getOriginalFilename(), response.getPageCount(), response.getFileId());
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("Error uploading file: {}", file.getOriginalFilename(), e);
+            throw e;
+        }
     }
 
     @PostMapping("/extract")
     public ResponseEntity<Resource> extract(@RequestBody ExtractRequest request) throws Exception {
-        PdfUtils.validateInputRangePattern(request.getPageRange());
-        File pdfFile = storageService.loadPdf(request.getFileId());
-        int totalPages = PdfUtils.getPageCount(pdfFile);
-        List<Integer> pagesToKeep = PdfUtils.getPageRanges(request.getPageRange(), totalPages, request.getActionType().equals(ActionType.KEEP));
-        ExtractedFile extractedFile = pdfService.extractPages(request, pagesToKeep);
+        log.info("Extract request received for fileId: {}, pageRange: {}, actionType: {}",
+                request.getFileId(), request.getPageRange(), request.getActionType());
 
-        ByteArrayResource resource = new ByteArrayResource(extractedFile.getFileBytes());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + "extracted_" + extractedFile.getFileName() + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .contentLength(extractedFile.getFileBytes().length)
-                .body(resource);
+        try {
+            PdfUtils.validateInputRangePattern(request.getPageRange());
+            File pdfFile = storageService.loadPdf(request.getFileId());
+            int totalPages = PdfUtils.getPageCount(pdfFile);
+            List<Integer> pagesToKeep = PdfUtils.getPageRanges(
+                    request.getPageRange(),
+                    totalPages,
+                    request.getActionType().equals(ActionType.KEEP)
+            );
+
+            log.debug("Extracting pages: {} from total pages: {}", pagesToKeep, totalPages);
+
+            ExtractedFile extractedFile = pdfService.extractPages(request, pagesToKeep);
+
+            ByteArrayResource resource = new ByteArrayResource(extractedFile.getFileBytes());
+
+            log.info("Pages extracted successfully for fileId: {}, output size: {} bytes",
+                    request.getFileId(), extractedFile.getFileBytes().length);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + "extracted_" + extractedFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(extractedFile.getFileBytes().length)
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("Error extracting pages for fileId: {}", request.getFileId(), e);
+            throw e;
+        }
     }
 
     @GetMapping("/thumbnail/{assetId}")
     public ResponseEntity<byte[]> getThumbnail(@PathVariable String assetId) throws Exception {
-        File image = storageService.loadThumbnail(assetId);
-        byte[] bytes = Files.readAllBytes(image.toPath());
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .body(bytes);
+        log.debug("Thumbnail request for assetId: {}", assetId);
+
+        try {
+            File image = storageService.loadThumbnail(assetId);
+            byte[] bytes = Files.readAllBytes(image.toPath());
+
+            log.debug("Thumbnail loaded successfully for assetId: {}, size: {} bytes",
+                    assetId, bytes.length);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(bytes);
+        } catch (Exception e) {
+            log.error("Error loading thumbnail for assetId: {}", assetId, e);
+            throw e;
+        }
     }
 
     @PostMapping("/merge")
     public ResponseEntity<Resource> merge(@RequestBody MergeRequest request) throws Exception {
-        ExtractedFile mergedFile = pdfService.mergePdfs(request);
+        log.info("Merge request received for {} files: {}",
+                request.getFileIds().size(), request.getFileIds());
 
-        ByteArrayResource resource = new ByteArrayResource(mergedFile.getFileBytes());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + mergedFile.getFileName() + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .contentLength(mergedFile.getFileBytes().length)
-                .body(resource);
+        try {
+            ExtractedFile mergedFile = pdfService.mergePdfs(request);
+
+            ByteArrayResource resource = new ByteArrayResource(mergedFile.getFileBytes());
+
+            log.info("PDFs merged successfully, output size: {} bytes",
+                    mergedFile.getFileBytes().length);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + mergedFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(mergedFile.getFileBytes().length)
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("Error merging PDFs for fileIds: {}", request.getFileIds(), e);
+            throw e;
+        }
     }
-
 }

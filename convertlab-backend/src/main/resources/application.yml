@@ -1,24 +1,25 @@
 spring:
   application:
-    name: convertlab-backend
+    name: ${SPRING_APPLICATION_NAME:convertlab-backend}
 
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5MB        # per file limit
-      max-request-size: 25MB    # total body limit
+      max-file-size: ${MAX_FILE_SIZE:5MB}
+      max-request-size: ${MAX_REQUEST_SIZE:25MB}
 
 server:
+  port: ${SERVER_PORT:8080}
   servlet:
-    context-path: /api
+    context-path: ${SERVER_CONTEXT_PATH:/api}
   tomcat:
-    max-swallow-size: 200MB
+    max-swallow-size: ${MAX_SWALLOW_SIZE:200MB}
 
 temp:
-  folder: temp-files
-  ttl-ms: 1800_000 #30mins
-  cleanup-interval-ms: 1800_000 #30mins
+  folder: ${TEMP_FOLDER:temp-files}
+  ttl-ms: ${TEMP_TTL_MS:1800000}
+  cleanup-interval-ms: ${TEMP_CLEANUP_INTERVAL_MS:1800000}
 
 app:
   cors:
-    allowed-origins: https://www.easyconvertlab.com,http://localhost:4200
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}

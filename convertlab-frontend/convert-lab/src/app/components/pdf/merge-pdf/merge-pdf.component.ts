@@ -9,7 +9,7 @@ import { Thumbnail } from '../../../models/thumbnail.model';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 import { PdfService } from '../../../services/pdf.service';
 import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
-import { MatButtonModule, MatFabButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
@@ -21,7 +21,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     DragDropModule,
     CdkDrag,
     ActionButtonComponent,
-    MatFabButton,
     MatTooltipModule,
     MatButtonModule
   ],

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
@@ -8,9 +8,10 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Thumbnail } from '../../../models/thumbnail.model';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 import { PdfService } from '../../../services/pdf.service';
-import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
+import { PdfMetadata, ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SnackbarService } from '../../../services/snackbar.service';
 
 @Component({
   selector: 'app-merge-pdf',
@@ -32,6 +33,7 @@ export class MergePdfComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly pdfService = inject(PdfService);
   private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
+  private readonly snackbarService = inject(SnackbarService);
 
   thumbnails = signal<Thumbnail[]>([]);
   isMerging = signal(false);
@@ -76,11 +78,9 @@ export class MergePdfComponent {
     const tempId = `temp-${Date.now()}-${Math.random()}`;
 
     try {
-      // Step 1: Generate thumbnail immediately (frontend)
-      const thumbnailUrl = await this.thumbnailGeneratorService.generateThumbnail(file);
-      const pageCount = await this.thumbnailGeneratorService.getPageCount(file);
+      const { thumbnailUrl, pageCount }: PdfMetadata = await this.thumbnailGeneratorService.getPdfInfo(file);
 
-      // Step 2: Add thumbnail to list with pending status
+      // Add thumbnail to list with pending status
       const thumbnail: Thumbnail = {
         fileId: tempId,
         pageCount,
@@ -91,7 +91,6 @@ export class MergePdfComponent {
       };
 
       this.thumbnails.update(list => [...list, thumbnail]);
-      const thumbnailIndex = this.thumbnails().length - 1;
 
       // Step 3: Start background upload
       this.uploadFileInBackground(file, tempId);
@@ -101,7 +100,6 @@ export class MergePdfComponent {
 
     } catch (error) {
       console.error('Failed to generate thumbnail:', error);
-      // Could show error snackbar here
     }
   }
 
@@ -194,7 +192,7 @@ export class MergePdfComponent {
 
     // Check if any uploads failed
     if (this.hasFailedUploads()) {
-      // Could show error message here
+      this.snackbarService.error('One or more uploads failed. Please re-upload and try again.');
       return;
     }
 

@@ -1,6 +1,5 @@
 <div class="container">
 
-  @if (thumbnails().length > 1) {
   <div class="merge-button-container">
     <div class="merge-button">
       <app-action-button [loading]="isMerging() || isWaitingForUploads()" [disabled]="!canMerge()"
@@ -8,7 +7,7 @@
       </app-action-button>
     </div>
   </div>
-  }
+
 
   @if(thumbnails().length > 0){
   <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">

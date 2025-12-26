@@ -23,5 +23,5 @@ temp:
 app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
-  version: 1.0.1
+  version: 1.0.2
   build-time: @maven.build.timestamp@

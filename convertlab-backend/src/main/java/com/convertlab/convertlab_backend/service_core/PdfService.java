@@ -19,11 +19,9 @@ import java.util.stream.Collectors;
 public class PdfService {
 
     private final StorageService storageService;
-    private final ThumbnailService thumbnailService;
 
-    public PdfService(StorageService storageService, ThumbnailService thumbnailService) {
+    public PdfService(StorageService storageService) {
         this.storageService = storageService;
-        this.thumbnailService = thumbnailService;
     }
 
     public UploadResponse uploadPdf(MultipartFile file) throws Exception {
@@ -52,19 +50,6 @@ public class PdfService {
         File pdfFile = storageService.loadPdf(request.getFileId());
         String originalFileName = PdfUtils.getOriginalUserFileName(pdfFile);
         byte[] fileBytes = PdfUtils.extractPages(pdfFile, pagesToKeep);
-
-        log.debug("Extracted {} pages, output size: {} bytes",
-                pagesToKeep.size(), fileBytes.length);
-
-        return new ExtractedFile(fileBytes, originalFileName);
-    }
-
-    public ExtractedFile extractPages(File file, List<Integer> pagesToKeep) throws Exception {
-        log.debug("Extracting pages from file: {}, pages to keep: {}",
-                file.getName(), pagesToKeep);
-
-        String originalFileName = PdfUtils.getOriginalUserFileName(file);
-        byte[] fileBytes = PdfUtils.extractPages(file, pagesToKeep);
 
         log.debug("Extracted {} pages, output size: {} bytes",
                 pagesToKeep.size(), fileBytes.length);

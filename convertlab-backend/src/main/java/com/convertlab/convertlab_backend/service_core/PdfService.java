@@ -36,14 +36,12 @@ public class PdfService {
         int pageCount = PdfUtils.getPageCount(savedFile);
         log.debug("PDF has {} pages", pageCount);
 
-        String thumbnailUrl = thumbnailService.generateThumbnail(savedFile, assetId);
-        log.debug("Thumbnail generated at: {}", thumbnailUrl);
 
         return new UploadResponse(
                 assetId,
                 pageCount,
                 file.getOriginalFilename(),
-                "/api/pdf/" + thumbnailUrl
+                "temp"
         );
     }
 

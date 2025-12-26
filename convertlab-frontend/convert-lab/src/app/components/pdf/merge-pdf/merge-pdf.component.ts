@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
@@ -8,6 +8,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Thumbnail } from '../../../models/thumbnail.model';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 import { PdfService } from '../../../services/pdf.service';
+import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
+import { MatButtonModule, MatFabButton } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-merge-pdf',
@@ -17,41 +20,154 @@ import { PdfService } from '../../../services/pdf.service';
     MatIconModule,
     DragDropModule,
     CdkDrag,
-    ActionButtonComponent
+    ActionButtonComponent,
+    MatFabButton,
+    MatTooltipModule,
+    MatButtonModule
   ],
   templateUrl: './merge-pdf.component.html',
   styleUrl: './merge-pdf.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MergePdfComponent {
-
   private readonly fileUploadService = inject(FileUploadService);
   private readonly pdfService = inject(PdfService);
+  private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
 
   thumbnails = signal<Thumbnail[]>([]);
-  isUploading = signal(false);
   isMerging = signal(false);
+  isWaitingForUploads = signal(false);
+
+  // Computed states
+  isAnyUploading = computed(() =>
+    this.thumbnails().some(t => t.uploadStatus === 'uploading' || t.uploadStatus === 'pending')
+  );
+
+  hasFailedUploads = computed(() =>
+    this.thumbnails().some(t => t.uploadStatus === 'failed')
+  );
+
+  allUploadsCompleted = computed(() =>
+    this.thumbnails().length > 0 &&
+    this.thumbnails().every(t => t.uploadStatus === 'completed')
+  );
+
+  canMerge = computed(() =>
+    this.thumbnails().length > 1 &&
+    !this.isMerging() &&
+    !this.isWaitingForUploads()
+  );
+
+  mergeButtonLabel = computed(() => {
+    if (this.isMerging()) return 'Merging...';
+    if (this.isWaitingForUploads()) return 'Uploading...';
+    return 'Merge';
+  });
 
   fileUploader = viewChild(FileUploaderComponent);
 
-  onFileUploaded(file: File | null) {
+  constructor() {
+
+  }
+
+  async onFileUploaded(file: File | null) {
     if (!file) return;
 
-    this.isUploading.set(true);
+    // Generate unique temporary ID
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+
+    try {
+      // Step 1: Generate thumbnail immediately (frontend)
+      const thumbnailUrl = await this.thumbnailGeneratorService.generateThumbnail(file);
+      const pageCount = await this.thumbnailGeneratorService.getPageCount(file);
+
+      // Step 2: Add thumbnail to list with pending status
+      const thumbnail: Thumbnail = {
+        fileId: tempId,
+        pageCount,
+        fileName: file.name,
+        thumbnailUrl,
+        uploadStatus: 'pending',
+        file
+      };
+
+      this.thumbnails.update(list => [...list, thumbnail]);
+      const thumbnailIndex = this.thumbnails().length - 1;
+
+      // Step 3: Start background upload
+      this.uploadFileInBackground(file, tempId);
+
+      // Clear file input for next upload
+      this.fileUploader()?.removeFile();
+
+    } catch (error) {
+      console.error('Failed to generate thumbnail:', error);
+      // Could show error snackbar here
+    }
+  }
+
+  private uploadFileInBackground(file: File, id: string) {
+    // Update status to uploading
+    this.thumbnails.update(list =>
+      list.map(t =>
+        t.fileId === id
+          ? { ...t, uploadStatus: 'uploading' }
+          : t
+      )
+    );
+
     this.fileUploadService.uploadPdf(file).subscribe({
-      next: res => {
-        this.thumbnails.update(list => [...list, res.data]);
-        this.isUploading.set(false);
-        this.fileUploader()!.removeFile();
+      next: (res) => {
+        this.thumbnails.update(list =>
+          list.map(t =>
+            t.fileId === id
+              ? {
+                ...t,
+                fileId: res.data.fileId,
+                pageCount: res.data.pageCount,
+                uploadStatus: 'completed'
+              }
+              : t
+          )
+        );
       },
-      error: () => this.isUploading.set(false)
+      error: (err) => {
+        this.thumbnails.update(list => list.map(t =>
+          t.fileId === id
+            ? {
+              ...t,
+              uploadStatus: 'failed',
+              error: err.message || 'Upload failed'
+            }
+            : t
+        ));
+      }
     });
   }
 
   removePdf(id: string) {
-    this.thumbnails.update(list =>
-      list.filter(t => t.fileId !== id)
+    const thumbnail = this.thumbnails().find(t =>
+      t.fileId === id || t.thumbnailUrl === id
     );
+
+    if (thumbnail?.thumbnailUrl.startsWith('blob:')) {
+      this.thumbnailGeneratorService.revokeThumbnailUrl(thumbnail.thumbnailUrl);
+    }
+
+    this.thumbnails.update(list =>
+      list.filter(t => t.fileId !== id && t.thumbnailUrl !== id)
+    );
+  }
+
+  retryUpload(id: string | null) {
+    if (!id) {
+      return;
+    }
+    const thumbnail = this.thumbnails().find(t => t.fileId === id);
+
+    if (thumbnail && thumbnail.file && thumbnail.uploadStatus === 'failed') {
+      this.uploadFileInBackground(thumbnail.file, id);
+    }
   }
 
   onDrop(event: CdkDragDrop<Thumbnail[]>) {
@@ -62,8 +178,30 @@ export class MergePdfComponent {
     });
   }
 
-  merge() {
-    const fileIds = this.thumbnails().map(t => t.fileId);
+  async merge() {
+    if (this.thumbnails().length < 2) {
+      return;
+    }
+
+    // Check if any uploads are still in progress
+    if (this.isAnyUploading()) {
+      this.isWaitingForUploads.set(true);
+
+      // Wait for all uploads to complete
+      await this.waitForUploadsToComplete();
+
+      this.isWaitingForUploads.set(false);
+    }
+
+    // Check if any uploads failed
+    if (this.hasFailedUploads()) {
+      // Could show error message here
+      return;
+    }
+
+    const fileIds = this.thumbnails()
+      .filter(t => t.fileId !== null)
+      .map(t => t.fileId!);
 
     if (fileIds.length < 2) {
       return;
@@ -93,5 +231,28 @@ export class MergePdfComponent {
         this.isMerging.set(false);
       }
     });
+  }
+
+  private waitForUploadsToComplete(): Promise<void> {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (!this.isAnyUploading()) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100); // Check every 100ms
+    });
+  }
+
+  private revokeThumbnailUrls(): void {
+    this.thumbnails().forEach(thumbnail => {
+      if (thumbnail.thumbnailUrl.startsWith('blob:')) {
+        this.thumbnailGeneratorService.revokeThumbnailUrl(thumbnail.thumbnailUrl);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.revokeThumbnailUrls();
   }
 }

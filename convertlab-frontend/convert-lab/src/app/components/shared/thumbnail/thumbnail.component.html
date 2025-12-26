@@ -1,18 +1,22 @@
-<div class="thumbnail-card" [class.disabled]="disabled()">
+<div class="thumbnail-card" [class.disabled]="disabled()" [class.failed]="isFailed()">
   <div class="thumbnail-wrapper">
-    <img [src]="fullThumbnailUrl()" alt="PDF thumbnail" loading="lazy" />
+    <img [src]="thumbnailUrl()" [alt]="fileName() + ' thumbnail'" loading="lazy" />
 
-    <button type="button" class="delete-btn" (click)="onRemoveClick($event)" aria-label="Remove PDF">
+    <button type="button" class="delete-btn" (click)="onRemoveClick($event)" [attr.aria-label]="'Remove ' + fileName()">
       ✕
     </button>
+
+    @if (isFailed()) {
+    <div class="status-badge error">
+      <mat-icon>error</mat-icon>
+    </div>
+    }
   </div>
 
   <div class="file-name" [title]="fileName()">
     {{ fileName() || 'PDF File' }}
   </div>
-  <div class="page-count" [title]="pageCount()">
+  <div class="page-count" [title]="pageCount() + ' pages'">
     ({{ pageCount() || '0' }} pages)
-
   </div>
-
 </div>

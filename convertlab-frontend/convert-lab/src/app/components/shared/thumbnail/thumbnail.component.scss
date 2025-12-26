@@ -1,4 +1,3 @@
-/* src/app/components/shared/thumbnail/thumbnail.component.scss */
 .thumbnail-card {
   width: 100%;
   max-width: 120px;
@@ -6,11 +5,17 @@
   flex-direction: column;
   gap: 6px;
   user-select: none;
-  pointer-events: auto; /* Important for nested dragging */
+  pointer-events: auto;
 
   &.disabled {
     opacity: 0.6;
     pointer-events: none;
+  }
+
+  &.failed {
+    .thumbnail-wrapper {
+      border-color: var(--mat-sys-error);
+    }
   }
 }
 
@@ -27,7 +32,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    pointer-events: none; /* Prevent image from interfering with drag */
+    pointer-events: none;
   }
 
   &:hover {
@@ -48,8 +53,8 @@
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
-  z-index: 10; /* Ensure button is above drag area */
-  pointer-events: auto; /* Ensure button is clickable */
+  z-index: 10;
+  pointer-events: auto;
 
   display: flex;
   align-items: center;
@@ -64,6 +69,48 @@
   }
 }
 
+.status-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &.uploading {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--mat-sys-primary);
+  }
+
+  &.error {
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .file-name,
 .page-count {
   font-size: 12px;
@@ -72,7 +119,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   color: #333;
-  pointer-events: none; /* Prevent text selection during drag */
+  pointer-events: none;
 }
 
 .page-count {

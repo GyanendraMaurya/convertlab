@@ -9,7 +9,7 @@
   );
 }
 
-.active-link {
+.error-button {
   @include mat.button-overrides(
     (
       protected-container-color: red,

@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { environment } from '../../../../environments/environment';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-thumbnail',
-  imports: [],
+  imports: [MatIconModule, MatButtonModule],
   templateUrl: './thumbnail.component.html',
   styleUrl: './thumbnail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,14 +14,27 @@ export class ThumbnailComponent {
   thumbnailUrl = input.required<string>();
   fileName = input<string>('');
   pageCount = input<number>(0);
+  uploadStatus = input<'pending' | 'uploading' | 'completed' | 'failed'>('completed');
   disabled = input(false);
+
   remove = output<string>();
-  fullThumbnailUrl = computed(() => environment.apiUrl.split("/api").at(0) + this.thumbnailUrl());
+  retry = output<void>();
+
+  isUploading = computed(() =>
+    this.uploadStatus() === 'uploading' || this.uploadStatus() === 'pending'
+  );
+
+  isFailed = computed(() => this.uploadStatus() === 'failed');
 
   onRemoveClick(event: MouseEvent) {
-    event.stopPropagation(); // important for future drag & drop
+    event.stopPropagation();
     if (!this.disabled()) {
       this.remove.emit(this.id());
     }
+  }
+
+  onRetryClick(event: MouseEvent) {
+    event.stopPropagation();
+    this.retry.emit();
   }
 }

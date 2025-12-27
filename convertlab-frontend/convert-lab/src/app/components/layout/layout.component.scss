@@ -1,18 +1,47 @@
-// .content {
-//   padding: 16px;
-// }
-/* MOBILE FIRST */
-.app-layout {
+.sidenav-container {
+  height: 100vh;
+}
+
+mat-sidenav {
+  width: 280px;
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .close-button {
+    color: var(--mat-sys-on-surface-variant);
+
+    &:hover {
+      background-color: var(--mat-sys-surface-variant);
+      color: var(--mat-sys-on-surface);
+    }
+  }
+}
+
+mat-sidenav-content {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 16px; /* Mobile padding */
-  gap: 16px;
 }
 
-.app-header {
-  font-size: 1.5rem;
-  padding: 8px 0;
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 16px;
 }
 
 .app-content {
@@ -22,10 +51,25 @@
   gap: 16px;
 }
 
-/* DESKTOP ≥ 720px */
+h3[mat-subheader] {
+  color: var(--mat-sys-primary);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.active-list-item {
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent) !important;
+  color: var(--mat-sys-primary) !important;
+
+  mat-icon {
+    color: var(--mat-sys-primary) !important;
+  }
+}
+
+/* Desktop styles */
 @media (min-width: 720px) {
   .app-layout {
-    padding: 32px 48px; /* Desktop padding */
+    padding: 32px 48px;
     gap: 32px;
   }
 

@@ -1,6 +1,11 @@
-.navbar {
+nav {
+  color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
   display: flex;
   align-items: center;
+  height: 60px;
+  padding: 0 1rem;
+  gap: 0.5rem;
 }
 
 .brand {
@@ -10,21 +15,8 @@
   align-items: center;
 }
 
-// .spacer {
-//   flex: 1 1 auto;
-// }
-
-nav {
-  color: var(--mat-sys-primary);
-  background: var(--mat-sys-primary-container);
-  display: flex;
-  align-items: center;
-  height: 60px;
-  padding: 0 2rem;
-}
-
-.right-block {
-  margin-left: auto;
+.spacer {
+  flex: 1 1 auto;
 }
 
 .nowrap {

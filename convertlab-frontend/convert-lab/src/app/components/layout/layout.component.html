@@ -1,17 +1,58 @@
-<!-- <app-navbar></app-navbar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav [opened]="sidenavOpened()" [mode]="'over'" [position]="'start'" (closedStart)="closeSidenav()">
+    <div class="sidenav-header">
+      <h2>Menu</h2>
+      <button mat-icon-button (click)="closeSidenav()" aria-label="Close menu" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
 
-<div class="content">
-  <router-outlet></router-outlet>
-</div>
+    <mat-nav-list>
+      <h3 mat-subheader>PDF Tools</h3>
 
-<router-outlet></router-outlet> -->
+      <a mat-list-item [routerLink]="['/merge-pdf']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/merge-pdf')">
+        <mat-icon matListItemIcon>merge</mat-icon>
+        <span matListItemTitle>Merge PDF</span>
+      </a>
 
-<app-navbar></app-navbar>
-<div class="app-layout">
-  <main class="app-content">
-    <router-outlet></router-outlet>
-  </main>
-</div>
+      <a mat-list-item [routerLink]="['/extract-pdf']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/extract-pdf')">
+        <mat-icon matListItemIcon>content_cut</mat-icon>
+        <span matListItemTitle>Extract PDF</span>
+      </a>
 
-<!-- Version display component -->
-<app-version-display></app-version-display>
+      <mat-divider></mat-divider>
+
+      <!-- Future options section -->
+      <h3 mat-subheader>Coming Soon</h3>
+      <a mat-list-item disabled>
+        <mat-icon matListItemIcon>splitscreen</mat-icon>
+        <span matListItemTitle>Split PDF</span>
+      </a>
+
+      <a mat-list-item disabled>
+        <mat-icon matListItemIcon>compress</mat-icon>
+        <span matListItemTitle>Compress PDF</span>
+      </a>
+
+      <!-- <a mat-list-item disabled>
+        <mat-icon matListItemIcon>rotate_right</mat-icon>
+        <span matListItemTitle>Rotate PDF</span>
+      </a> -->
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <app-navbar (menuToggle)="toggleSidenav()"></app-navbar>
+
+    <div class="app-layout">
+      <main class="app-content">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+
+    <app-version-display></app-version-display>
+  </mat-sidenav-content>
+</mat-sidenav-container>

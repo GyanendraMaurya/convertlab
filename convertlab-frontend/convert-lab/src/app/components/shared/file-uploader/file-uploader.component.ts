@@ -1,25 +1,38 @@
-import { Component, Input, Output, EventEmitter, signal, input, computed, output, viewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  input,
+  computed,
+  output,
+  viewChild,
+  ElementRef,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { FileValidationService } from '../../../services/file-validation.service';
 
 @Component({
   selector: 'app-file-uploader',
-  imports: [MatButtonModule, MatIconModule, CommonModule, ActionButtonComponent,
-    MatProgressBar
-  ],
+  imports: [MatButtonModule, MatIconModule, CommonModule, ActionButtonComponent, MatProgressBar],
   templateUrl: './file-uploader.component.html',
   styleUrl: './file-uploader.component.scss',
 })
 export class FileUploaderComponent {
+  private readonly validationService = inject(FileValidationService);
 
   // /** Allowed file types e.g. ['pdf', 'png', 'jpeg'] */
   allowedTypes = input<string[]>(['pdf']);
 
-  allowedTypesAttr = computed(() => this.allowedTypes().length > 0 ? this.allowedTypes().map(t => '.' + t).join(',') : null)
-
+  allowedTypesAttr = computed(() =>
+    this.allowedTypes().length > 0 ? this.allowedTypes().map((t) => '.' + t).join(',') : null
+  );
 
   onFileSelected = output<File | null>();
   fileRemoved = output<void>();
@@ -29,10 +42,28 @@ export class FileUploaderComponent {
   selectedFile = signal<File | null>(null);
   selectedFileName = computed(() => this.selectedFile()?.name);
   isUploading = input(false);
-  fileInput = viewChild<ElementRef>('fileInput')
+  fileInput = viewChild<ElementRef>('fileInput');
+
+  // Display validation constraints
+  validationInfo = computed(() => this.validationService.getConstraintsDescription());
 
   /** Validate and emit file */
   handleFile(file: File) {
+    // Clear previous errors
+    this.errorMessage.set('');
+
+    // Run validation
+    const validationResult = this.validationService.validateFile(file);
+
+    if (!validationResult.valid) {
+      // Display all validation errors
+      this.onFileSelected.emit(null);
+      this.clearFileInput();
+      this.errorMessage.set(validationResult.errors.join('. '));
+      return;
+    }
+
+    // Additional extension check (backward compatibility)
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (this.allowedTypes().length > 0 && !this.allowedTypes().includes(extension!)) {
       this.errorMessage.set(`Only ${this.allowedTypes().join(', ')} files are allowed`);
@@ -41,7 +72,6 @@ export class FileUploaderComponent {
       return;
     }
 
-    this.errorMessage.set('');
     this.selectedFile.set(file);
     this.onFileSelected.emit(file);
   }
@@ -80,5 +110,6 @@ export class FileUploaderComponent {
       this.fileInput()!.nativeElement.value = '';
     }
     this.selectedFile.set(null);
+    this.errorMessage.set('');
   }
 }

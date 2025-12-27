@@ -5,8 +5,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: ${MAX_FILE_SIZE:5MB}
-      max-request-size: ${MAX_REQUEST_SIZE:25MB}
+      max-file-size: ${MAX_FILE_SIZE:15MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
 
 server:
   port: ${SERVER_PORT:8080}
@@ -23,5 +23,5 @@ temp:
 app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
-  version: 1.0.2
+  version: 1.0.3
   build-time: @maven.build.timestamp@

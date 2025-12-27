@@ -19,7 +19,7 @@ export interface ValidationResult {
 export class FileValidationService {
   // Default constraints - can be overridden by backend config
   private readonly defaultConstraints: FileValidationConstraints = {
-    maxSizeBytes: 5 * 1024 * 1024, // 5MB
+    maxSizeBytes: 15 * 1024 * 1024, // 15MB
     minSizeBytes: 1024, // 1KB
     allowedMimeTypes: ['application/pdf'],
     allowedExtensions: ['pdf'],

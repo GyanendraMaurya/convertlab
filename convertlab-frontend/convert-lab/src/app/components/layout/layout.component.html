@@ -22,24 +22,21 @@
         <span matListItemTitle>Extract PDF</span>
       </a>
 
+      <a mat-list-item [routerLink]="['/split-pdf']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/split-pdf')">
+        <mat-icon matListItemIcon>splitscreen</mat-icon>
+        <span matListItemTitle>Split PDF</span>
+      </a>
+
       <mat-divider></mat-divider>
 
       <!-- Future options section -->
       <h3 mat-subheader>Coming Soon</h3>
-      <a mat-list-item disabled>
-        <mat-icon matListItemIcon>splitscreen</mat-icon>
-        <span matListItemTitle>Split PDF</span>
-      </a>
 
       <a mat-list-item disabled>
         <mat-icon matListItemIcon>compress</mat-icon>
         <span matListItemTitle>Compress PDF</span>
       </a>
-
-      <!-- <a mat-list-item disabled>
-        <mat-icon matListItemIcon>rotate_right</mat-icon>
-        <span matListItemTitle>Rotate PDF</span>
-      </a> -->
 
     </mat-nav-list>
   </mat-sidenav>

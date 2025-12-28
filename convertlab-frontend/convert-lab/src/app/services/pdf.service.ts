@@ -6,6 +6,7 @@ import { HttpContext, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IS_BLOB_REQUEST, SUPPRESS_ERROR } from '../interceptors/http-context';
 import { MergePdfRequest } from '../models/merge-pdf.model';
+import { SplitPdfRequest } from '../models/split-pdf.model';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,18 @@ export class PdfService {
   mergePdfs(request: MergePdfRequest): Observable<HttpResponse<Blob>> {
     return this.httpService.post<HttpResponse<Blob>>(
       `${this.apiUrl}/pdf/merge`,
+      request,
+      {
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(IS_BLOB_REQUEST, true)
+      }
+    );
+  }
+
+  splitPdf(request: SplitPdfRequest): Observable<HttpResponse<Blob>> {
+    return this.httpService.post<HttpResponse<Blob>>(
+      `${this.apiUrl}/pdf/split`,
       request,
       {
         responseType: 'blob',

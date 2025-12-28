@@ -1,0 +1,86 @@
+:host {
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.split-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.file-uploader-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.thumbnail-section {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.split-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.option-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  .page-range-input {
+    width: 100%;
+  }
+}
+
+.range-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 8px 12px;
+  background: var(--mat-sys-surface-variant);
+  border-radius: 8px;
+  margin-top: 8px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* DESKTOP ≥ 720px */
+@media (min-width: 720px) {
+  .container {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .split-container {
+    width: 60%;
+    max-width: 800px;
+  }
+
+  .option-item {
+    width: auto;
+    min-width: 400px;
+  }
+}

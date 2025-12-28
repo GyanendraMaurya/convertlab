@@ -13,6 +13,9 @@ export const routes: Routes = [
   {
     path: 'extract-pdf',
     loadComponent: () => import('./components/pdf/extract-page/extract-page.component').then(m => m.ExtractPageComponent)
+  },
+  {
+    path: 'split-pdf',
+    loadComponent: () => import('./components/pdf/split-pdf/split-pdf.component').then(m => m.SplitPdfComponent)
   }
-
 ];

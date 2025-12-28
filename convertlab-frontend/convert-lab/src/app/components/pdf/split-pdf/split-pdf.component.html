@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="split-container">
+
+    @if (thumbnailUrl()) {
+    <!-- Show thumbnail when file is uploaded -->
+    <div class="thumbnail-section">
+      <app-thumbnail [id]="uploadedFileId() || 'temp'" [thumbnailUrl]="thumbnailUrl()" [pageCount]="pageCount()"
+        [fileName]="fileName()" [uploadStatus]="isUploading() ? 'uploading' : 'completed'" (remove)="removeThumbnail()">
+      </app-thumbnail>
+    </div>
+    }
+
+    @if (!thumbnailUrl()) {
+    <!-- Show file uploader when no file is uploaded -->
+    <div class="file-uploader-wrapper">
+      <app-file-uploader [allowedTypes]="['pdf']" (onFileSelected)="onFileUploaded($event)"
+        (fileRemoved)="onFileRemoved()" [isUploading]="isUploading()">
+      </app-file-uploader>
+    </div>
+    }
+
+    <!-- Split options -->
+    <div class="split-options">
+      <div class="option-item">
+        <mat-button-toggle-group name="splitType" aria-label="Split Type" [value]="splitType()"
+          (change)="splitTypeChange($event)">
+          <mat-button-toggle [value]="'EACH_PAGE'">Split Each Page</mat-button-toggle>
+          <mat-button-toggle [value]="'BY_RANGE'">Split by Range</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      @if (showPageRangeInput()) {
+      <div class="option-item">
+        <app-page-range-input class="page-range-input" [(ngModel)]="pageRange">
+        </app-page-range-input>
+        <div class="range-hint">
+          <mat-icon>info</mat-icon>
+          <span>Enter ranges like: 1-3,5-7,10 (each range will be a separate PDF)</span>
+        </div>
+      </div>
+      }
+
+    </div>
+    <app-action-button [disabled]="selectedFile() === null || (showPageRangeInput() && !pageRange())"
+      [loading]="isSplitting()" [label]="isSplitting() ? 'Splitting...' : 'Split PDF'" variant="filled"
+      [inputClass]="'big-button-64 w-100'" (onClick)="split()">
+    </app-action-button>
+  </div>
+</div>

@@ -48,7 +48,7 @@ export class ExtractPageComponent {
   );
 
   canExtract = computed(() =>
-    !this.isExtracting() && !this.isWaitingForUpload()
+    !this.isExtracting() && !this.isWaitingForUpload() && this.pageRange().trim()
   );
 
   extractButtonLabel = computed(() => {

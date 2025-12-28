@@ -59,8 +59,11 @@
     max-width: 800px;
   }
 
+  .extract-options {
+    flex-direction: row;
+  }
+
   .option-item {
     width: auto;
-    min-width: 400px;
   }
 }

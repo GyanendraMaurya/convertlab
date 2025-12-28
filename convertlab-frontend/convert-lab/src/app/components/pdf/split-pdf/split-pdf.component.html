@@ -41,9 +41,8 @@
       }
 
     </div>
-    <app-action-button [disabled]="selectedFile() === null || (showPageRangeInput() && !pageRange())"
-      [loading]="isSplitting()" [label]="isSplitting() ? 'Splitting...' : 'Split PDF'" variant="filled"
-      [inputClass]="'big-button-64 w-100'" (onClick)="split()">
+    <app-action-button [disabled]="!canSplit()" [loading]="isSplitting() || isWaitingForUpload()"
+      [label]="splitButtonLabel()" variant="filled" [inputClass]="'big-button-64 w-100'" (onClick)="split()">
     </app-action-button>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
 import { PageRangeInputComponent } from '../../shared/page-range-input/page-range-input.component';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { PdfService } from '../../../services/pdf.service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { SplitType } from '../../../models/split-pdf.model';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
 import { MatIconModule } from '@angular/material/icon';
-import { SplitType } from '../../../models/split-pdf.model';
 
 @Component({
   selector: 'app-split-pdf',
@@ -36,6 +36,7 @@ export class SplitPdfComponent {
   selectedFile = signal<File | null>(null);
   splitType = signal<SplitType>(SplitType.EACH_PAGE);
   isSplitting = signal(false);
+  isWaitingForUpload = signal(false);
 
   // Thumbnail data
   thumbnailUrl = signal<string>('');
@@ -44,6 +45,28 @@ export class SplitPdfComponent {
 
   // Show/hide page range input based on split type
   showPageRangeInput = signal(false);
+
+  // Computed states
+  uploadCompleted = computed(() =>
+    this.uploadedFileId() !== null && !this.isUploading()
+  );
+
+  canSplit = computed(() => {
+    const uploadReady = !this.isSplitting() && !this.isWaitingForUpload();
+
+    // If split by range, also check if page range is provided
+    if (this.splitType() === SplitType.BY_RANGE) {
+      return uploadReady && this.pageRange().trim() !== '';
+    }
+
+    return uploadReady;
+  });
+
+  splitButtonLabel = computed(() => {
+    if (this.isSplitting()) return 'Splitting...';
+    if (this.isWaitingForUpload()) return 'Uploading...';
+    return 'Split PDF';
+  });
 
   async onFileUploaded($event: File | null) {
     if (!$event) return;
@@ -97,11 +120,26 @@ export class SplitPdfComponent {
     this.onFileRemoved();
   }
 
-  split(): void {
-    if (this.uploadedFileId() == null || this.selectedFile() == null) return;
+  async split(): Promise<void> {
+    if (this.selectedFile() == null) return;
 
     // Validate page range if split by range
     if (this.splitType() === SplitType.BY_RANGE && !this.pageRange()) {
+      return;
+    }
+
+    // Check if upload is still in progress
+    if (this.isUploading()) {
+      this.isWaitingForUpload.set(true);
+
+      // Wait for upload to complete
+      await this.waitForUploadToComplete();
+
+      this.isWaitingForUpload.set(false);
+    }
+
+    // Check if upload completed successfully
+    if (this.uploadedFileId() == null) {
       return;
     }
 
@@ -133,6 +171,17 @@ export class SplitPdfComponent {
           this.isSplitting.set(false);
         },
       });
+  }
+
+  private waitForUploadToComplete(): Promise<void> {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (!this.isUploading()) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100); // Check every 100ms
+    });
   }
 
   splitTypeChange($event: MatButtonToggleChange) {

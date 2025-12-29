@@ -2,12 +2,15 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.api.enums.ActionType;
+import com.convertlab.convertlab_backend.api.enums.SplitType;
 import com.convertlab.convertlab_backend.service_core.PdfService;
+import com.convertlab.convertlab_backend.service_core.PdfSplitService;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.SplitRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,10 +21,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 @Log4j2
 @RestController
@@ -31,6 +36,7 @@ public class PdfController {
 
     private final PdfService pdfService;
     private final StorageService storageService;
+    private final PdfSplitService pdfSplitService;
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
@@ -131,6 +137,59 @@ public class PdfController {
                     .body(resource);
         } catch (Exception e) {
             log.error("Error merging PDFs for fileIds: {}", request.getFileIds(), e);
+            throw e;
+        }
+    }
+
+    @PostMapping("/split")
+    public ResponseEntity<StreamingResponseBody> split(@RequestBody SplitRequest request) throws Exception {
+        log.info("Split request received for fileId: {}, pageRange: {}, splitType: {}",
+                request.getFileId(), request.getPageRange(), request.getSplitType());
+
+        try {
+            // Validate input if split by range
+            if (request.getSplitType() == SplitType.BY_RANGE) {
+                PdfUtils.validateInputRangePattern(request.getPageRange());
+            }
+
+            // Load PDF file
+            File pdfFile = storageService.loadPdf(request.getFileId());
+
+            if (!pdfFile.exists()) {
+                log.error("PDF file not found for fileId: {}", request.getFileId());
+                throw new RuntimeException("PDF file not found");
+            }
+
+            String originalFileName = PdfUtils.getOriginalUserFileName(pdfFile);
+            String baseFileName = originalFileName.replaceFirst("[.][^.]+$", ""); // Remove extension
+
+            // Create streaming response
+            StreamingResponseBody responseBody = outputStream -> {
+                try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
+                    pdfSplitService.splitIntoZip(
+                            pdfFile,
+                            request.getPageRange(),
+                            request.getSplitType(),
+                            zipOut
+                    );
+                    zipOut.finish();
+                    log.info("Split PDF streaming completed for fileId: {}", request.getFileId());
+                } catch (Exception e) {
+                    log.error("Error during PDF split streaming for fileId: {}", request.getFileId(), e);
+                    throw new RuntimeException("Error splitting PDF", e);
+                }
+            };
+
+            String zipFileName = baseFileName + "_split.zip";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + zipFileName + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(responseBody);
+
+        } catch (Exception e) {
+            log.error("Error splitting PDF for fileId: {}", request.getFileId(), e);
             throw e;
         }
     }

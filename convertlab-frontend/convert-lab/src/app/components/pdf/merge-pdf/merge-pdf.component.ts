@@ -71,36 +71,50 @@ export class MergePdfComponent {
 
   }
 
-  async onFileUploaded(file: File | null) {
-    if (!file) return;
+  async onFilesUploaded(files: File[] | null) {
+    if (!files || files.length === 0) return;
 
-    // Generate unique temporary ID
-    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    for (const file of files) {
+      // Generate unique temporary ID per file
+      const tempId = `temp-${Date.now()}-${Math.random()}`;
 
-    try {
-      const { thumbnailUrl, pageCount }: PdfMetadata = await this.thumbnailGeneratorService.getPdfInfo(file);
+      try {
+        const { thumbnailUrl, pageCount }: PdfMetadata =
+          await this.thumbnailGeneratorService.getPdfInfo(file);
 
-      // Add thumbnail to list with pending status
-      const thumbnail: Thumbnail = {
-        fileId: tempId,
-        pageCount,
-        fileName: file.name,
-        thumbnailUrl,
-        uploadStatus: 'pending',
-        file
-      };
+        const thumbnail: Thumbnail = {
+          fileId: tempId,
+          pageCount,
+          fileName: file.name,
+          thumbnailUrl,
+          uploadStatus: 'pending',
+          file
+        };
 
-      this.thumbnails.update(list => [...list, thumbnail]);
+        // Add thumbnail immediately
+        this.thumbnails.update(list => [...list, thumbnail]);
 
-      // Step 3: Start background upload
-      this.uploadFileInBackground(file, tempId);
+        // Start background upload for this file
+        this.uploadFileInBackground(file, tempId);
 
-      // Clear file input for next upload
-      this.fileUploader()?.removeFile();
+      } catch (error) {
+        console.error(`Failed to generate thumbnail for ${file.name}`, error);
 
-    } catch (error) {
-      console.error('Failed to generate thumbnail:', error);
+        // Optional: show failed thumbnail entry
+        this.thumbnails.update(list => [
+          ...list,
+          {
+            fileId: tempId,
+            fileName: file.name,
+            uploadStatus: 'failed',
+            error: 'Thumbnail generation failed'
+          } as Thumbnail
+        ]);
+      }
     }
+
+    // Clear file input once after all files are processed
+    this.fileUploader()?.removeFile();
   }
 
   private uploadFileInBackground(file: File, id: string) {

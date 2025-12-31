@@ -3,16 +3,17 @@
 
   <mat-icon class="upload-icon">upload</mat-icon>
 
-  <p>Drag & Drop your file here</p>
+  <p>Drag & Drop your {{ multiple() ? 'files' : 'file' }} here</p>
   <p class="or">or</p>
 
-  <app-action-button label="Choose File" variant="filled" (onClick)="fileInput.click()">
+  <app-action-button label="Choose {{ multiple() ? 'Files' : 'File' }}" variant="filled" (onClick)="fileInput.click()">
   </app-action-button>
 
   <!-- Validation info -->
-  <p class="validation-info">{{ validationInfo() }}</p>
+  <!-- <p class="validation-info">{{ validationInfo() }}</p> -->
 
-  <input #fileInput type="file" hidden (change)="onFileInput($event)" [attr.accept]="allowedTypesAttr()" />
+  <input #fileInput type="file" hidden (change)="onFileInput($event)" [attr.accept]="allowedTypesAttr()"
+    [attr.multiple]="multiple() ? true : null" />
 
   @if (selectedFileName()) {
   <div class="file-info">

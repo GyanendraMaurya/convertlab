@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="convert-button-container">
+    <div class="convert-button">
+      <app-action-button [loading]="isConverting() || isWaitingForUploads()" [disabled]="!canConvert()"
+        [label]="convertButtonLabel()" variant="filled" [inputClass]="'big-button-64 w-100'" (onClick)="convert()">
+      </app-action-button>
+    </div>
+  </div>
+
+  @if(thumbnails().length > 0){
+  <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
+    @for (image of thumbnails(); track image.fileId; let i = $index) {
+
+    <div class="thumbnail-wrapper" cdkDrag [class.failed]="image.uploadStatus === 'failed'">
+
+      <app-image-thumbnail [id]="image.fileId || image.thumbnailUrl" [thumbnailUrl]="image.thumbnailUrl"
+        [fileName]="image.fileName" [dimensions]="image.width + ' × ' + image.height" [rotation]="image.rotation"
+        [uploadStatus]="image.uploadStatus" (remove)="removeImage($event)" (rotate)="rotateImage($event)"
+        (retry)="retryUpload(image.fileId)">
+      </app-image-thumbnail>
+
+      <!-- Order indicator -->
+      <div class="order-badge">{{ i + 1 }}</div>
+
+      @if (image.uploadStatus === 'failed') {
+      <div class="upload-overlay error">
+        <mat-icon>error</mat-icon>
+        <button mat-mini-fab matTooltip="Retry" (click)="retryUpload(image.fileId)" class="error-button">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+      }
+
+      <!-- Drag handle -->
+      <div class="drag-hint">
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+
+    </div>
+    }
+  </div>
+  }
+
+  <div class="file-uploader-container">
+    <div class="file-uploader-content">
+      <app-file-uploader [allowedTypes]="['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']" [isUploading]="false"
+        [multiple]="true" (onFilesSelected)="onFilesUploaded($event)">
+      </app-file-uploader>
+    </div>
+  </div>
+</div>

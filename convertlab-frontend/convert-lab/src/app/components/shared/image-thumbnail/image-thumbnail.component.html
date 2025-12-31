@@ -1,0 +1,31 @@
+<div class="thumbnail-card" [class.disabled]="disabled()" [class.failed]="isFailed()">
+  <div class="thumbnail-wrapper">
+    <img [src]="thumbnailUrl()" [alt]="fileName() + ' thumbnail'" [style.transform]="rotationTransform()"
+      loading="lazy" />
+
+    <div class="button-group">
+      <button type="button" class="action-btn rotate-btn" (click)="onRotateClick($event)"
+        [attr.aria-label]="'Rotate ' + fileName()" matTooltip="Rotate 90°">
+        <mat-icon>rotate_right</mat-icon>
+      </button>
+
+      <button type="button" class="action-btn delete-btn" (click)="onRemoveClick($event)"
+        [attr.aria-label]="'Remove ' + fileName()" matTooltip="Remove">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    @if (isFailed()) {
+    <div class="status-badge error">
+      <mat-icon>error</mat-icon>
+    </div>
+    }
+  </div>
+
+  <div class="file-name" [title]="fileName()">
+    {{ fileName() || 'Image File' }}
+  </div>
+  <div class="dimensions" [title]="dimensions()">
+    {{ dimensions() }}
+  </div>
+</div>

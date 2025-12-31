@@ -28,6 +28,14 @@
         <span matListItemTitle>Split PDF</span>
       </a>
 
+      <h3 mat-subheader>Image Tools</h3>
+
+      <a mat-list-item [routerLink]="['/image-to-pdf']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/image-to-pdf')">
+        <mat-icon matListItemIcon>image</mat-icon>
+        <span matListItemTitle>Image to PDF</span>
+      </a>
+
       <mat-divider></mat-divider>
 
       <!-- Future options section -->
@@ -36,6 +44,11 @@
       <a mat-list-item disabled>
         <mat-icon matListItemIcon>compress</mat-icon>
         <span matListItemTitle>Compress PDF</span>
+      </a>
+
+      <a mat-list-item disabled>
+        <mat-icon matListItemIcon>crop</mat-icon>
+        <span matListItemTitle>Crop Images</span>
       </a>
 
     </mat-nav-list>

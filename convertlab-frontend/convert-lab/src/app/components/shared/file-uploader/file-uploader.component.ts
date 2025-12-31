@@ -1,8 +1,5 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   signal,
   input,
   computed,
@@ -27,59 +24,84 @@ import { FileValidationService } from '../../../services/file-validation.service
 export class FileUploaderComponent {
   private readonly validationService = inject(FileValidationService);
 
-  // /** Allowed file types e.g. ['pdf', 'png', 'jpeg'] */
+  /** Allowed file types e.g. ['pdf', 'png', 'jpeg'] */
   allowedTypes = input<string[]>(['pdf']);
+
+  /** Enable multiple file selection */
+  multiple = input<boolean>(false);
 
   allowedTypesAttr = computed(() =>
     this.allowedTypes().length > 0 ? this.allowedTypes().map((t) => '.' + t).join(',') : null
   );
 
-  onFileSelected = output<File | null>();
+  // Outputs
+  onFileSelected = output<File | null>(); // For single file (backward compatibility)
+  onFilesSelected = output<File[] | null>(); // For multiple files
   fileRemoved = output<void>();
 
   isDragging = signal(false);
   errorMessage = signal('');
-  selectedFile = signal<File | null>(null);
-  selectedFileName = computed(() => this.selectedFile()?.name);
+  selectedFiles = signal<File[]>([]);
+  selectedFileName = computed(() => {
+    const files = this.selectedFiles();
+    if (files.length === 0) return null;
+    if (files.length === 1) return files[0].name;
+    return `${files.length} files selected`;
+  });
   isUploading = input(false);
   fileInput = viewChild<ElementRef>('fileInput');
 
   // Display validation constraints
   validationInfo = computed(() => this.validationService.getConstraintsDescription());
 
-  /** Validate and emit file */
-  handleFile(file: File) {
+  /** Validate and emit file(s) */
+  handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+
     // Clear previous errors
     this.errorMessage.set('');
 
-    // Run validation
-    const validationResult = this.validationService.validateFile(file);
+    const fileArray = Array.from(files);
 
-    if (!validationResult.valid) {
-      // Display all validation errors
-      this.onFileSelected.emit(null);
-      this.clearFileInput();
-      this.errorMessage.set(validationResult.errors.join('. '));
-      return;
-    }
+    // Validate all files
+    // const validationResult = this.validationService.validateFiles(fileArray);
 
-    // Additional extension check (backward compatibility)
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    if (this.allowedTypes().length > 0 && !this.allowedTypes().includes(extension!)) {
+    // if (!validationResult.valid) {
+    //   this.onFileSelected.emit(null);
+    //   this.onFilesSelected.emit(null);
+    //   this.clearFileInput();
+    //   this.errorMessage.set(validationResult.errors.join('. '));
+    //   return;
+    // }
+
+    // Additional extension check for all files
+    const invalidFiles = fileArray.filter(file => {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      return this.allowedTypes().length > 0 && !this.allowedTypes().includes(extension!);
+    });
+
+    if (invalidFiles.length > 0) {
       this.errorMessage.set(`Only ${this.allowedTypes().join(', ')} files are allowed`);
       this.onFileSelected.emit(null);
+      this.onFilesSelected.emit(null);
       this.clearFileInput();
       return;
     }
 
-    this.selectedFile.set(file);
-    this.onFileSelected.emit(file);
+    this.selectedFiles.set(fileArray);
+
+    // Emit based on mode
+    if (this.multiple()) {
+      this.onFilesSelected.emit(fileArray);
+    } else {
+      this.onFileSelected.emit(fileArray[0]);
+    }
   }
 
   /** Trigger manually from input */
   onFileInput(event: any) {
-    const file = event.target.files?.[0];
-    if (file) this.handleFile(file);
+    const files = event.target.files;
+    if (files) this.handleFiles(files);
   }
 
   /** Drag events */
@@ -96,8 +118,8 @@ export class FileUploaderComponent {
     event.preventDefault();
     this.isDragging.set(false);
 
-    const file = event.dataTransfer?.files?.[0];
-    if (file) this.handleFile(file);
+    const files = event.dataTransfer?.files;
+    if (files) this.handleFiles(files);
   }
 
   removeFile() {
@@ -109,7 +131,7 @@ export class FileUploaderComponent {
     if (this.fileInput()) {
       this.fileInput()!.nativeElement.value = '';
     }
-    this.selectedFile.set(null);
+    this.selectedFiles.set([]);
     this.errorMessage.set('');
   }
 }

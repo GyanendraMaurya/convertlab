@@ -20,8 +20,9 @@ interface ImageThumbnail {
   width: number;
   height: number;
   uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
-  file?: File;
+  file: File;
   error?: string;
+  trackId?: string; // only for frontend optimization
 }
 
 @Component({
@@ -102,7 +103,9 @@ export class ImageToPdfComponent {
         width,
         height,
         uploadStatus: 'pending',
-        file
+        file,
+        trackId: tempId
+
       };
 
       this.thumbnails.update(list => [...list, thumbnail]);

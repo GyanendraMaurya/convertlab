@@ -2,6 +2,7 @@ package com.convertlab.convertlab_backend.service_core;
 
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
+import com.convertlab.convertlab_backend.service_util.FileValidationService;
 import com.convertlab.convertlab_backend.service_util.ImageToPdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ImageToPdfRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
@@ -15,12 +16,18 @@ public class ImageService {
 
     private final StorageService storageService;
 
-    public ImageService(StorageService storageService) {
+    private final FileValidationService fileValidationService;
+
+    public ImageService(StorageService storageService, FileValidationService fileValidationService) {
         this.storageService = storageService;
+        this.fileValidationService = fileValidationService;
     }
 
     public UploadResponse uploadImage(MultipartFile file) throws Exception {
         log.debug("Starting image upload process for file: {}", file.getOriginalFilename());
+
+        fileValidationService.validateImageFile(file);
+        fileValidationService.validateImageDimensions(file);
 
         String assetId = storageService.saveTempImage(file);
         log.debug("Image saved with assetId: {}", assetId);

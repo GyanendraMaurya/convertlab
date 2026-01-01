@@ -38,4 +38,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.PAYLOAD_TOO_LARGE) // 413
                 .body(ApiResponse.failure(msg, "MAX_UPLOAD_EXCEEDED"));
     }
+
+    @ExceptionHandler(FileValidationException.class)
+    public ResponseEntity<ApiResponse<?>> handleFileValidation(FileValidationException ex) {
+        log.warn("File validation error: {} (code: {})", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
 }

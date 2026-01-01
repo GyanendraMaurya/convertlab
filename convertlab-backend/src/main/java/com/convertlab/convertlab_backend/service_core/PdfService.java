@@ -2,6 +2,7 @@ package com.convertlab.convertlab_backend.service_core;
 
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
+import com.convertlab.convertlab_backend.service_util.FileValidationService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
@@ -20,12 +21,16 @@ public class PdfService {
 
     private final StorageService storageService;
 
-    public PdfService(StorageService storageService) {
-        this.storageService = storageService;
-    }
+    private final FileValidationService fileValidationService;
 
+    public PdfService(StorageService storageService, FileValidationService fileValidationService) {
+        this.storageService = storageService;
+        this.fileValidationService = fileValidationService;
+    }
     public UploadResponse uploadPdf(MultipartFile file) throws Exception {
         log.debug("Starting PDF upload process for file: {}", file.getOriginalFilename());
+
+        fileValidationService.validatePdfFile(file);
 
         String assetId = storageService.saveTempPdf(file);
         log.debug("File saved with assetId: {}", assetId);
@@ -33,7 +38,6 @@ public class PdfService {
         File savedFile = storageService.loadPdf(assetId);
         int pageCount = PdfUtils.getPageCount(savedFile);
         log.debug("PDF has {} pages", pageCount);
-
 
         return new UploadResponse(
                 assetId,

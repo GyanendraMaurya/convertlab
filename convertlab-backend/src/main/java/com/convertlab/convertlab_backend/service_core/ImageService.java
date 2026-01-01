@@ -4,14 +4,10 @@ import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.ImageToPdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ImageToPdfRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.ImageUploadResponse;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 @Log4j2
 @Service
@@ -23,13 +19,13 @@ public class ImageService {
         this.storageService = storageService;
     }
 
-    public ImageUploadResponse uploadImage(MultipartFile file) throws Exception {
+    public UploadResponse uploadImage(MultipartFile file) throws Exception {
         log.debug("Starting image upload process for file: {}", file.getOriginalFilename());
 
         String assetId = storageService.saveTempImage(file);
         log.debug("Image saved with assetId: {}", assetId);
 
-        return new ImageUploadResponse(
+        return new UploadResponse(
                 assetId,
                 file.getOriginalFilename()
         );

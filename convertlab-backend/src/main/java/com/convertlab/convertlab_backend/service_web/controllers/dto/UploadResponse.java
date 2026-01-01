@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class ImageUploadResponse {
+public class UploadResponse {
     final private String fileId;
     final private String fileName;
 }

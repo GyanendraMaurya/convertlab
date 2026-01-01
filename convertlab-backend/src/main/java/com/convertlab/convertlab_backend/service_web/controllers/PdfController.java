@@ -44,17 +44,33 @@ public class PdfController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<ImageUploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {
+    public ResponseEntity<ApiResponse<UploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {
         log.info("Upload request received for file: {} (size: {} bytes)",
                 file.getOriginalFilename(), file.getSize());
 
         try {
-            ImageUploadResponse response = pdfService.uploadPdf(file);
+            UploadResponse response = pdfService.uploadPdf(file);
             log.info("File uploaded successfully: {}, assetId: {}",
                     file.getOriginalFilename(), response.getFileId());
             return ResponseEntity.ok(ApiResponse.success(response));
         } catch (Exception e) {
             log.error("Error uploading file: {}", file.getOriginalFilename(), e);
+            throw e;
+        }
+    }
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<ApiResponse<UploadResponse>> uploadImage(@RequestParam MultipartFile file) throws Exception {
+        log.info("Image upload request received for file: {} (size: {} bytes)",
+                file.getOriginalFilename(), file.getSize());
+
+        try {
+            UploadResponse response = imageService.uploadImage(file);
+            log.info("Image uploaded successfully: {}, assetId: {}",
+                    file.getOriginalFilename(), response.getFileId());
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("Error uploading image: {}", file.getOriginalFilename(), e);
             throw e;
         }
     }
@@ -195,21 +211,6 @@ public class PdfController {
 
     }
 
-    @PostMapping("/upload-image")
-    public ResponseEntity<ApiResponse<ImageUploadResponse>> uploadImage(@RequestParam MultipartFile file) throws Exception {
-        log.info("Image upload request received for file: {} (size: {} bytes)",
-                file.getOriginalFilename(), file.getSize());
-
-        try {
-            ImageUploadResponse response = imageService.uploadImage(file);
-            log.info("Image uploaded successfully: {}, assetId: {}",
-                    file.getOriginalFilename(), response.getFileId());
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (Exception e) {
-            log.error("Error uploading image: {}", file.getOriginalFilename(), e);
-            throw e;
-        }
-    }
 
     @PostMapping("/images-to-pdf")
     public ResponseEntity<Resource> imagesToPdf(@RequestBody ImageToPdfRequest request) throws Exception {

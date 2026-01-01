@@ -77,7 +77,6 @@ export class MergePdfComponent {
     for (const file of files) {
       // Generate unique temporary ID per file
       const tempId = `temp-${Date.now()}-${Math.random()}`;
-      console.log("before for loop")
       this.generateThumbnail(file, tempId);
       // Start background upload for this file
       this.uploadFileInBackground(file, tempId);

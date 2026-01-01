@@ -66,19 +66,20 @@ export class ImageToPdfComponent {
 
   fileUploader = viewChild(FileUploaderComponent);
 
-  async onFilesUploaded(files: File[] | null) {
+  onFilesUploaded(files: File[] | null) {
     if (!files || files.length === 0) return;
 
     for (const file of files) {
-      await this.processImage(file);
+      const tempId = `temp-${Date.now()}-${Math.random()}`;
+      this.processImage(file, tempId);
+      this.uploadFileInBackground(file, tempId);
     }
 
     // Clear file input for next upload
     this.fileUploader()?.clearFileInput();
   }
 
-  private async processImage(file: File) {
-    const tempId = `temp-${Date.now()}-${Math.random()}`;
+  private async processImage(file: File, tempId: string) {
 
     try {
       const { thumbnailUrl, width, height } = await this.generateImageThumbnail(file);
@@ -93,14 +94,8 @@ export class ImageToPdfComponent {
         uploadStatus: 'pending',
         file,
         trackId: tempId
-
       };
-
       this.thumbnails.update(list => [...list, thumbnail]);
-
-      // Start background upload
-      this.uploadFileInBackground(file, tempId);
-
     } catch (error) {
       console.error('Failed to process image:', error);
       this.snackbarService.error(`Failed to process ${file.name}`);
@@ -169,9 +164,6 @@ export class ImageToPdfComponent {
           : t
       )
     );
-
-    // TODO: Replace with actual image upload endpoint
-    // For now, simulating upload
 
     this.fileUploadService.uploadImage(file).subscribe({
       next: (res) => {

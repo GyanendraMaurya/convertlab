@@ -11,19 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { ImageThumbnailComponent } from '../../shared/image-thumbnail/image-thumbnail.component';
 import { PdfService } from '../../../services/pdf.service';
-
-interface ImageThumbnail {
-  fileId: string | null;
-  fileName: string;
-  thumbnailUrl: string;
-  rotation: 0 | 90 | 180 | 270;
-  width: number;
-  height: number;
-  uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
-  file: File;
-  error?: string;
-  trackId?: string; // only for frontend optimization
-}
+import { ImageThumbnail } from '../../../models/image-thumbnail.mode';
 
 @Component({
   selector: 'app-image-to-pdf',
@@ -193,7 +181,6 @@ export class ImageToPdfComponent {
               ? {
                 ...t,
                 fileId: res.data.fileId,
-                pageCount: res.data.pageCount,
                 uploadStatus: 'completed'
               }
               : t
@@ -212,19 +199,6 @@ export class ImageToPdfComponent {
         ));
       }
     });
-    // setTimeout(() => {
-    //   this.thumbnails.update(list =>
-    //     list.map(t =>
-    //       t.fileId === id
-    //         ? {
-    //           ...t,
-    //           fileId: `uploaded-${id}`,
-    //           uploadStatus: 'completed' as const
-    //         }
-    //         : t
-    //     )
-    //   );
-    // }, 3000);
   }
 
   removeImage(id: string) {

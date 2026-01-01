@@ -7,10 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class UploadResponse {
+public class ImageUploadResponse {
     final private String fileId;
-    final private int pageCount;
     final private String fileName;
-    final private String thumbnailUrl;
-
 }

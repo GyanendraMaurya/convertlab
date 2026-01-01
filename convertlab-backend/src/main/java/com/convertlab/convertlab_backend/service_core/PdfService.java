@@ -5,7 +5,7 @@ import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.ImageUploadResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +24,7 @@ public class PdfService {
         this.storageService = storageService;
     }
 
-    public UploadResponse uploadPdf(MultipartFile file) throws Exception {
+    public ImageUploadResponse uploadPdf(MultipartFile file) throws Exception {
         log.debug("Starting PDF upload process for file: {}", file.getOriginalFilename());
 
         String assetId = storageService.saveTempPdf(file);
@@ -35,11 +35,9 @@ public class PdfService {
         log.debug("PDF has {} pages", pageCount);
 
 
-        return new UploadResponse(
+        return new ImageUploadResponse(
                 assetId,
-                pageCount,
-                file.getOriginalFilename(),
-                "temp"
+                file.getOriginalFilename()
         );
     }
 

@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment';
 import { ApiResponse, HttpService } from './http.service';
 import { Observable } from 'rxjs';
 import { Thumbnail } from '../models/thumbnail.model';
+import { UploadedImageResponse as UploadImageResponse } from '../models/image-thumbnail.mode';
 
 @Injectable({
   providedIn: 'root',
@@ -17,9 +18,9 @@ export class FileUploadService {
     return this.httpService.post<ApiResponse<Thumbnail>>(`${this.apiUrl}/pdf/upload`, formData);
   }
 
-  uploadImage(file: File): Observable<ApiResponse<any>> {
+  uploadImage(file: File): Observable<ApiResponse<UploadImageResponse>> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.httpService.post<ApiResponse<any>>(`${this.apiUrl}/pdf/upload-image`, formData);
+    return this.httpService.post<ApiResponse<UploadImageResponse>>(`${this.apiUrl}/pdf/upload-image`, formData);
   }
 }

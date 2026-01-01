@@ -13,7 +13,7 @@
     @if (!thumbnailUrl()) {
     <!-- Show file uploader when no file is uploaded -->
     <div class="file-uploader-wrapper">
-      <app-file-uploader [allowedTypes]="['pdf']" (onFileSelected)="onFileUploaded($event)"
+      <app-file-uploader [allowedTypes]="['pdf']" [fileType]="'pdf'" (onFileSelected)="onFileUploaded($event)"
         (fileRemoved)="onFileRemoved()" [isUploading]="isUploading()">
       </app-file-uploader>
     </div>

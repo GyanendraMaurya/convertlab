@@ -9,8 +9,8 @@
   <app-action-button label="Choose {{ multiple() ? 'Files' : 'File' }}" variant="filled" (onClick)="fileInput.click()">
   </app-action-button>
 
-  <!-- Validation info -->
-  <!-- <p class="validation-info">{{ validationInfo() }}</p> -->
+  <!-- Show validation constraints -->
+  <p class="validation-info">{{ validationInfo() }}</p>
 
   <input #fileInput type="file" hidden (change)="onFileInput($event)" [attr.accept]="allowedTypesAttr()"
     [attr.multiple]="multiple() ? true : null" />
@@ -18,9 +18,7 @@
   @if (selectedFileName()) {
   <div class="file-info">
     <mat-icon class="file-icon">description</mat-icon>
-
     <span class="filename" [title]="selectedFileName()">{{ selectedFileName() }}</span>
-
     <button mat-icon-button color="warn" class="remove-btn" (click)="removeFile()">
       <mat-icon>close</mat-icon>
     </button>

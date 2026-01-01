@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 
-export interface FileValidationConstraints {
+export type FileType = 'pdf' | 'image';
+
+export interface FileTypeConstraints {
   maxSizeBytes: number;
+  minSizeBytes: number;
   allowedMimeTypes: string[];
   allowedExtensions: string[];
-  minSizeBytes?: number;
-  maxPages?: number;
+  maxPages?: number; // Only for PDFs
+  maxDimension?: number; // Only for images (width or height)
 }
 
 export interface ValidationResult {
@@ -17,45 +20,39 @@ export interface ValidationResult {
   providedIn: 'root',
 })
 export class FileValidationService {
-  // Default constraints - can be overridden by backend config
-  private readonly defaultConstraints: FileValidationConstraints = {
-    maxSizeBytes: 15 * 1024 * 1024, // 15MB
-    minSizeBytes: 1024, // 1KB
-    allowedMimeTypes: ['application/pdf'],
-    allowedExtensions: ['pdf'],
-    maxPages: 1000, // Optional: maximum pages allowed
+  // Default constraints for different file types
+  private readonly constraints: Record<FileType, FileTypeConstraints> = {
+    pdf: {
+      maxSizeBytes: 15 * 1024 * 1024, // 15MB
+      minSizeBytes: 1024, // 1KB
+      allowedMimeTypes: ['application/pdf'],
+      allowedExtensions: ['pdf'],
+      maxPages: 1000,
+    },
+    image: {
+      maxSizeBytes: 10 * 1024 * 1024, // 10MB
+      minSizeBytes: 1024, // 1KB
+      allowedMimeTypes: [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/gif',
+        'image/bmp',
+        'image/webp',
+      ],
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'],
+      maxDimension: 10000, // 10000px max width or height
+    },
   };
-
-  private constraints: FileValidationConstraints = { ...this.defaultConstraints };
 
   constructor() { }
 
   /**
-   * Update validation constraints (useful for backend-driven config)
+   * Validate a single file based on its type
    */
-  updateConstraints(newConstraints: Partial<FileValidationConstraints>): void {
-    this.constraints = { ...this.constraints, ...newConstraints };
-  }
-
-  /**
-   * Get current constraints
-   */
-  getConstraints(): FileValidationConstraints {
-    return { ...this.constraints };
-  }
-
-  /**
-   * Reset to default constraints
-   */
-  resetConstraints(): void {
-    this.constraints = { ...this.defaultConstraints };
-  }
-
-  /**
-   * Validate a file before upload
-   */
-  validateFile(file: File): ValidationResult {
+  validateFile(file: File, fileType: FileType): ValidationResult {
     const errors: string[] = [];
+    const config = this.constraints[fileType];
 
     // 1. Check if file exists
     if (!file) {
@@ -64,35 +61,29 @@ export class FileValidationService {
     }
 
     // 2. Check file size (max)
-    if (file.size > this.constraints.maxSizeBytes) {
-      const maxSizeMB = (this.constraints.maxSizeBytes / (1024 * 1024)).toFixed(2);
+    if (file.size > config.maxSizeBytes) {
+      const maxSizeMB = (config.maxSizeBytes / (1024 * 1024)).toFixed(2);
       errors.push(`File size exceeds maximum allowed size of ${maxSizeMB}MB`);
     }
 
     // 3. Check file size (min)
-    if (this.constraints.minSizeBytes && file.size < this.constraints.minSizeBytes) {
-      const minSizeKB = (this.constraints.minSizeBytes / 1024).toFixed(2);
+    if (file.size < config.minSizeBytes) {
+      const minSizeKB = (config.minSizeBytes / 1024).toFixed(2);
       errors.push(`File size is too small. Minimum size is ${minSizeKB}KB`);
     }
 
     // 4. Check MIME type
-    if (
-      this.constraints.allowedMimeTypes.length > 0 &&
-      !this.constraints.allowedMimeTypes.includes(file.type)
-    ) {
+    if (config.allowedMimeTypes.length > 0 && !config.allowedMimeTypes.includes(file.type)) {
       errors.push(
-        `Invalid file type. Allowed types: ${this.constraints.allowedMimeTypes.join(', ')}`
+        `Invalid file type. Allowed types: ${this.getReadableFileTypes(fileType)}`
       );
     }
 
     // 5. Check file extension
     const extension = this.getFileExtension(file.name);
-    if (
-      this.constraints.allowedExtensions.length > 0 &&
-      !this.constraints.allowedExtensions.includes(extension)
-    ) {
+    if (!config.allowedExtensions.includes(extension)) {
       errors.push(
-        `Invalid file extension. Allowed extensions: ${this.constraints.allowedExtensions.join(', ')}`
+        `Invalid file extension. Allowed extensions: ${config.allowedExtensions.join(', ')}`
       );
     }
 
@@ -108,13 +99,13 @@ export class FileValidationService {
   }
 
   /**
-   * Validate multiple files
+   * Validate multiple files of the same type
    */
-  validateFiles(files: File[]): ValidationResult {
+  validateFiles(files: File[], fileType: FileType): ValidationResult {
     const allErrors: string[] = [];
 
     files.forEach((file, index) => {
-      const result = this.validateFile(file);
+      const result = this.validateFile(file, fileType);
       if (!result.valid) {
         result.errors.forEach((error) => {
           allErrors.push(`File ${index + 1} (${file.name}): ${error}`);
@@ -126,6 +117,55 @@ export class FileValidationService {
       valid: allErrors.length === 0,
       errors: allErrors,
     };
+  }
+
+  /**
+   * Validate image dimensions (requires loading the image)
+   */
+  async validateImageDimensions(file: File): Promise<ValidationResult> {
+    const config = this.constraints.image;
+    const errors: string[] = [];
+
+    try {
+      const dimensions = await this.getImageDimensions(file);
+
+      if (config.maxDimension) {
+        if (dimensions.width > config.maxDimension || dimensions.height > config.maxDimension) {
+          errors.push(
+            `Image dimensions exceed maximum allowed size of ${config.maxDimension}px`
+          );
+        }
+      }
+    } catch (error) {
+      errors.push('Failed to read image dimensions');
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+    };
+  }
+
+  /**
+   * Get image dimensions
+   */
+  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve({ width: img.width, height: img.height });
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Failed to load image'));
+      };
+
+      img.src = url;
+    });
   }
 
   /**
@@ -158,25 +198,45 @@ export class FileValidationService {
   }
 
   /**
-   * Get human-readable constraints for display
+   * Get human-readable file types
    */
-  getConstraintsDescription(): string {
+  private getReadableFileTypes(fileType: FileType): string {
+    const config = this.constraints[fileType];
+    return config.allowedExtensions.map((ext) => ext.toUpperCase()).join(', ');
+  }
+
+  /**
+   * Get constraints for a file type
+   */
+  getConstraints(fileType: FileType): FileTypeConstraints {
+    return { ...this.constraints[fileType] };
+  }
+
+  /**
+   * Get human-readable constraints description
+   */
+  getConstraintsDescription(fileType: FileType): string {
+    const config = this.constraints[fileType];
     const parts: string[] = [];
 
-    parts.push(`Max size: ${this.formatFileSize(this.constraints.maxSizeBytes)}`);
+    parts.push(`Max size: ${this.formatFileSize(config.maxSizeBytes)}`);
+    parts.push(`Allowed: ${config.allowedExtensions.join(', ')}`);
 
-    if (this.constraints.minSizeBytes) {
-      parts.push(`Min size: ${this.formatFileSize(this.constraints.minSizeBytes)}`);
+    if (config.maxPages) {
+      parts.push(`Max pages: ${config.maxPages}`);
     }
 
-    if (this.constraints.allowedExtensions.length > 0) {
-      parts.push(`Allowed: ${this.constraints.allowedExtensions.join(', ')}`);
-    }
-
-    if (this.constraints.maxPages) {
-      parts.push(`Max pages: ${this.constraints.maxPages}`);
+    if (config.maxDimension) {
+      parts.push(`Max dimension: ${config.maxDimension}px`);
     }
 
     return parts.join(' | ');
+  }
+
+  /**
+   * Update constraints for a specific file type (optional, for backend-driven config)
+   */
+  updateConstraints(fileType: FileType, newConstraints: Partial<FileTypeConstraints>): void {
+    this.constraints[fileType] = { ...this.constraints[fileType], ...newConstraints };
   }
 }

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { MatIconModule } from '@angular/material/icon';

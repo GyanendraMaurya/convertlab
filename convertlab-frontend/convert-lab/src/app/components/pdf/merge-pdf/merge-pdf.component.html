@@ -44,7 +44,7 @@
 
   <div class="file-uploader-container">
     <div class="file-uploader-content">
-      <app-file-uploader [allowedTypes]="['pdf']" [multiple]="true" [isUploading]="false"
+      <app-file-uploader [allowedTypes]="['pdf']" [fileType]="'pdf'" [multiple]="true" [isUploading]="false"
         (onFilesSelected)="onFilesUploaded($event)">
       </app-file-uploader>
     </div>

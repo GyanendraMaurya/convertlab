@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { FileValidationService } from '../../../services/file-validation.service';
+import { FileValidationService, FileType } from '../../../services/file-validation.service';
 
 @Component({
   selector: 'app-file-uploader',
@@ -24,19 +24,25 @@ import { FileValidationService } from '../../../services/file-validation.service
 export class FileUploaderComponent {
   private readonly validationService = inject(FileValidationService);
 
-  /** Allowed file types e.g. ['pdf', 'png', 'jpeg'] */
-  allowedTypes = input<string[]>(['pdf']);
+  /** Allowed file types - now using FileType instead of string[] */
+  allowedTypes = input<string[]>(['pdf']); // Keep for backward compatibility
+
+  /** File type for validation (pdf | image) */
+  fileType = input<FileType>('pdf');
 
   /** Enable multiple file selection */
   multiple = input<boolean>(false);
+
+  /** Validate image dimensions */
+  validateDimensions = input<boolean>(false);
 
   allowedTypesAttr = computed(() =>
     this.allowedTypes().length > 0 ? this.allowedTypes().map((t) => '.' + t).join(',') : null
   );
 
   // Outputs
-  onFileSelected = output<File | null>(); // For single file (backward compatibility)
-  onFilesSelected = output<File[] | null>(); // For multiple files
+  onFileSelected = output<File | null>();
+  onFilesSelected = output<File[] | null>();
   fileRemoved = output<void>();
 
   isDragging = signal(false);
@@ -52,10 +58,12 @@ export class FileUploaderComponent {
   fileInput = viewChild<ElementRef>('fileInput');
 
   // Display validation constraints
-  validationInfo = computed(() => this.validationService.getConstraintsDescription());
+  validationInfo = computed(() =>
+    this.validationService.getConstraintsDescription(this.fileType())
+  );
 
   /** Validate and emit file(s) */
-  handleFiles(files: FileList | null) {
+  async handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
 
     // Clear previous errors
@@ -63,29 +71,29 @@ export class FileUploaderComponent {
 
     const fileArray = Array.from(files);
 
-    // Validate all files
-    // const validationResult = this.validationService.validateFiles(fileArray);
+    // Validate all files using the new validation service
+    const validationResult = this.validationService.validateFiles(fileArray, this.fileType());
 
-    // if (!validationResult.valid) {
-    //   this.onFileSelected.emit(null);
-    //   this.onFilesSelected.emit(null);
-    //   this.clearFileInput();
-    //   this.errorMessage.set(validationResult.errors.join('. '));
-    //   return;
-    // }
-
-    // Additional extension check for all files
-    const invalidFiles = fileArray.filter(file => {
-      const extension = file.name.split('.').pop()?.toLowerCase();
-      return this.allowedTypes().length > 0 && !this.allowedTypes().includes(extension!);
-    });
-
-    if (invalidFiles.length > 0) {
-      this.errorMessage.set(`Only ${this.allowedTypes().join(', ')} files are allowed`);
+    if (!validationResult.valid) {
       this.onFileSelected.emit(null);
       this.onFilesSelected.emit(null);
       this.clearFileInput();
+      this.errorMessage.set(validationResult.errors.join('. '));
       return;
+    }
+
+    // Additional dimension validation for images if enabled
+    if (this.fileType() === 'image' && this.validateDimensions()) {
+      for (const file of fileArray) {
+        const dimensionResult = await this.validationService.validateImageDimensions(file);
+        if (!dimensionResult.valid) {
+          this.errorMessage.set(`${file.name}: ${dimensionResult.errors.join('. ')}`);
+          this.onFileSelected.emit(null);
+          this.onFilesSelected.emit(null);
+          this.clearFileInput();
+          return;
+        }
+      }
     }
 
     this.selectedFiles.set(fileArray);

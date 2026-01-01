@@ -13,7 +13,7 @@
     @if (!thumbnailUrl()) {
     <!-- Show file uploader when no file is uploaded -->
     <div class="file-uploader-wrapper">
-      <app-file-uploader [allowedTypes]="['pdf']" (onFileSelected)="onFileUploaded($event)"
+      <app-file-uploader [allowedTypes]="['pdf']" [fileType]="'pdf'" (onFileSelected)="onFileUploaded($event)"
         (fileRemoved)="onFileRemoved()" [isUploading]="isUploading()">
       </app-file-uploader>
     </div>
@@ -33,10 +33,6 @@
       <div class="option-item">
         <app-page-range-input class="page-range-input" [(ngModel)]="pageRange">
         </app-page-range-input>
-        <!-- <div class="range-hint">
-          <mat-icon>info</mat-icon>
-          <span>Enter ranges like: 1-3,5-7,10 (each range will be a separate PDF)</span>
-        </div> -->
       </div>
       }
 

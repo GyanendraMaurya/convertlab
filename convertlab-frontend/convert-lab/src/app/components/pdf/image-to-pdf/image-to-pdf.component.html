@@ -43,8 +43,8 @@
 
   <div class="file-uploader-container">
     <div class="file-uploader-content">
-      <app-file-uploader [allowedTypes]="['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']" [isUploading]="false"
-        [multiple]="true" (onFilesSelected)="onFilesUploaded($event)">
+      <app-file-uploader [allowedTypes]="['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp']" [fileType]="'image'"
+        [multiple]="true" [validateDimensions]="true" [isUploading]="false" (onFilesSelected)="onFilesUploaded($event)">
       </app-file-uploader>
     </div>
   </div>

@@ -20,11 +20,14 @@ import java.util.UUID;
 public class LocalStorageService implements StorageService {
 
     private final Path pdfDir = Paths.get("temp-files/pdf");
+    // thumbnail not used currently
     private final Path thumbnailDir = Paths.get("temp-files/thumbnail");
+    private final Path imageDir = Paths.get("temp-files/images");
 
     public LocalStorageService() throws IOException {
         Files.createDirectories(pdfDir);
         Files.createDirectories(thumbnailDir);
+        Files.createDirectories(imageDir);
         log.info("Storage directories initialized: pdf={}, thumbnail={}",
                 pdfDir.toAbsolutePath(), thumbnailDir.toAbsolutePath());
     }
@@ -83,6 +86,34 @@ public class LocalStorageService implements StorageService {
         } catch (IOException e) {
             log.error("Error deleting file: {}", fileId, e);
         }
+    }
+
+    @Override
+    public String saveTempImage(MultipartFile file) throws Exception {
+        String id = UUID.randomUUID().toString();
+        String name = id + "_" + file.getOriginalFilename();
+        Path dest = imageDir.resolve(name);
+
+        log.debug("Saving image file: {} to {}", file.getOriginalFilename(), dest);
+
+        Files.copy(file.getInputStream(), dest, StandardCopyOption.REPLACE_EXISTING);
+
+        log.info("Image saved successfully: {} (size: {} bytes)", name, file.getSize());
+
+        return name;
+    }
+
+    @Override
+    public File loadImage(String fileId) {
+        File file = imageDir.resolve(fileId).toFile();
+
+        if (!file.exists()) {
+            log.warn("Image file not found: {}", fileId);
+        } else {
+            log.debug("Loading image file: {}", fileId);
+        }
+
+        return file;
     }
 
     public String saveThumbnail(String assetId, BufferedImage image) throws IOException {

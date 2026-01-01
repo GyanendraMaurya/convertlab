@@ -16,4 +16,10 @@ export class FileUploadService {
     formData.append('file', file);
     return this.httpService.post<ApiResponse<Thumbnail>>(`${this.apiUrl}/pdf/upload`, formData);
   }
+
+  uploadImage(file: File): Observable<ApiResponse<any>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpService.post<ApiResponse<any>>(`${this.apiUrl}/pdf/upload-image`, formData);
+  }
 }

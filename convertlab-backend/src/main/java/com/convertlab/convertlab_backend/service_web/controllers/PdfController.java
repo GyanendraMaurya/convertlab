@@ -3,15 +3,13 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.api.enums.ActionType;
 import com.convertlab.convertlab_backend.api.enums.SplitType;
+import com.convertlab.convertlab_backend.service_core.ImageService;
 import com.convertlab.convertlab_backend.service_core.PdfService;
 import com.convertlab.convertlab_backend.service_core.PdfSplitService;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.MergeRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.SplitRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.UploadResponse;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,6 +35,7 @@ public class PdfController {
     private final PdfService pdfService;
     private final StorageService storageService;
     private final PdfSplitService pdfSplitService;
+    private final ImageService imageService;
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
@@ -190,6 +189,48 @@ public class PdfController {
 
         } catch (Exception e) {
             log.error("Error splitting PDF for fileId: {}", request.getFileId(), e);
+            throw e;
+        }
+
+
+    }
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<ApiResponse<UploadResponse>> uploadImage(@RequestParam MultipartFile file) throws Exception {
+        log.info("Image upload request received for file: {} (size: {} bytes)",
+                file.getOriginalFilename(), file.getSize());
+
+        try {
+            UploadResponse response = imageService.uploadImage(file);
+            log.info("Image uploaded successfully: {}, assetId: {}",
+                    file.getOriginalFilename(), response.getFileId());
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            log.error("Error uploading image: {}", file.getOriginalFilename(), e);
+            throw e;
+        }
+    }
+
+    @PostMapping("/images-to-pdf")
+    public ResponseEntity<Resource> imagesToPdf(@RequestBody ImageToPdfRequest request) throws Exception {
+        log.info("Image to PDF conversion request received for {} images", request.getImages().size());
+
+        try {
+            ExtractedFile pdfFile = imageService.convertImagesToPdf(request);
+
+            ByteArrayResource resource = new ByteArrayResource(pdfFile.getFileBytes());
+
+            log.info("Images converted to PDF successfully, output size: {} bytes",
+                    pdfFile.getFileBytes().length);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + pdfFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(pdfFile.getFileBytes().length)
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("Error converting images to PDF", e);
             throw e;
         }
     }

@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { ImageThumbnailComponent } from '../../shared/image-thumbnail/image-thumbnail.component';
+import { PdfService } from '../../../services/pdf.service';
 
 interface ImageThumbnail {
   fileId: string | null;
@@ -42,6 +43,7 @@ interface ImageThumbnail {
 export class ImageToPdfComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly snackbarService = inject(SnackbarService);
+  private readonly pdfService = inject(PdfService);
 
   thumbnails = signal<ImageThumbnail[]>([]);
   isConverting = signal(false);
@@ -179,19 +181,47 @@ export class ImageToPdfComponent {
 
     // TODO: Replace with actual image upload endpoint
     // For now, simulating upload
-    setTimeout(() => {
-      this.thumbnails.update(list =>
-        list.map(t =>
+
+    this.fileUploadService.uploadImage(file).subscribe({
+      next: (res) => {
+        this.thumbnails.update(list =>
+          list.map(t =>
+            t.fileId === id
+              ? {
+                ...t,
+                fileId: res.data.fileId,
+                pageCount: res.data.pageCount,
+                uploadStatus: 'completed'
+              }
+              : t
+          )
+        );
+      },
+      error: (err) => {
+        this.thumbnails.update(list => list.map(t =>
           t.fileId === id
             ? {
               ...t,
-              fileId: `uploaded-${id}`,
-              uploadStatus: 'completed' as const
+              uploadStatus: 'failed',
+              error: err.message || 'Upload failed'
             }
             : t
-        )
-      );
-    }, 3000);
+        ));
+      }
+    });
+    // setTimeout(() => {
+    //   this.thumbnails.update(list =>
+    //     list.map(t =>
+    //       t.fileId === id
+    //         ? {
+    //           ...t,
+    //           fileId: `uploaded-${id}`,
+    //           uploadStatus: 'completed' as const
+    //         }
+    //         : t
+    //     )
+    //   );
+    // }, 3000);
   }
 
   removeImage(id: string) {
@@ -263,13 +293,36 @@ export class ImageToPdfComponent {
 
     this.isConverting.set(true);
 
-    // TODO: Call backend API
-    // For now, simulating conversion
-    setTimeout(() => {
-      this.isConverting.set(false);
-      this.snackbarService.success('PDF created successfully!');
-      console.log('Converting images:', imageData);
-    }, 2000);
+    const imageToPdfRequest = {
+      images: this.thumbnails().map(thumbnail => ({
+        fileId: thumbnail.fileId,
+        rotation: thumbnail.rotation
+      }))
+    };
+
+    this.pdfService.convertImagesToPdf(imageToPdfRequest).subscribe({
+      next: response => {
+        this.isConverting.set(false);
+        const blob = response.body as Blob;
+        const contentDisposition = response.headers.get('content-disposition');
+        let fileName = 'ConvertLab_ImageToPdf.pdf';
+
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="([^"]+)"/);
+          if (match?.[1]) fileName = match[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.isConverting.set(false);
+      }
+    });
   }
 
   private waitForUploadsToComplete(): Promise<void> {

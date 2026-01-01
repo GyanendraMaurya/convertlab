@@ -11,5 +11,7 @@ public interface StorageService {
     File loadThumbnail(String fileId);
     void delete(String fileId);
     String saveThumbnail(String assetId, BufferedImage image) throws IOException;
+    String saveTempImage(MultipartFile file) throws Exception;
+    File loadImage(String fileId);
 }
 

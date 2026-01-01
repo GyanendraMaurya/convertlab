@@ -77,44 +77,45 @@ export class MergePdfComponent {
     for (const file of files) {
       // Generate unique temporary ID per file
       const tempId = `temp-${Date.now()}-${Math.random()}`;
-
-      try {
-        const { thumbnailUrl, pageCount }: PdfMetadata =
-          await this.thumbnailGeneratorService.getPdfInfo(file);
-
-        const thumbnail: Thumbnail = {
-          fileId: tempId,
-          pageCount,
-          fileName: file.name,
-          thumbnailUrl,
-          uploadStatus: 'pending',
-          file
-        };
-
-        // Add thumbnail immediately
-        this.thumbnails.update(list => [...list, thumbnail]);
-
-        // Start background upload for this file
-        this.uploadFileInBackground(file, tempId);
-
-      } catch (error) {
-        console.error(`Failed to generate thumbnail for ${file.name}`, error);
-
-        // Optional: show failed thumbnail entry
-        this.thumbnails.update(list => [
-          ...list,
-          {
-            fileId: tempId,
-            fileName: file.name,
-            uploadStatus: 'failed',
-            error: 'Thumbnail generation failed'
-          } as Thumbnail
-        ]);
-      }
+      console.log("before for loop")
+      this.generateThumbnail(file, tempId);
+      // Start background upload for this file
+      this.uploadFileInBackground(file, tempId);
     }
-
     // Clear file input once after all files are processed
     this.fileUploader()?.removeFile();
+  }
+
+  private async generateThumbnail(file: File, tempId: string) {
+    try {
+      const { thumbnailUrl, pageCount }: PdfMetadata = await this.thumbnailGeneratorService.getPdfInfo(file);
+      console.log("after thumbnail generation")
+
+      const thumbnail: Thumbnail = {
+        fileId: tempId,
+        pageCount,
+        fileName: file.name,
+        thumbnailUrl,
+        uploadStatus: 'pending',
+        file
+      };
+
+      // Add thumbnail immediately
+      this.thumbnails.update(list => [...list, thumbnail]);
+    } catch (error) {
+      console.error(`Failed to generate thumbnail for ${file.name}`, error);
+
+      // Optional: show failed thumbnail entry
+      this.thumbnails.update(list => [
+        ...list,
+        {
+          fileId: tempId,
+          fileName: file.name,
+          uploadStatus: 'failed',
+          error: 'Thumbnail generation failed'
+        } as Thumbnail
+      ]);
+    }
   }
 
   private uploadFileInBackground(file: File, id: string) {

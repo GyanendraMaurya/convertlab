@@ -70,6 +70,7 @@ export class ImageToPdfComponent {
 
     for (const file of files) {
       const tempId = `temp-${Date.now()}-${Math.random()}`;
+      this.addPlaceholderThumbnail(file, tempId);
       this.processImage(file, tempId);
       this.uploadFileInBackground(file, tempId);
     }
@@ -78,23 +79,33 @@ export class ImageToPdfComponent {
     this.fileUploader()?.clearFileInput();
   }
 
+  private addPlaceholderThumbnail(file: File, tempId: string): void {
+    const placeholder: ImageThumbnail = {
+      fileId: null,
+      fileName: file.name,
+      thumbnailUrl: '',
+      rotation: 0,
+      width: 0,
+      height: 0,
+      uploadStatus: 'pending',
+      file,
+      tempId: tempId
+    };
+
+    this.thumbnails.update(list => [...list, placeholder]);
+  }
+
   private async processImage(file: File, tempId: string) {
 
     try {
       const { thumbnailUrl, width, height } = await this.generateImageThumbnail(file);
 
-      const thumbnail: ImageThumbnail = {
-        fileId: tempId,
-        fileName: file.name,
-        thumbnailUrl,
-        rotation: 0,
-        width,
-        height,
-        uploadStatus: 'pending',
-        file,
-        tempId: tempId
-      };
-      this.thumbnails.update(list => [...list, thumbnail]);
+      this.thumbnails.update(list =>
+        list.map(t =>
+          t.tempId === tempId
+            ? { ...t, thumbnailUrl, width, height }
+            : t
+        ));
     } catch (error) {
       console.error('Failed to process image:', error);
       this.snackbarService.error(`Failed to process ${file.name}`);

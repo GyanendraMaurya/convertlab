@@ -62,14 +62,10 @@ export class MergePdfComponent {
   mergeButtonLabel = computed(() => {
     if (this.isMerging()) return 'Merging...';
     if (this.isWaitingForUploads()) return 'Uploading...';
-    return 'Merge2';
+    return 'Merge PDF';
   });
 
   fileUploader = viewChild(FileUploaderComponent);
-
-  constructor() {
-
-  }
 
   async onFilesUploaded(files: File[] | null) {
     if (!files || files.length === 0) return;
@@ -77,66 +73,95 @@ export class MergePdfComponent {
     for (const file of files) {
       // Generate unique temporary ID per file
       const tempId = `temp-${Date.now()}-${Math.random()}`;
+
+      // 1. IMMEDIATELY add placeholder to array
+      this.addPlaceholderThumbnail(file, tempId);
+
+      // 2. Start thumbnail generation (updates the placeholder)
       this.generateThumbnail(file, tempId);
-      // Start background upload for this file
+
+      // 3. Start upload in parallel (updates the placeholder)
       this.uploadFileInBackground(file, tempId);
     }
+
     // Clear file input once after all files are processed
     this.fileUploader()?.removeFile();
   }
 
-  private async generateThumbnail(file: File, tempId: string) {
+  /**
+   * Step 1: Add placeholder thumbnail immediately
+   */
+  private addPlaceholderThumbnail(file: File, tempId: string): void {
+    const placeholder: Thumbnail = {
+      fileId: null,
+      fileName: file.name,
+      pageCount: 0,
+      thumbnailUrl: '', // Empty for now
+      uploadStatus: 'pending',
+      file,
+      tempId
+    };
+
+    this.thumbnails.update(list => [...list, placeholder]);
+  }
+
+  /**
+   * Step 2: Generate thumbnail and update the placeholder
+   */
+  private async generateThumbnail(file: File, tempId: string): Promise<void> {
     try {
-      const { thumbnailUrl, pageCount }: PdfMetadata = await this.thumbnailGeneratorService.getPdfInfo(file);
-      console.log("after thumbnail generation")
+      const { thumbnailUrl, pageCount }: PdfMetadata =
+        await this.thumbnailGeneratorService.getPdfInfo(file);
 
-      const thumbnail: Thumbnail = {
-        fileId: tempId,
-        pageCount,
-        fileName: file.name,
-        thumbnailUrl,
-        uploadStatus: 'pending',
-        file,
-        tempId: tempId
-      };
-
-      // Add thumbnail immediately
-      this.thumbnails.update(list => [...list, thumbnail]);
+      // Update the existing placeholder with thumbnail data
+      this.thumbnails.update(list =>
+        list.map(t =>
+          t.tempId === tempId
+            ? { ...t, thumbnailUrl, pageCount }
+            : t
+        )
+      );
     } catch (error) {
       console.error(`Failed to generate thumbnail for ${file.name}`, error);
 
-      // Optional: show failed thumbnail entry
-      this.thumbnails.update(list => [
-        ...list,
-        {
-          fileId: tempId,
-          fileName: file.name,
-          uploadStatus: 'failed',
-          error: 'Thumbnail generation failed'
-        } as Thumbnail
-      ]);
+      // Mark thumbnail generation as failed (but keep trying upload)
+      this.thumbnails.update(list =>
+        list.map(t =>
+          t.tempId === tempId
+            ? {
+              ...t,
+              error: 'Thumbnail generation failed',
+              // Don't mark as 'failed' yet, upload might succeed
+            }
+            : t
+        )
+      );
     }
   }
 
-  private uploadFileInBackground(file: File, tempId: string) {
+  /**
+   * Step 3: Upload file and update the placeholder
+   */
+  private uploadFileInBackground(file: File, tempId: string): void {
     // Update status to uploading
     this.thumbnails.update(list =>
       list.map(t =>
         t.tempId === tempId
-          ? { ...t, uploadStatus: 'uploading' }
+          ? { ...t, uploadStatus: 'uploading' as const }
           : t
       )
     );
 
     this.fileUploadService.uploadPdf(file).subscribe({
       next: (res) => {
+        // Update with backend response
         this.thumbnails.update(list =>
           list.map(t =>
             t.tempId === tempId
               ? {
                 ...t,
                 fileId: res.data.fileId,
-                pageCount: res.data.pageCount,
+                pageCount: res.data.pageCount, // Backend page count (more reliable)
                 uploadStatus: 'completed'
               }
               : t
@@ -144,15 +169,17 @@ export class MergePdfComponent {
         );
       },
       error: (err) => {
-        this.thumbnails.update(list => list.map(t =>
-          t.tempId === tempId
-            ? {
-              ...t,
-              uploadStatus: 'failed',
-              error: err.message || 'Upload failed'
-            }
-            : t
-        ));
+        this.thumbnails.update(list =>
+          list.map(t =>
+            t.tempId === tempId
+              ? {
+                ...t,
+                uploadStatus: 'failed',
+                error: err.message || 'Upload failed'
+              }
+              : t
+          )
+        );
       }
     });
   }
@@ -162,7 +189,7 @@ export class MergePdfComponent {
       t.fileId === id || t.thumbnailUrl === id
     );
 
-    if (thumbnail?.thumbnailUrl.startsWith('blob:')) {
+    if (thumbnail?.thumbnailUrl && thumbnail.thumbnailUrl.startsWith('blob:')) {
       this.thumbnailGeneratorService.revokeThumbnailUrl(thumbnail.thumbnailUrl);
     }
 
@@ -172,13 +199,17 @@ export class MergePdfComponent {
   }
 
   retryUpload(id: string | null) {
-    if (!id) {
-      return;
-    }
-    const thumbnail = this.thumbnails().find(t => t.fileId === id);
+    if (!id) return;
+
+    const thumbnail = this.thumbnails().find(t => t.fileId === id || t.tempId === id);
 
     if (thumbnail && thumbnail.file && thumbnail.uploadStatus === 'failed') {
-      this.uploadFileInBackground(thumbnail.file, id);
+      // Generate new tempId for retry
+      const newTempId = thumbnail.tempId || `temp-${Date.now()}-${Math.random()}`;
+
+      // Retry both thumbnail generation and upload
+      this.generateThumbnail(thumbnail.file, newTempId);
+      this.uploadFileInBackground(thumbnail.file, newTempId);
     }
   }
 

@@ -2,9 +2,10 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './interceptors/error.interceptor';
 import { blobErrorInterceptor } from './interceptors/blob-error.interceptor';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     // provideHttpClient()
-    provideHttpClient(withInterceptors([blobErrorInterceptor, errorInterceptor]))
+    provideHttpClient(withInterceptors([blobErrorInterceptor, errorInterceptor]), withFetch()),
+    provideClientHydration(withEventReplay())
   ]
 };

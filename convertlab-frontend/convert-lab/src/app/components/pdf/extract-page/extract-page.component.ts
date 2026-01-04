@@ -54,7 +54,7 @@ export class ExtractPageComponent {
   extractButtonLabel = computed(() => {
     if (this.isExtracting()) return 'Extracting...';
     if (this.isWaitingForUpload()) return 'Uploading...';
-    return 'Extract';
+    return 'Extract1';
   });
 
   async onFileUploaded($event: File | null) {

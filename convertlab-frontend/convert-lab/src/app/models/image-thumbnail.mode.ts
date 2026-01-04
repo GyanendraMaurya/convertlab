@@ -8,7 +8,7 @@ export interface ImageThumbnail {
   uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
   file: File;
   error?: string;
-  trackId?: string; // only for frontend optimization
+  tempId?: string; // only for frontend optimization
 }
 
 export interface UploadedImageResponse {

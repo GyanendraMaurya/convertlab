@@ -11,7 +11,7 @@
 
   @if(thumbnails().length > 0){
   <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
-    @for (pdf of thumbnails(); track pdf.trackId; let i = $index) {
+    @for (pdf of thumbnails(); track pdf.tempId; let i = $index) {
 
     <div class="thumbnail-wrapper" cdkDrag [class.failed]="pdf.uploadStatus === 'failed'">
 

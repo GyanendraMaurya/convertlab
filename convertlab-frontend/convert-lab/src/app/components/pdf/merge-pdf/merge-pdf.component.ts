@@ -62,7 +62,7 @@ export class MergePdfComponent {
   mergeButtonLabel = computed(() => {
     if (this.isMerging()) return 'Merging...';
     if (this.isWaitingForUploads()) return 'Uploading...';
-    return 'Merge';
+    return 'Merge1';
   });
 
   fileUploader = viewChild(FileUploaderComponent);
@@ -96,7 +96,8 @@ export class MergePdfComponent {
         fileName: file.name,
         thumbnailUrl,
         uploadStatus: 'pending',
-        file
+        file,
+        tempId: tempId
       };
 
       // Add thumbnail immediately
@@ -117,11 +118,11 @@ export class MergePdfComponent {
     }
   }
 
-  private uploadFileInBackground(file: File, id: string) {
+  private uploadFileInBackground(file: File, tempId: string) {
     // Update status to uploading
     this.thumbnails.update(list =>
       list.map(t =>
-        t.fileId === id
+        t.tempId === tempId
           ? { ...t, uploadStatus: 'uploading' }
           : t
       )
@@ -131,7 +132,7 @@ export class MergePdfComponent {
       next: (res) => {
         this.thumbnails.update(list =>
           list.map(t =>
-            t.fileId === id
+            t.tempId === tempId
               ? {
                 ...t,
                 fileId: res.data.fileId,
@@ -144,7 +145,7 @@ export class MergePdfComponent {
       },
       error: (err) => {
         this.thumbnails.update(list => list.map(t =>
-          t.fileId === id
+          t.tempId === tempId
             ? {
               ...t,
               uploadStatus: 'failed',

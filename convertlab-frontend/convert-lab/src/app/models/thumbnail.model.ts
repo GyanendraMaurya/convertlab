@@ -6,7 +6,7 @@ export interface Thumbnail {
   uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
   file?: File; // Keep reference for retry
   error?: string;
-  trackId?: string;
+  tempId?: string;
 }
 
 export interface UploadedPdfResponse {

@@ -27,6 +27,10 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "prerender": {
+              "discoverRoutes": false,
+              "routesFile": "routes.txt"
+            },
             "assets": [
               {
                 "glob": "**/*",
@@ -34,7 +38,7 @@
               },
               {
                 "glob": "pdf.worker.min.mjs",
-                "input": "node_modules/pdfjs-dist/build",
+                "input": "node_modules/pdfjs-dist/legacy/build",
                 "output": "/assets/pdfjs"
               }
             ],
@@ -42,7 +46,11 @@
               "src/styles.scss",
               "src/styles/material-overrides.scss",
               "src/styles/util.scss"
-            ]
+            ],
+            "server": "src/main.server.ts",
+            "ssr": {
+              "entry": "src/server.ts"
+            }
           },
           "configurations": {
             "production": {

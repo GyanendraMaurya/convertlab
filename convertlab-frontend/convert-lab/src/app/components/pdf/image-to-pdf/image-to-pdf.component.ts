@@ -92,7 +92,7 @@ export class ImageToPdfComponent {
         height,
         uploadStatus: 'pending',
         file,
-        trackId: tempId
+        tempId: tempId
       };
       this.thumbnails.update(list => [...list, thumbnail]);
     } catch (error) {
@@ -155,10 +155,10 @@ export class ImageToPdfComponent {
     });
   }
 
-  private uploadFileInBackground(file: File, id: string) {
+  private uploadFileInBackground(file: File, tempId: string) {
     this.thumbnails.update(list =>
       list.map(t =>
-        t.fileId === id
+        t.tempId === tempId
           ? { ...t, uploadStatus: 'uploading' as const }
           : t
       )
@@ -168,7 +168,7 @@ export class ImageToPdfComponent {
       next: (res) => {
         this.thumbnails.update(list =>
           list.map(t =>
-            t.fileId === id
+            t.tempId === tempId
               ? {
                 ...t,
                 fileId: res.data.fileId,
@@ -180,7 +180,7 @@ export class ImageToPdfComponent {
       },
       error: (err) => {
         this.thumbnails.update(list => list.map(t =>
-          t.fileId === id
+          t.tempId === tempId
             ? {
               ...t,
               uploadStatus: 'failed',

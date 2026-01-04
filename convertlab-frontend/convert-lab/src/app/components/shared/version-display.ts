@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, afterNextRender } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -106,8 +106,13 @@ export class VersionDisplayComponent implements OnInit {
   loadingBackend = signal(true);
   expanded = signal(false);
 
+  constructor() {
+    afterNextRender(() => {
+      this.loadBackendVersion();
+    });
+  }
   ngOnInit() {
-    this.loadBackendVersion();
+
   }
 
   loadBackendVersion() {

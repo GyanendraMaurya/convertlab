@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import * as pdfjsLib from 'pdfjs-dist';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { RenderParameters } from 'pdfjs-dist/types/src/display/api';
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   '/assets/pdfjs/pdf.worker.min.mjs';
@@ -14,6 +15,7 @@ export interface PdfMetadata {
 })
 export class ThumbnailGeneratorService {
 
+  private platformId = inject(PLATFORM_ID);
   //A reference to hold the worker in memory
   private pdfWorker: any = null;
 
@@ -30,12 +32,15 @@ export class ThumbnailGeneratorService {
    * Revoke a blob URL to free memory
    */
   revokeThumbnailUrl(url: string): void {
-    if (url && url.startsWith('blob:')) {
+    if (isPlatformBrowser(this.platformId) && url && url.startsWith('blob:')) {
       URL.revokeObjectURL(url);
     }
   }
 
   async getPdfInfo(file: File): Promise<PdfMetadata> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return { thumbnailUrl: '', pageCount: 0 };
+    }
     const typedArray = new Uint8Array(await file.arrayBuffer());
 
     // 3. Pass the cached worker to the loading task

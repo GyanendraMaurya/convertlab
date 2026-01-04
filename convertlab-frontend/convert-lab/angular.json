@@ -31,6 +31,7 @@
               "discoverRoutes": false,
               "routesFile": "routes.txt"
             },
+            "ssr": false,
             "assets": [
               {
                 "glob": "**/*",
@@ -47,10 +48,7 @@
               "src/styles/material-overrides.scss",
               "src/styles/util.scss"
             ],
-            "server": "src/main.server.ts",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "server": "src/main.server.ts"
           },
           "configurations": {
             "production": {

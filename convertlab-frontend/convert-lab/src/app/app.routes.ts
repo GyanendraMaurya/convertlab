@@ -3,8 +3,6 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    // redirectTo: 'merge-pdf',
-    // pathMatch: 'full'
     loadComponent: () => import('./components/pdf/merge-pdf/merge-pdf.component').then(m => m.MergePdfComponent)
   },
   {

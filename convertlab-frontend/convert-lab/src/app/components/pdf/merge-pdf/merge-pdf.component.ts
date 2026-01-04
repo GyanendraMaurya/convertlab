@@ -62,7 +62,7 @@ export class MergePdfComponent {
   mergeButtonLabel = computed(() => {
     if (this.isMerging()) return 'Merging...';
     if (this.isWaitingForUploads()) return 'Uploading...';
-    return 'Merge1';
+    return 'Merge2';
   });
 
   fileUploader = viewChild(FileUploaderComponent);

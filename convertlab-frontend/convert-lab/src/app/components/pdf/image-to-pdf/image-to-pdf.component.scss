@@ -27,6 +27,7 @@
   cursor: grab;
   transition: transform 0.2s, opacity 0.2s;
   touch-action: none;
+  min-width: 120px;
 
   &:active {
     cursor: grabbing;
@@ -163,15 +164,6 @@
   margin-top: 8px;
 }
 
-/* Show drag hint on mobile */
-@media (max-width: 720px) {
-  .thumbnail-wrapper {
-    .drag-hint {
-      opacity: 1;
-    }
-  }
-}
-
 /* Show drag hint on hover for desktop */
 @media (min-width: 721px) {
   .thumbnail-wrapper:hover:not(.uploading):not(.failed) {
@@ -247,8 +239,9 @@
   }
 
   .thumbnail-wrapper {
-    min-width: 100px;
-
+    .drag-hint {
+      opacity: 1;
+    }
     &::after {
       content: '';
       position: absolute;

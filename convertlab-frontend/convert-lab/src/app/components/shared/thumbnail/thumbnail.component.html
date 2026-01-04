@@ -1,6 +1,12 @@
 <div class="thumbnail-card" [class.disabled]="disabled()" [class.failed]="isFailed()">
   <div class="thumbnail-wrapper">
+
+    @if (!this.thumbnailUrl()) {
+    <app-skeleton-loader variant="thumbnail" width="100%" height="100%">
+    </app-skeleton-loader>
+    } @else {
     <img [src]="thumbnailUrl()" [alt]="fileName() + ' thumbnail'" loading="lazy" />
+    }
 
     <button type="button" class="delete-btn" (click)="onRemoveClick($event)" [attr.aria-label]="'Remove ' + fileName()">
       ✕
@@ -14,9 +20,18 @@
   </div>
 
   <div class="file-name" [title]="fileName()">
+    @if (!this.thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="90%" height="12px"></app-skeleton-loader>
+    } @else {
     {{ fileName() || 'PDF File' }}
+    }
   </div>
+
   <div class="page-count" [title]="pageCount() + ' pages'">
+    @if (!this.thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
+    } @else {
     ({{ pageCount() || '0' }} pages)
+    }
   </div>
 </div>

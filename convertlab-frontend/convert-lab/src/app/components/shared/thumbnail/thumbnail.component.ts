@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
 
 @Component({
   selector: 'app-thumbnail',
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, SkeletonLoaderComponent],
   templateUrl: './thumbnail.component.html',
   styleUrl: './thumbnail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

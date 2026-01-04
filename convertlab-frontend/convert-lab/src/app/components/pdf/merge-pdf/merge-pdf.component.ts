@@ -74,13 +74,8 @@ export class MergePdfComponent {
       // Generate unique temporary ID per file
       const tempId = `temp-${Date.now()}-${Math.random()}`;
 
-      // 1. IMMEDIATELY add placeholder to array
       this.addPlaceholderThumbnail(file, tempId);
-
-      // 2. Start thumbnail generation (updates the placeholder)
       this.generateThumbnail(file, tempId);
-
-      // 3. Start upload in parallel (updates the placeholder)
       this.uploadFileInBackground(file, tempId);
     }
 

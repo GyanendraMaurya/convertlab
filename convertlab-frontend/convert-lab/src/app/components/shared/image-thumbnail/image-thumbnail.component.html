@@ -1,7 +1,15 @@
 <div class="thumbnail-card" [class.disabled]="disabled()" [class.failed]="isFailed()">
   <div class="thumbnail-wrapper">
+
+    @if (!thumbnailUrl()) {
+    <!-- Show skeleton loader while thumbnail is generating -->
+    <app-skeleton-loader variant="thumbnail" width="100%" height="100%">
+    </app-skeleton-loader>
+    } @else {
+    <!-- Show actual thumbnail -->
     <img [src]="thumbnailUrl()" [alt]="fileName() + ' thumbnail'" [style.transform]="rotationTransform()"
       loading="lazy" />
+    }
 
     <div class="button-group">
       <button type="button" class="action-btn rotate-btn" (click)="onRotateClick($event)"
@@ -23,9 +31,18 @@
   </div>
 
   <div class="file-name" [title]="fileName()">
+    @if (!thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="90%" height="12px"></app-skeleton-loader>
+    } @else {
     {{ fileName() || 'Image File' }}
+    }
   </div>
+
   <div class="dimensions" [title]="dimensions()">
+    @if (!thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
+    } @else {
     {{ dimensions() }}
+    }
   </div>
 </div>

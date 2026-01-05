@@ -120,7 +120,7 @@ export class HomeComponent {
     {
       number: 3,
       icon: 'download',
-      title: 'Download Result',
+      title: 'Result Downloads',
       description: 'Get your processed file instantly',
     },
   ];

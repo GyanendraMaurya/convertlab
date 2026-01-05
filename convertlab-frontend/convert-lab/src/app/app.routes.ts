@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./components/pdf/merge-pdf/merge-pdf.component').then(m => m.MergePdfComponent)
+    loadComponent: () => import('./components/home/home.component').then(m => m.HomeComponent)
   },
   {
     path: 'merge-pdf',

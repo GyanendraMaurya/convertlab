@@ -1,0 +1,111 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <mat-icon class="hero-icon">description</mat-icon>
+      <h1 class="hero-title">Transform Your Documents in Seconds</h1>
+      <p class="hero-subtitle">
+        Free online tool to merge, split, extract, and convert your PDF files and images
+      </p>
+      <button mat-raised-button color="primary" class="hero-cta" (click)="navigateToFeature('/merge-pdf')">
+        <mat-icon>merge</mat-icon>
+        Get Started with Merge PDF
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Features -->
+  <section class="features-section">
+    <h2 class="section-title">Available Tools</h2>
+    <div class="features-grid">
+      @for (feature of features; track feature.route) {
+      <mat-card class="feature-card" (click)="navigateToFeature(feature.route)">
+        <mat-card-content class="feature-content">
+          <div class="feature-icon-wrapper">
+            <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+          <button mat-button color="primary" class="feature-button">
+            Try Now
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  </section>
+
+  <!-- Coming Soon Features -->
+  <section class="coming-soon-section">
+    <h2 class="section-title">Coming Soon</h2>
+    <div class="coming-soon-grid">
+      @for (feature of comingSoonFeatures; track feature.title) {
+      <mat-card class="feature-card disabled">
+        <mat-card-content class="feature-content">
+          <div class="feature-icon-wrapper">
+            <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+          <div class="coming-soon-badge">
+            <mat-icon>schedule</mat-icon>
+            <span>Coming Soon</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  </section>
+
+  <!-- Value Propositions -->
+  <section class="value-props-section">
+    <h2 class="section-title">Why Choose ConvertLab?</h2>
+    <div class="value-props-grid">
+      @for (prop of valueProps; track prop.title) {
+      <div class="value-prop">
+        <div class="value-prop-icon-wrapper">
+          <mat-icon class="value-prop-icon">{{ prop.icon }}</mat-icon>
+        </div>
+        <h3 class="value-prop-title">{{ prop.title }}</h3>
+        <p class="value-prop-description">{{ prop.description }}</p>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-container">
+      @for (step of steps; track step.number) {
+      <div class="step">
+        <div class="step-number">{{ step.number }}</div>
+        <div class="step-icon-wrapper">
+          <mat-icon class="step-icon">{{ step.icon }}</mat-icon>
+        </div>
+        <h3 class="step-title">{{ step.title }}</h3>
+        <p class="step-description">{{ step.description }}</p>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Get Started?</h2>
+      <p class="cta-description">Choose a tool and start transforming your documents now</p>
+      <div class="cta-buttons">
+        <button mat-raised-button color="primary" (click)="navigateToFeature('/merge-pdf')">
+          <mat-icon>merge</mat-icon>
+          Merge PDF
+        </button>
+        <button mat-raised-button color="primary" (click)="navigateToFeature('/split-pdf')">
+          <mat-icon>splitscreen</mat-icon>
+          Split PDF
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

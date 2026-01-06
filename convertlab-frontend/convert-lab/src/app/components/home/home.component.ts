@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+import { MetaService } from '../../seo/meta.service';
+import { StructuredDataService } from '../../seo/structured-data.service';
+import { SeoService } from '../../seo/seo.service';
 
 interface Feature {
   icon: string;
@@ -33,6 +36,8 @@ interface Step {
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
+
+
   features: Feature[] = [
     {
       icon: 'merge',
@@ -125,11 +130,21 @@ export class HomeComponent {
     },
   ];
 
-  constructor(private router: Router) { }
+  private router = inject(Router)
+  private seoService = inject(SeoService);
+
+  ngOnInit() {
+    this.seoService.applySEO('home');
+  }
 
   navigateToFeature(route: string) {
     if (route) {
       this.router.navigate([route]);
     }
+    this.seoService.cleanup();
+  }
+
+  ngOnDestroy() {
+    this.seoService.cleanup();
   }
 }

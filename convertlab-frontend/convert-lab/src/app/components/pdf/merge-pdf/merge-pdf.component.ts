@@ -12,6 +12,7 @@ import { PdfMetadata, ThumbnailGeneratorService } from '../../../services/thumbn
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SnackbarService } from '../../../services/snackbar.service';
+import { SeoService } from '../../../seo/seo.service';
 
 @Component({
   selector: 'app-merge-pdf',
@@ -34,6 +35,7 @@ export class MergePdfComponent {
   private readonly pdfService = inject(PdfService);
   private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
   private readonly snackbarService = inject(SnackbarService);
+  private seoService = inject(SeoService);
 
   thumbnails = signal<Thumbnail[]>([]);
   isMerging = signal(false);
@@ -66,6 +68,10 @@ export class MergePdfComponent {
   });
 
   fileUploader = viewChild(FileUploaderComponent);
+
+  ngOnInit() {
+    this.seoService.applySEO('merge-pdf');
+  }
 
   async onFilesUploaded(files: File[] | null) {
     if (!files || files.length === 0) return;
@@ -292,5 +298,6 @@ export class MergePdfComponent {
 
   ngOnDestroy(): void {
     this.revokeThumbnailUrls();
+    this.seoService.cleanup();
   }
 }

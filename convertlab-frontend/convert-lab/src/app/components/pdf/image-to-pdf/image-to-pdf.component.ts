@@ -11,6 +11,7 @@ import { SnackbarService } from '../../../services/snackbar.service';
 import { ImageThumbnailComponent } from '../../shared/image-thumbnail/image-thumbnail.component';
 import { PdfService } from '../../../services/pdf.service';
 import { ImageThumbnail } from '../../../models/image-thumbnail.mode';
+import { SeoService } from '../../../seo/seo.service';
 
 @Component({
   selector: 'app-image-to-pdf',
@@ -32,6 +33,7 @@ export class ImageToPdfComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly snackbarService = inject(SnackbarService);
   private readonly pdfService = inject(PdfService);
+  private seoService = inject(SeoService);
 
   thumbnails = signal<ImageThumbnail[]>([]);
   isConverting = signal(false);
@@ -64,6 +66,10 @@ export class ImageToPdfComponent {
   });
 
   fileUploader = viewChild(FileUploaderComponent);
+
+  ngOnInit() {
+    this.seoService.applySEO('image-to-pdf');
+  }
 
   onFilesUploaded(files: File[] | null) {
     if (!files || files.length === 0) return;
@@ -325,5 +331,6 @@ export class ImageToPdfComponent {
 
   ngOnDestroy(): void {
     this.revokeThumbnailUrls();
+    this.seoService.cleanup();
   }
 }

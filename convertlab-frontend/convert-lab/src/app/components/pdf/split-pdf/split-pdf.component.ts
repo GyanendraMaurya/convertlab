@@ -10,6 +10,7 @@ import { SplitType } from '../../../models/split-pdf.model';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
 import { MatIconModule } from '@angular/material/icon';
+import { SeoService } from '../../../seo/seo.service';
 
 @Component({
   selector: 'app-split-pdf',
@@ -29,6 +30,7 @@ export class SplitPdfComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly pdfService = inject(PdfService);
   private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
+  private seoService = inject(SeoService);
 
   public uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');
@@ -67,6 +69,10 @@ export class SplitPdfComponent {
     if (this.isWaitingForUpload()) return 'Uploading...';
     return 'Split PDF';
   });
+
+  ngOnInit() {
+    this.seoService.applySEO('split-pdf');
+  }
 
   async onFileUploaded($event: File | null) {
     if (!$event) return;
@@ -199,5 +205,6 @@ export class SplitPdfComponent {
     if (this.thumbnailUrl()) {
       this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnailUrl());
     }
+    this.seoService.cleanup();
   }
 }

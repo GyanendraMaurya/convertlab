@@ -9,6 +9,7 @@ import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/
 import { ActionType } from '../../../models/extract-pdf.model';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
 import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
+import { SeoService } from '../../../seo/seo.service';
 
 @Component({
   selector: 'app-extract-page',
@@ -28,6 +29,7 @@ export class ExtractPageComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly extractPdfService = inject(PdfService);
   private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
+  private seoService = inject(SeoService);
 
   public uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');
@@ -56,6 +58,10 @@ export class ExtractPageComponent {
     if (this.isWaitingForUpload()) return 'Uploading...';
     return 'Extract2';
   });
+
+  ngOnInit() {
+    this.seoService.applySEO('extract-pdf');
+  }
 
   async onFileUploaded($event: File | null) {
     if (!$event) return;
@@ -176,5 +182,6 @@ export class ExtractPageComponent {
     if (this.thumbnailUrl()) {
       this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnailUrl());
     }
+    this.seoService.cleanup();
   }
 }

@@ -4,6 +4,6 @@ CREATE TABLE page_visit
     session_id UUID         NOT NULL,
     path       VARCHAR(255) NOT NULL,
     entry      BOOLEAN,
-    visited_at TIMESTAMP    NOT NULL
+    visited_at TIMESTAMPTZ    NOT NULL
 );
 

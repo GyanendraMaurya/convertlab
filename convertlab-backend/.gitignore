@@ -39,3 +39,9 @@ logs/
 
 ### Environment Variables ###
 .env
+
+### Ec2 Scripts ###
+/ec2-setup-1.sh
+/generate-github-key-2.sh
+/ec2-env-push-3.sh
+/ec2-deploy-4.sh

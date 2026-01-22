@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { FileValidationService, FileType } from '../../../services/file-validation.service';
-import heic2any from 'heic2any';
 
 @Component({
   selector: 'app-file-uploader',
@@ -44,6 +43,7 @@ export class FileUploaderComponent {
   // Outputs
   onFileSelected = output<File | null>();
   onFilesSelected = output<File[] | null>();
+  onRawFilesSelected = output<File[] | null>();
   fileRemoved = output<void>();
 
   isDragging = signal(false);
@@ -71,6 +71,12 @@ export class FileUploaderComponent {
     this.errorMessage.set('');
 
     const fileArray = Array.from(files);
+
+    if (this.multiple()) {
+      this.onRawFilesSelected.emit(fileArray);
+    } else {
+      this.onRawFilesSelected.emit([fileArray[0]]);
+    }
     const fileArrayConverted = [];
 
     for (const file of fileArray) {
@@ -117,20 +123,26 @@ export class FileUploaderComponent {
 
   async convertHeicToJpeg(file: File): Promise<File> {
     if (!file.name.toLowerCase().endsWith(".heic")) {
-      return file; // already fine
+      return file;
     }
+    try {
+      const heic2any = (await import("heic2any")).default
+      const jpegBlob = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.9
+      });
 
-    const jpegBlob = await heic2any({
-      blob: file,
-      toType: "image/jpeg",
-      quality: 0.9
-    });
-
-    return new File(
-      [jpegBlob as BlobPart],
-      file.name.replace(/\.heic$/i, ".jpg"),
-      { type: "image/jpeg" }
-    );
+      return new File(
+        [jpegBlob as BlobPart],
+        file.name.replace(/\.heic$/i, ".jpg"),
+        { type: "image/jpeg" }
+      );
+    } catch (error) {
+      console.error('HEIC conversion failed for:', file.name, error);
+      // Return original file if conversion fails - let validation handle it
+      return file;
+    }
   }
 
   /** Trigger manually from input */

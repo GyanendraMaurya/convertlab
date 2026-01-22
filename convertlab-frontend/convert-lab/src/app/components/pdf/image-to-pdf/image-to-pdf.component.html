@@ -43,8 +43,9 @@
 
   <div class="file-uploader-container">
     <div class="file-uploader-content">
-      <app-file-uploader [allowedTypes]="allowedTypes()" [fileType]="'image'"
-        [multiple]="true" [validateDimensions]="true" [isUploading]="false" (onFilesSelected)="onFilesUploaded($event)">
+      <app-file-uploader [allowedTypes]="allowedTypes()" [fileType]="'image'" [multiple]="true"
+        [validateDimensions]="true" [isUploading]="false" (onFilesSelected)="onFilesUploaded($event)"
+        (onRawFilesSelected)="onRawFilesReceived($event)">
       </app-file-uploader>
     </div>
   </div>

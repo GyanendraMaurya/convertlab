@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, PLATFORM_ID, signal, viewChild} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
 import { FileUploadService } from '../../../services/file-upload.service';
@@ -12,8 +12,7 @@ import { ImageThumbnailComponent } from '../../shared/image-thumbnail/image-thum
 import { PdfService } from '../../../services/pdf.service';
 import { ImageThumbnail } from '../../../models/image-thumbnail.mode';
 import { SeoService } from '../../../seo/seo.service';
-import {isPlatformBrowser} from '@angular/common';
-import {FileValidationService} from '../../../services/file-validation.service';
+import { FileValidationService } from '../../../services/file-validation.service';
 
 @Component({
   selector: 'app-image-to-pdf',
@@ -36,8 +35,7 @@ export class ImageToPdfComponent {
   private readonly snackbarService = inject(SnackbarService);
   private readonly pdfService = inject(PdfService);
   private seoService = inject(SeoService);
-  private platformId = inject(PLATFORM_ID);
-  public readonly  fileValidationService = inject(FileValidationService);
+  public readonly fileValidationService = inject(FileValidationService);
 
   thumbnails = signal<ImageThumbnail[]>([]);
   isConverting = signal(false);
@@ -69,7 +67,7 @@ export class ImageToPdfComponent {
     return 'Convert to PDF';
   });
 
-  allowedTypes = computed(()=> this.fileValidationService.getConstraints('image').allowedExtensions);
+  allowedTypes = computed(() => this.fileValidationService.getConstraints('image').allowedExtensions);
 
   fileUploader = viewChild(FileUploaderComponent);
 
@@ -77,18 +75,58 @@ export class ImageToPdfComponent {
     this.seoService.applySEO('image-to-pdf');
   }
 
-  onFilesUploaded(files: File[] | null) {
+  onRawFilesReceived(files: File[] | null) {
     if (!files || files.length === 0) return;
 
+    // Immediately add placeholders with skeleton loaders
     for (const file of files) {
       const tempId = `temp-${Date.now()}-${Math.random()}`;
       this.addPlaceholderThumbnail(file, tempId);
-      this.processImage(file, tempId);
-      this.uploadFileInBackground(file, tempId);
+    }
+  }
+
+  // Simplified onFilesUploaded (receives converted files):
+  onFilesUploaded(files: File[] | null) {
+    if (!files || files.length === 0) return;
+
+    // Files are already converted at this point
+    for (const file of files) {
+      // Find the placeholder by original filename pattern
+      const tempId = this.findTempIdForFile(file);
+
+      if (tempId) {
+        // Update file reference and process in parallel
+        this.thumbnails.update(list =>
+          list.map(t =>
+            t.tempId === tempId
+              ? { ...t, file, fileName: file.name }
+              : t
+          )
+        );
+
+        // Run thumbnail generation and upload in parallel
+        this.processImage(file, tempId);
+        this.uploadFileInBackground(file, tempId);
+      }
     }
 
     // Clear file input for next upload
     this.fileUploader()?.clearFileInput();
+  }
+
+  private findTempIdForFile(convertedFile: File): string | null {
+    const thumbnails = this.thumbnails();
+
+    // For HEIC -> JPG conversion, match by base name
+    const baseName = convertedFile.name.replace(/\.(jpg|jpeg)$/i, '');
+
+    const match = thumbnails.find(t => {
+      if (!t.file) return false;
+      const originalBase = t.file.name.replace(/\.(heic|jpg|jpeg|png|gif|bmp|webp)$/i, '');
+      return originalBase === baseName || t.file.name === convertedFile.name;
+    });
+
+    return match?.tempId || null;
   }
 
   private addPlaceholderThumbnail(file: File, tempId: string): void {
@@ -108,9 +146,10 @@ export class ImageToPdfComponent {
   }
 
   private async processImage(file: File, tempId: string): Promise<void> {
-
     try {
+      console.log("thumbnail generateion started")
       const { thumbnailUrl, width, height } = await this.generateImageThumbnail(file);
+      console.log("thumbnail generateion ended")
 
       this.thumbnails.update(list =>
         list.map(t =>
@@ -187,8 +226,11 @@ export class ImageToPdfComponent {
       )
     );
 
+    console.log("file upload started")
     this.fileUploadService.uploadImage(file).subscribe({
       next: (res) => {
+        console.log("file upload ended")
+
         this.thumbnails.update(list =>
           list.map(t =>
             t.tempId === tempId
@@ -333,6 +375,30 @@ export class ImageToPdfComponent {
         URL.revokeObjectURL(thumbnail.thumbnailUrl);
       }
     });
+  }
+
+  private async convertHeicToJpeg(file: File): Promise<File> {
+    if (!file.name.toLowerCase().endsWith(".heic")) {
+      return file; // already fine
+    }
+
+    const heic2any = (await import("heic2any")).default
+    try {
+      const jpegBlob = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.9
+      });
+
+      return new File(
+        [jpegBlob as BlobPart],
+        file.name.replace(/\.heic$/i, ".jpg"),
+        { type: "image/jpeg" }
+      );
+    } catch (error) {
+      console.error('HEIC conversion failed:', error);
+      throw new Error('Failed to convert HEIC image');
+    }
   }
 
   ngOnDestroy(): void {

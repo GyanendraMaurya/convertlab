@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import ExifReader  from 'exifreader';
 
 export type FileType = 'pdf' | 'image';
 
@@ -153,14 +152,6 @@ export class FileValidationService {
    * Get image dimensions
    */
   private async getImageDimensions(file: File): Promise<{ width: number; height: number }> {
-
-    if (file.name.toLowerCase().endsWith('.heic')) {
-      const tags = await ExifReader.load(file);
-      return {
-        width: tags['Image Width']?.value || 0,
-        height: tags['Image Height']?.value || 0
-      };
-    }
 
     return new Promise((resolve, reject) => {
       const img = new Image();

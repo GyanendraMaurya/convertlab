@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, PLATFORM_ID, signal, viewChild} from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
 import { FileUploadService } from '../../../services/file-upload.service';
@@ -12,6 +12,8 @@ import { ImageThumbnailComponent } from '../../shared/image-thumbnail/image-thum
 import { PdfService } from '../../../services/pdf.service';
 import { ImageThumbnail } from '../../../models/image-thumbnail.mode';
 import { SeoService } from '../../../seo/seo.service';
+import {isPlatformBrowser} from '@angular/common';
+import {FileValidationService} from '../../../services/file-validation.service';
 
 @Component({
   selector: 'app-image-to-pdf',
@@ -34,6 +36,8 @@ export class ImageToPdfComponent {
   private readonly snackbarService = inject(SnackbarService);
   private readonly pdfService = inject(PdfService);
   private seoService = inject(SeoService);
+  private platformId = inject(PLATFORM_ID);
+  public readonly  fileValidationService = inject(FileValidationService);
 
   thumbnails = signal<ImageThumbnail[]>([]);
   isConverting = signal(false);
@@ -64,6 +68,8 @@ export class ImageToPdfComponent {
     if (this.isWaitingForUploads()) return 'Uploading...';
     return 'Convert to PDF';
   });
+
+  allowedTypes = computed(()=> this.fileValidationService.getConstraints('image').allowedExtensions);
 
   fileUploader = viewChild(FileUploaderComponent);
 
@@ -101,7 +107,7 @@ export class ImageToPdfComponent {
     this.thumbnails.update(list => [...list, placeholder]);
   }
 
-  private async processImage(file: File, tempId: string) {
+  private async processImage(file: File, tempId: string): Promise<void> {
 
     try {
       const { thumbnailUrl, width, height } = await this.generateImageThumbnail(file);

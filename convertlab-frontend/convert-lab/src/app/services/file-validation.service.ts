@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import ExifReader  from 'exifreader';
 
 export type FileType = 'pdf' | 'image';
 
@@ -39,8 +40,9 @@ export class FileValidationService {
         'image/gif',
         'image/bmp',
         'image/webp',
+        'image/heic'
       ],
-      allowedExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'],
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'heic'],
       maxDimension: 10000, // 10000px max width or height
     },
   };
@@ -50,7 +52,7 @@ export class FileValidationService {
   /**
    * Validate a single file based on its type
    */
-  validateFile(file: File, fileType: FileType): ValidationResult {
+  async validateFile(file: File, fileType: FileType): Promise<ValidationResult> {
     const errors: string[] = [];
     const config = this.constraints[fileType];
 
@@ -72,18 +74,18 @@ export class FileValidationService {
       errors.push(`File size is too small. Minimum size is ${minSizeKB}KB`);
     }
 
-    // 4. Check MIME type
-    if (config.allowedMimeTypes.length > 0 && !config.allowedMimeTypes.includes(file.type)) {
-      errors.push(
-        `Invalid file type. Allowed types: ${this.getReadableFileTypes(fileType)}`
-      );
-    }
-
-    // 5. Check file extension
+    // 4. Check file extension
     const extension = this.getFileExtension(file.name);
     if (!config.allowedExtensions.includes(extension)) {
       errors.push(
         `Invalid file extension. Allowed extensions: ${config.allowedExtensions.join(', ')}`
+      );
+    }
+
+    // 5. Check MIME type
+    if (config.allowedMimeTypes.length > 0 && !config.allowedMimeTypes.includes(file.type)) {
+      errors.push(
+        `Invalid file type. Allowed types: ${this.getReadableFileTypes(fileType)}`
       );
     }
 
@@ -101,17 +103,18 @@ export class FileValidationService {
   /**
    * Validate multiple files of the same type
    */
-  validateFiles(files: File[], fileType: FileType): ValidationResult {
+  async validateFiles(files: File[], fileType: FileType): Promise<ValidationResult> {
     const allErrors: string[] = [];
 
-    files.forEach((file, index) => {
-      const result = this.validateFile(file, fileType);
+    for (const file of files) {
+      const index = files.indexOf(file);
+      const result = await this.validateFile(file, fileType);
       if (!result.valid) {
         result.errors.forEach((error) => {
           allErrors.push(`File ${index + 1} (${file.name}): ${error}`);
         });
       }
-    });
+    }
 
     return {
       valid: allErrors.length === 0,
@@ -149,7 +152,16 @@ export class FileValidationService {
   /**
    * Get image dimensions
    */
-  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  private async getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+
+    if (file.name.toLowerCase().endsWith('.heic')) {
+      const tags = await ExifReader.load(file);
+      return {
+        width: tags['Image Width']?.value || 0,
+        height: tags['Image Height']?.value || 0
+      };
+    }
+
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);

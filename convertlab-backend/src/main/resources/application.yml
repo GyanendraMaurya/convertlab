@@ -54,4 +54,4 @@ validation:
     max-size-mb: 10
     min-size-kb: 1
     max-dimension-px: 10000
-    allowed-extensions: png,jpg,jpeg,gif,bmp,webp
+    allowed-extensions: png,jpg,jpeg,gif,bmp,webp,heic

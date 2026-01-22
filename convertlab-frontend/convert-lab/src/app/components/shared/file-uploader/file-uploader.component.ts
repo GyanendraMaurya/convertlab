@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActionButtonComponent } from '../action-button/action-button.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { FileValidationService, FileType } from '../../../services/file-validation.service';
+import heic2any from 'heic2any';
 
 @Component({
   selector: 'app-file-uploader',
@@ -70,9 +71,17 @@ export class FileUploaderComponent {
     this.errorMessage.set('');
 
     const fileArray = Array.from(files);
+    const fileArrayConverted = [];
+
+    for (const file of fileArray) {
+      const convertedFile = await this.convertHeicToJpeg(file);
+      fileArrayConverted.push(convertedFile);
+    }
+
+
 
     // Validate all files using the new validation service
-    const validationResult = this.validationService.validateFiles(fileArray, this.fileType());
+    const validationResult = await this.validationService.validateFiles(fileArrayConverted, this.fileType());
 
     if (!validationResult.valid) {
       this.onFileSelected.emit(null);
@@ -84,7 +93,7 @@ export class FileUploaderComponent {
 
     // Additional dimension validation for images if enabled
     if (this.fileType() === 'image' && this.validateDimensions()) {
-      for (const file of fileArray) {
+      for (const file of fileArrayConverted) {
         const dimensionResult = await this.validationService.validateImageDimensions(file);
         if (!dimensionResult.valid) {
           this.errorMessage.set(`${file.name}: ${dimensionResult.errors.join('. ')}`);
@@ -96,14 +105,32 @@ export class FileUploaderComponent {
       }
     }
 
-    this.selectedFiles.set(fileArray);
+    this.selectedFiles.set(fileArrayConverted);
 
     // Emit based on mode
     if (this.multiple()) {
-      this.onFilesSelected.emit(fileArray);
+      this.onFilesSelected.emit(fileArrayConverted);
     } else {
-      this.onFileSelected.emit(fileArray[0]);
+      this.onFileSelected.emit(fileArrayConverted[0]);
     }
+  }
+
+  async convertHeicToJpeg(file: File): Promise<File> {
+    if (!file.name.toLowerCase().endsWith(".heic")) {
+      return file; // already fine
+    }
+
+    const jpegBlob = await heic2any({
+      blob: file,
+      toType: "image/jpeg",
+      quality: 0.9
+    });
+
+    return new File(
+      [jpegBlob as BlobPart],
+      file.name.replace(/\.heic$/i, ".jpg"),
+      { type: "image/jpeg" }
+    );
   }
 
   /** Trigger manually from input */

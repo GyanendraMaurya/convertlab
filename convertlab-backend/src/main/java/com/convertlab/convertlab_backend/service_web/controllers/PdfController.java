@@ -4,6 +4,7 @@ import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.api.enums.ActionType;
 import com.convertlab.convertlab_backend.api.enums.SplitType;
 import com.convertlab.convertlab_backend.service_core.ImageService;
+import com.convertlab.convertlab_backend.service_core.PdfCompressionService;
 import com.convertlab.convertlab_backend.service_core.PdfService;
 import com.convertlab.convertlab_backend.service_core.PdfSplitService;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
@@ -36,6 +37,7 @@ public class PdfController {
     private final StorageService storageService;
     private final PdfSplitService pdfSplitService;
     private final ImageService imageService;
+    private final PdfCompressionService pdfCompressionService;
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
@@ -232,6 +234,56 @@ public class PdfController {
                     .body(resource);
         } catch (Exception e) {
             log.error("Error converting images to PDF", e);
+            throw e;
+        }
+    }
+
+    @PostMapping("/compress")
+    public ResponseEntity<Resource> compress(@RequestBody CompressRequest request) throws Exception {
+        log.info("Compress request received for {} file(s) with level: {}",
+                request.getFileIds().size(), request.getCompressionLevel());
+
+        try {
+            // Single file - return compressed PDF directly
+            if (request.getFileIds().size() == 1) {
+                ExtractedFile compressedFile = pdfCompressionService.compressSinglePdf(
+                        request.getFileIds().getFirst(),
+                        request.getCompressionLevel()
+                );
+
+                ByteArrayResource resource = new ByteArrayResource(compressedFile.getFileBytes());
+
+                log.info("Single PDF compressed successfully, output size: {} bytes",
+                        compressedFile.getFileBytes().length);
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + compressedFile.getFileName() + "\"")
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .contentLength(compressedFile.getFileBytes().length)
+                        .body(resource);
+            }
+
+            // Multiple files - return ZIP
+            ExtractedFile zipFile = pdfCompressionService.compressMultiplePdfs(
+                    request.getFileIds(),
+                    request.getCompressionLevel()
+            );
+
+            ByteArrayResource resource = new ByteArrayResource(zipFile.getFileBytes());
+
+            log.info("Multiple PDFs compressed successfully, ZIP size: {} bytes",
+                    zipFile.getFileBytes().length);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + zipFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(zipFile.getFileBytes().length)
+                    .body(resource);
+
+        } catch (Exception e) {
+            log.error("Error compressing PDFs for fileIds: {}", request.getFileIds(), e);
             throw e;
         }
     }

@@ -8,6 +8,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 export interface PdfMetadata {
   thumbnailUrl: string;
   pageCount: number;
+  size: number; // in bytes
 }
 
 @Injectable({
@@ -39,7 +40,7 @@ export class ThumbnailGeneratorService {
 
   async getPdfInfo(file: File): Promise<PdfMetadata> {
     if (!isPlatformBrowser(this.platformId)) {
-      return { thumbnailUrl: '', pageCount: 0 };
+      return { thumbnailUrl: '', pageCount: 0, size: 0 };
     }
     const typedArray = new Uint8Array(await file.arrayBuffer());
 
@@ -70,7 +71,7 @@ export class ThumbnailGeneratorService {
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         const url = blob ? URL.createObjectURL(blob) : '';
-        resolve({ thumbnailUrl: url, pageCount });
+        resolve({ thumbnailUrl: url, pageCount, size: file.size });
       }, 'image/png');
     });
   }

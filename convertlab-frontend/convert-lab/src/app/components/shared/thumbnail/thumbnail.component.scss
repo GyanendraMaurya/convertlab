@@ -112,6 +112,7 @@
 }
 
 .file-name,
+.size,
 .page-count {
   font-size: 12px;
   text-align: center;
@@ -121,6 +122,7 @@
   color: #333;
 }
 
-.page-count {
+.page-count,
+.size {
   margin-top: -8px;
 }

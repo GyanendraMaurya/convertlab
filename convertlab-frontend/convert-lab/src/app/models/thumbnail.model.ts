@@ -1,9 +1,10 @@
 export interface Thumbnail {
   fileId: string | null; // null while uploading
-  pageCount: number;
   fileName: string;
   thumbnailUrl: string; // blob URL from frontend
   uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
+  pageCount?: number;
+  size?: number;
   file?: File; // Keep reference for retry
   error?: string;
   tempId?: string;

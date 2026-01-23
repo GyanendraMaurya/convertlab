@@ -1,0 +1,193 @@
+.thumbnail-list {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  flex-wrap: wrap;
+  min-height: 120px;
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+  justify-content: center;
+
+  &:empty {
+    border-color: #e0e0e0;
+    justify-content: center;
+    align-items: center;
+
+    &::after {
+      content: 'Upload PDFs to start merging';
+      color: #999;
+      font-size: 14px;
+    }
+  }
+}
+
+.thumbnail-wrapper {
+  position: relative;
+  cursor: grab;
+  min-width: 120px;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &.failed {
+    opacity: 0.8;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border: 2px solid var(--mat-sys-error);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+  }
+}
+
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 5;
+  flex-direction: column;
+  gap: 8px;
+
+  &.error {
+    background: rgba(244, 67, 54, 0.1);
+  }
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--mat-sys-primary);
+  }
+
+  &.error mat-icon {
+    color: var(--mat-sys-error);
+  }
+
+  .retry-btn {
+    background: var(--mat-sys-error);
+    color: white;
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  color: var(--mat-sys-error);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+@media (min-width: 721px) {
+  :host {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    .compress-options {
+      flex-direction: row;
+    }
+
+    .option-item {
+      width: auto;
+    }
+  }
+
+  .file-uploader-container {
+    display: flex;
+    justify-content: center;
+
+    .file-uploader-content {
+      width: 50%;
+    }
+  }
+
+  .compress-button-container {
+    display: flex;
+    justify-content: center;
+    .compress-button {
+      width: 50%;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.compress-button {
+  padding-bottom: 15px;
+}
+
+.compress-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.option-item {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  .label {
+    font-size: 20px;
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 720px) {
+  .thumbnail-list {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .thumbnail-wrapper {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      pointer-events: auto;
+    }
+  }
+}

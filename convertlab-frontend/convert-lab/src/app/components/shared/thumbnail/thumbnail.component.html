@@ -27,6 +27,7 @@
     }
   </div>
 
+  @if ((pageCount() ?? 0) > 0) {
   <div class="page-count" [title]="pageCount() + ' pages'">
     @if (!this.thumbnailUrl()) {
     <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
@@ -34,4 +35,15 @@
     ({{ pageCount() || '0' }} pages)
     }
   </div>
+  }
+
+  @if (size() > 0) {
+  <div class="size" [title]="sizeInMegaBytes() + ' MB'">
+    @if (!this.thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
+    } @else {
+    ({{ sizeInMegaBytes() | number: '1.2-2' }} MB)
+    }
+  </div>
+  }
 </div>

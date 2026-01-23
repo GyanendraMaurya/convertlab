@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-thumbnail',
-  imports: [MatIconModule, MatButtonModule, SkeletonLoaderComponent],
+  imports: [MatIconModule, MatButtonModule, SkeletonLoaderComponent, DecimalPipe],
   templateUrl: './thumbnail.component.html',
   styleUrl: './thumbnail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +15,8 @@ export class ThumbnailComponent {
   id = input.required<string>();
   thumbnailUrl = input.required<string>();
   fileName = input<string>('');
-  pageCount = input<number>(0);
+  pageCount = input<number | undefined>(0);
+  size = input<number>(0);
   uploadStatus = input<'pending' | 'uploading' | 'completed' | 'failed'>('completed');
   disabled = input(false);
 
@@ -26,6 +28,8 @@ export class ThumbnailComponent {
   );
 
   isFailed = computed(() => this.uploadStatus() === 'failed');
+
+  sizeInMegaBytes = computed(() => this.size() / 1024 / 1024);
 
   onRemoveClick(event: MouseEvent) {
     event.stopPropagation();

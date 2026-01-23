@@ -8,6 +8,7 @@ import { IS_BLOB_REQUEST, SUPPRESS_ERROR } from '../interceptors/http-context';
 import { MergePdfRequest } from '../models/merge-pdf.model';
 import { SplitPdfRequest } from '../models/split-pdf.model';
 import { ImageToPdfRequest } from '../models/image-to-pdf.model';
+import { CompressPdfRequest } from '../models/compress-pdf.model';
 
 @Injectable({
   providedIn: 'root',
@@ -49,6 +50,18 @@ export class PdfService {
   convertImagesToPdf(request: ImageToPdfRequest): Observable<HttpResponse<Blob>> {
     return this.httpService.post<HttpResponse<Blob>>(
       `${this.apiUrl}/pdf/images-to-pdf`,
+      request,
+      {
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(IS_BLOB_REQUEST, true)
+      }
+    );
+  }
+
+  compressPdfs(request: CompressPdfRequest): Observable<HttpResponse<Blob>> {
+    return this.httpService.post<HttpResponse<Blob>>(
+      `${this.apiUrl}/pdf/compress`,
       request,
       {
         responseType: 'blob',

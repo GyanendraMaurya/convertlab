@@ -3,6 +3,7 @@ package com.convertlab.convertlab_backend.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Table(name = "page_visit")
 @AllArgsConstructor
 @Getter
-public class PageVisit {
+public class PageVisit implements Persistable<UUID> {
 
     @Id
     @Column(name = "id")
@@ -34,5 +35,9 @@ public class PageVisit {
     }
 
 
+    @Override
+    public boolean isNew() {
+        return true;
+    }
 }
 

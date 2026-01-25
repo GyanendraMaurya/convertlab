@@ -72,7 +72,7 @@ export class CompressPdfComponent {
   fileUploader = viewChild(FileUploaderComponent);
 
   ngOnInit() {
-    this.seoService.applySEO('merge-pdf');
+    this.seoService.applySEO('compress-pdf');
   }
 
   async onFilesUploaded(files: File[] | null) {

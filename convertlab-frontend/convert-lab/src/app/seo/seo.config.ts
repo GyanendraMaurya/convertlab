@@ -20,9 +20,9 @@ export interface SEOConfig {
   breadcrumbs: Array<{ name: string; url: string }>;
 }
 
-export type PageIds = 'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf';
+export type PageIds = 'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf';
 
-export const SEO_CONFIGS: Record<string, SEOConfig> = {
+export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
     meta: {
       title: 'EasyConvertLab - Free Online PDF Tools | Merge, Split, Extract & Convert PDFs',
@@ -141,5 +141,30 @@ export const SEO_CONFIGS: Record<string, SEOConfig> = {
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'Image to PDF', url: 'https://www.easyconvertlab.com/image-to-pdf' }
     ]
+  },
+  'compress-pdf': {
+    meta: {
+      title: 'Compress PDF Files Online - Reduce PDF Size | EasyConvertLab',
+      description: 'Compress PDF files online for free and reduce file size without losing quality. Choose from low, medium, or high compression levels. Fast, secure, and no registration required.',
+      keywords: 'compress pdf, reduce pdf size, pdf compressor, shrink pdf, optimize pdf, compress pdf online, free pdf compression',
+      url: 'https://www.easyconvertlab.com/compress-pdf',
+      image: 'https://www.easyconvertlab.com/assets/images/compress-pdf-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'Compress PDF - EasyConvertLab',
+      description: 'Reduce PDF file size online using low, medium, or high compression levels while maintaining the best possible quality.',
+      url: 'https://www.easyconvertlab.com/compress-pdf',
+      featureList: 'Low compression (best quality), Medium compression (balanced), High compression (maximum size reduction), Fast and secure processing',
+      aggregateRating: {
+        ratingValue: '4.8',
+        ratingCount: '980'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'Compress PDF', url: 'https://www.easyconvertlab.com/compress-pdf' }
+    ]
   }
+
 };

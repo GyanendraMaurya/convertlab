@@ -3,3 +3,5 @@
 /extract-pdf
 /split-pdf
 /image-to-pdf
+/compress-pdf
+/compress-image

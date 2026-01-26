@@ -24,15 +24,40 @@ public class CorsLoggingFilter implements Filter {
 
         String origin = request.getHeader("Origin");
         String method = request.getMethod();
+        String uri = request.getRequestURI();
 
         chain.doFilter(req, res);
 
-        String allowedOrigin = response.getHeader("Access-Control-Allow-Origin");
+        // No Origin header → not a CORS request → ignore
+        if (origin == null) {
+            return;
+        }
+
+        String allowedOrigin =
+                response.getHeader("Access-Control-Allow-Origin");
+
+        // CASE 1: CORS headers missing completely
+        if (allowedOrigin == null) {
+            log.warn("""
+                CORS BLOCKED
+                Origin: {}
+                Method: {}
+                URI: {}
+                Reason: Access-Control-Allow-Origin header missing
+                """, origin, method, uri);
+            return;
+        }
+
+        // CASE 2: Origin present but not allowed
         if (!origin.equals(allowedOrigin)) {
-            log.error("CORS request - Origin: {}, Method: {}, URI: {}",
-                    origin, method, request.getRequestURI());
-            log.error("CORS response - Allowed Origin: {}", allowedOrigin);
+            log.warn("""
+                CORS MISMATCH
+                Origin: {}
+                Allowed-Origin: {}
+                Method: {}
+                URI: {}
+                """, origin, allowedOrigin, method, uri);
         }
     }
-
 }
+

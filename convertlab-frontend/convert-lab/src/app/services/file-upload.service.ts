@@ -15,12 +15,12 @@ export class FileUploadService {
   uploadPdf(file: File): Observable<ApiResponse<Thumbnail>> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.httpService.post<ApiResponse<Thumbnail>>(`${this.apiUrl}/pdf/upload`, formData);
+    return this.httpService.post<ApiResponse<Thumbnail>>(`${this.apiUrl}/upload/pdf`, formData);
   }
 
   uploadImage(file: File): Observable<ApiResponse<UploadImageResponse>> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.httpService.post<ApiResponse<UploadImageResponse>>(`${this.apiUrl}/pdf/upload-image`, formData);
+    return this.httpService.post<ApiResponse<UploadImageResponse>>(`${this.apiUrl}/upload/image`, formData);
   }
 }

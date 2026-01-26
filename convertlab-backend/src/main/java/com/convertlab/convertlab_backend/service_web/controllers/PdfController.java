@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.File;
@@ -45,37 +44,6 @@ public class PdfController {
         return ResponseEntity.ok(ApiResponse.success("test, path variable: " + pathVariable));
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<UploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {
-        log.info("Upload request received for file: {} (size: {} bytes)",
-                file.getOriginalFilename(), file.getSize());
-
-        try {
-            UploadResponse response = pdfService.uploadPdf(file);
-            log.info("File uploaded successfully: {}, assetId: {}",
-                    file.getOriginalFilename(), response.getFileId());
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (Exception e) {
-            log.error("Error uploading file: {}", file.getOriginalFilename(), e);
-            throw e;
-        }
-    }
-
-    @PostMapping("/upload-image")
-    public ResponseEntity<ApiResponse<UploadResponse>> uploadImage(@RequestParam MultipartFile file) throws Exception {
-        log.info("Image upload request received for file: {} (size: {} bytes)",
-                file.getOriginalFilename(), file.getSize());
-
-        try {
-            UploadResponse response = imageService.uploadImage(file);
-            log.info("Image uploaded successfully: {}, assetId: {}",
-                    file.getOriginalFilename(), response.getFileId());
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (Exception e) {
-            log.error("Error uploading image: {}", file.getOriginalFilename(), e);
-            throw e;
-        }
-    }
 
     @PostMapping("/extract")
     public ResponseEntity<Resource> extract(@RequestBody ExtractRequest request) throws Exception {

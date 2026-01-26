@@ -24,5 +24,9 @@ export const routes: Routes = [
   {
     path: 'compress-pdf',
     loadComponent: () => import('./components/pdf/compress-pdf/compress-pdf.component').then(m => m.CompressPdfComponent)
+  },
+  {
+    path: 'compress-image',
+    loadComponent: () => import('./components/image/compress-image/compress-image.component').then(m => m.CompressImageComponent)
   }
 ];

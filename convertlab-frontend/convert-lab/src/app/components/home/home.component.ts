@@ -72,18 +72,19 @@ export class HomeComponent {
       title: 'Compress PDF',
       description: 'Reduce PDF file size without quality loss',
       route: '/compress-pdf',
-      available: false,
+      available: true,
+    },
+    {
+      icon: 'compress',
+      title: 'Compress Image',
+      description: 'Reduce Image size without quality loss',
+      route: '/compress-image',
+      available: true,
     },
   ];
 
   comingSoonFeatures: Feature[] = [
-    {
-      icon: 'compress',
-      title: 'Compress Images',
-      description: 'Reduce image file size without quality loss',
-      route: '',
-      available: false,
-    },
+
   ];
 
   valueProps: ValueProp[] = [

@@ -1,6 +1,7 @@
 import { CompressionLevel } from "./compression-level.model";
 
-export interface CompressPdfRequest {
+
+export interface CompressImageRequest {
   fileIds: string[];
   compressionLevel: CompressionLevel
 }

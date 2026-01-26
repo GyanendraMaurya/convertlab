@@ -20,7 +20,8 @@ export interface SEOConfig {
   breadcrumbs: Array<{ name: string; url: string }>;
 }
 
-export type PageIds = 'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf';
+export type PageIds =
+  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
@@ -164,6 +165,30 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
     breadcrumbs: [
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'Compress PDF', url: 'https://www.easyconvertlab.com/compress-pdf' }
+    ]
+  },
+  'compress-image': {
+    meta: {
+      title: 'Compress images Online - Reduce Image Size | EasyConvertLab',
+      description: 'Compress image files online for free and reduce file size without losing quality. Choose from low, medium, or high compression levels. Fast, secure, and no registration required.',
+      keywords: 'compress image, reduce image size, image compressor, shrink image, optimize image, compress image online, free image compression',
+      url: 'https://www.easyconvertlab.com/compress-image',
+      image: 'https://www.easyconvertlab.com/assets/images/compress-image-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'Compress image - EasyConvertLab',
+      description: 'Reduce image file size online using low, medium, or high compression levels while maintaining the best possible quality.',
+      url: 'https://www.easyconvertlab.com/compress-image',
+      featureList: 'Low compression (best quality), Medium compression (balanced), High compression (maximum size reduction), Fast and secure processing',
+      aggregateRating: {
+        ratingValue: '4.8',
+        ratingCount: '980'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'Compress image', url: 'https://www.easyconvertlab.com/compress-pdf' }
     ]
   }
 

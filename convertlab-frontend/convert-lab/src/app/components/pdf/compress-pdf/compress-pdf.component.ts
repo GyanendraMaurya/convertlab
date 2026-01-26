@@ -14,7 +14,8 @@ import { SnackbarService } from '../../../services/snackbar.service';
 import { SeoService } from '../../../seo/seo.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
-import { CompressionLevel, CompressPdfRequest } from '../../../models/compress-pdf.model';
+import { CompressPdfRequest } from '../../../models/compress-pdf.model';
+import { CompressionLevel } from '../../../models/compression-level.model';
 
 @Component({
   selector: 'app-compress-pdf',

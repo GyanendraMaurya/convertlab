@@ -67,20 +67,20 @@ export class HomeComponent {
       route: '/image-to-pdf',
       available: true,
     },
+    {
+      icon: 'compress',
+      title: 'Compress PDF',
+      description: 'Reduce PDF file size without quality loss',
+      route: '/compress-pdf',
+      available: false,
+    },
   ];
 
   comingSoonFeatures: Feature[] = [
     {
       icon: 'compress',
-      title: 'Compress PDF',
-      description: 'Reduce PDF file size without quality loss',
-      route: '',
-      available: false,
-    },
-    {
-      icon: 'crop',
-      title: 'Crop Images',
-      description: 'Trim and resize your images perfectly',
+      title: 'Compress Images',
+      description: 'Reduce image file size without quality loss',
       route: '',
       available: false,
     },

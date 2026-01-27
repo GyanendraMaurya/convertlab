@@ -147,9 +147,7 @@ export class CompressImageComponent {
 
   private async processImage(file: File, tempId: string): Promise<void> {
     try {
-      console.log("thumbnail generateion started")
       const { thumbnailUrl, size } = await this.generateImageThumbnail(file);
-      console.log("thumbnail generateion ended")
 
       this.thumbnails.update(list =>
         list.map(t =>
@@ -226,11 +224,8 @@ export class CompressImageComponent {
       )
     );
 
-    console.log("file upload started")
     this.fileUploadService.uploadImage(file).subscribe({
       next: (res) => {
-        console.log("file upload ended")
-
         this.thumbnails.update(list =>
           list.map(t =>
             t.tempId === tempId
@@ -271,10 +266,10 @@ export class CompressImageComponent {
     );
   }
 
-  retryUpload(id: string | null) {
+  retryUpload(id: string | undefined) {
     if (!id) return;
 
-    const thumbnail = this.thumbnails().find(t => t.fileId === id);
+    const thumbnail = this.thumbnails().find(t => t.fileId === id || t.tempId === id);
 
     if (thumbnail && thumbnail.file && thumbnail.uploadStatus === 'failed') {
       this.uploadFileInBackground(thumbnail.file, id);

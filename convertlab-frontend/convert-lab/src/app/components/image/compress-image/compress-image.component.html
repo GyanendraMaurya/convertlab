@@ -33,13 +33,13 @@
 
       <app-image-thumbnail [id]="image.fileId || image.thumbnailUrl" [thumbnailUrl]="image.thumbnailUrl"
         [size]="image.size || 0" [enableRotate]="false" [fileName]="image.fileName" [uploadStatus]="image.uploadStatus"
-        (remove)="removeImage($event)" (retry)="retryUpload(image.fileId)">
+        (remove)="removeImage($event)" (retry)="retryUpload(image.tempId)">
       </app-image-thumbnail>
 
       @if (image.uploadStatus === 'failed') {
       <div class="upload-overlay error">
         <mat-icon>error</mat-icon>
-        <button mat-mini-fab matTooltip="Retry" (click)="retryUpload(image.fileId)" class="error-button">
+        <button mat-mini-fab matTooltip="Retry" (click)="retryUpload(image.tempId)" class="error-button">
           <mat-icon>refresh</mat-icon>
         </button>
       </div>

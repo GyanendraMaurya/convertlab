@@ -32,13 +32,13 @@
 
       <app-thumbnail [id]="pdf.fileId || pdf.thumbnailUrl" [thumbnailUrl]="pdf.thumbnailUrl" [size]="pdf.size || 0"
         [fileName]="pdf.fileName" [uploadStatus]="pdf.uploadStatus" (remove)="removePdf($event)"
-        (retry)="retryUpload(pdf.fileId)">
+        (retry)="retryUpload(pdf.tempId)">
       </app-thumbnail>
 
       @if (pdf.uploadStatus === 'failed') {
       <div class="upload-overlay error">
         <mat-icon>error</mat-icon>
-        <button matMiniFab matTooltip="Retry" (click)="retryUpload(pdf.fileId)" class="error-button">
+        <button matMiniFab matTooltip="Retry" (click)="retryUpload(pdf.tempId)" class="error-button">
           <mat-icon>refresh</mat-icon>
         </button>
       </div>

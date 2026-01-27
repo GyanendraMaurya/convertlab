@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SessionService } from './session.service';
 import { filter } from 'rxjs';
-import {HttpService} from './http.service';
-import {environment} from '../../environments/environment';
+import { HttpService } from './http.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PageVisitService {
@@ -32,7 +32,6 @@ export class PageVisitService {
     };
 
     this.firstNavigation = false;
-    console.log("recordVisit", payload);
     this.http.post(`${this.apiUrl}/analytics/page-visit`, payload).subscribe();
   }
 }

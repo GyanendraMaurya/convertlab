@@ -202,7 +202,7 @@ export class CompressPdfComponent {
     );
   }
 
-  retryUpload(id: string | null) {
+  retryUpload(id: string | undefined) {
     if (!id) return;
 
     const thumbnail = this.thumbnails().find(t => t.fileId === id || t.tempId === id);

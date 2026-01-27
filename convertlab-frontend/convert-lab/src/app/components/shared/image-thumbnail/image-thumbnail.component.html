@@ -12,10 +12,12 @@
     }
 
     <div class="button-group">
+      @if (enableRotate()) {
       <button type="button" class="action-btn rotate-btn" (click)="onRotateClick($event)"
         [attr.aria-label]="'Rotate ' + fileName()" matTooltip="Rotate 90°">
         <mat-icon>rotate_right</mat-icon>
       </button>
+      }
 
       <button type="button" class="action-btn delete-btn" (click)="onRemoveClick($event)"
         [attr.aria-label]="'Remove ' + fileName()" matTooltip="Remove">
@@ -38,6 +40,7 @@
     }
   </div>
 
+  @if (dimensions() !== '') {
   <div class="dimensions" [title]="dimensions()">
     @if (!thumbnailUrl()) {
     <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
@@ -45,4 +48,14 @@
     {{ dimensions() }}
     }
   </div>
+  }
+  @if (size() > 0) {
+  <div class="size" [title]="sizeInMegaBytes() + ' MB'">
+    @if (!this.thumbnailUrl()) {
+    <app-skeleton-loader variant="text" width="70%" height="11px"></app-skeleton-loader>
+    } @else {
+    ({{ sizeInMegaBytes() | number: '1.2-2' }} MB)
+    }
+  </div>
+  }
 </div>

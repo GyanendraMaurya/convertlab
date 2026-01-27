@@ -7,6 +7,7 @@ export interface ImageThumbnail {
   height: number;
   uploadStatus: 'pending' | 'uploading' | 'completed' | 'failed';
   file: File;
+  size?: number;
   error?: string;
   tempId?: string; // only for frontend optimization
 }

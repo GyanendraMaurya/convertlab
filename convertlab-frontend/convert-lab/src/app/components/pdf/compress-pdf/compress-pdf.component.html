@@ -35,9 +35,6 @@
         (retry)="retryUpload(pdf.fileId)">
       </app-thumbnail>
 
-      <!-- Order indicator -->
-      <!-- <div class="order-badge">{{ i + 1 }}</div> -->
-
       @if (pdf.uploadStatus === 'failed') {
       <div class="upload-overlay error">
         <mat-icon>error</mat-icon>

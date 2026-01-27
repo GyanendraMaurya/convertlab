@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, inject, PLATFORM_ID, signal, viewChild } from '@angular/core';
-import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FileUploaderComponent } from '../../shared/file-uploader/file-uploader.component';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { MatIconModule } from '@angular/material/icon';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ActionButtonComponent } from '../../shared/action-button/action-button.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,8 +21,6 @@ import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/
     ImageThumbnailComponent,
     FileUploaderComponent,
     MatIconModule,
-    DragDropModule,
-    CdkDrag,
     ActionButtonComponent,
     MatTooltipModule,
     MatButtonModule,
@@ -152,13 +148,13 @@ export class CompressImageComponent {
   private async processImage(file: File, tempId: string): Promise<void> {
     try {
       console.log("thumbnail generateion started")
-      const { thumbnailUrl, width, height } = await this.generateImageThumbnail(file);
+      const { thumbnailUrl, size } = await this.generateImageThumbnail(file);
       console.log("thumbnail generateion ended")
 
       this.thumbnails.update(list =>
         list.map(t =>
           t.tempId === tempId
-            ? { ...t, thumbnailUrl, width, height }
+            ? { ...t, thumbnailUrl, size }
             : t
         ));
     } catch (error) {
@@ -167,7 +163,7 @@ export class CompressImageComponent {
     }
   }
 
-  private async generateImageThumbnail(file: File): Promise<{ thumbnailUrl: string; width: number; height: number }> {
+  private async generateImageThumbnail(file: File): Promise<{ thumbnailUrl: string, size: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
@@ -203,8 +199,8 @@ export class CompressImageComponent {
             const thumbnailUrl = URL.createObjectURL(blob);
             resolve({
               thumbnailUrl,
-              width: img.width,
-              height: img.height
+              size: file.size
+
             });
           } else {
             reject(new Error('Failed to create thumbnail'));
@@ -297,13 +293,6 @@ export class CompressImageComponent {
     );
   }
 
-  onDrop(event: CdkDragDrop<ImageThumbnail[]>) {
-    this.thumbnails.update(list => {
-      const updated = [...list];
-      moveItemInArray(updated, event.previousIndex, event.currentIndex);
-      return updated;
-    });
-  }
 
   async compress() {
     if (this.thumbnails().length === 0) return;
@@ -343,7 +332,7 @@ export class CompressImageComponent {
         this.isCompressing.set(false);
         const blob = response.body as Blob;
         const contentDisposition = response.headers.get('content-disposition');
-        let fileName = 'ConvertLab_ImageToPdf.pdf';
+        let fileName = 'ConvertLab_CompressedImage';
 
         if (contentDisposition) {
           const match = contentDisposition.match(/filename="([^"]+)"/);

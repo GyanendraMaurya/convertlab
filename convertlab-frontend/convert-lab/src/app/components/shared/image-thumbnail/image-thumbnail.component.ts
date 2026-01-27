@@ -3,10 +3,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-image-thumbnail',
-  imports: [MatIconModule, MatButtonModule, MatTooltipModule, SkeletonLoaderComponent],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule, SkeletonLoaderComponent, DecimalPipe],
   templateUrl: './image-thumbnail.component.html',
   styleUrl: './image-thumbnail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,8 +18,10 @@ export class ImageThumbnailComponent {
   fileName = input<string>('');
   dimensions = input<string>('');
   rotation = input<0 | 90 | 180 | 270>(0);
+  size = input<number>(0);
   uploadStatus = input<'pending' | 'uploading' | 'completed' | 'failed'>('completed');
   disabled = input(false);
+  enableRotate = input(true);
 
   remove = output<string>();
   rotate = output<string>();
@@ -32,6 +35,8 @@ export class ImageThumbnailComponent {
 
   // Compute rotation transform
   rotationTransform = computed(() => `rotate(${this.rotation()}deg)`);
+
+  sizeInMegaBytes = computed(() => this.size() / 1024 / 1024);
 
   onRemoveClick(event: MouseEvent) {
     event.stopPropagation();

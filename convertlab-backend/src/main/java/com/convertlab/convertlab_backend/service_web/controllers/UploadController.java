@@ -23,7 +23,7 @@ public class UploadController {
     private final PdfService pdfService;
     private final ImageService imageService;
 
-    @PostMapping("/upload")
+    @PostMapping("/pdf")
     public ResponseEntity<ApiResponse<UploadResponse>> upload(@RequestParam MultipartFile file) throws Exception {
         log.info("Upload request received for file: {} (size: {} bytes)",
                 file.getOriginalFilename(), file.getSize());

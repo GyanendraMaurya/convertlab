@@ -33,30 +33,34 @@ public class CorsLoggingFilter implements Filter {
             return;
         }
 
+        if (response.getStatus() == 429) {
+            return;
+        }
+
         String allowedOrigin =
                 response.getHeader("Access-Control-Allow-Origin");
 
         // CASE 1: CORS headers missing completely
         if (allowedOrigin == null) {
             log.warn("""
-                CORS BLOCKED
-                Origin: {}
-                Method: {}
-                URI: {}
-                Reason: Access-Control-Allow-Origin header missing
-                """, origin, method, uri);
+                    CORS BLOCKED
+                    Origin: {}
+                    Method: {}
+                    URI: {}
+                    Reason: Access-Control-Allow-Origin header missing
+                    """, origin, method, uri);
             return;
         }
 
         // CASE 2: Origin present but not allowed
         if (!origin.equals(allowedOrigin)) {
             log.warn("""
-                CORS MISMATCH
-                Origin: {}
-                Allowed-Origin: {}
-                Method: {}
-                URI: {}
-                """, origin, allowedOrigin, method, uri);
+                    CORS MISMATCH
+                    Origin: {}
+                    Allowed-Origin: {}
+                    Method: {}
+                    URI: {}
+                    """, origin, allowedOrigin, method, uri);
         }
     }
 }

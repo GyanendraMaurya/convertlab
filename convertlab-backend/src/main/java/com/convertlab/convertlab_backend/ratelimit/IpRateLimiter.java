@@ -15,9 +15,9 @@ public class IpRateLimiter {
 
         TokenBucket bucket = buckets.computeIfAbsent(key, k -> {
             if (type == RateLimitType.UPLOAD) {
-                return new TokenBucket(2, 2); // 40 per minute
+                return new TokenBucket(30, 30); // 30 per minute
             }
-            return new TokenBucket(20, 20); // 20 per minute
+            return new TokenBucket(10, 10); // 10 per minute
         });
 
         return bucket.tryConsume();

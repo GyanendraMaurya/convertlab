@@ -10,6 +10,8 @@ const routes = [
   { path: '/extract-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/split-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/image-to-pdf', priority: '0.9', changefreq: 'weekly' },
+  { path: '/compress-pdf', priority: '0.9', changefreq: 'weekly' },
+  { path: '/compress-image', priority: '0.9', changefreq: 'weekly' },
 ];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -21,7 +23,7 @@ ${routes
     <lastmod>${today}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
-  </url>`
+  </url>`,
   )
   .join('\n')}
 </urlset>`;

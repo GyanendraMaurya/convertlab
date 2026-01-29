@@ -1,20 +1,32 @@
 <div class="container">
   <div class="split-container">
 
-    @if (thumbnailUrl()) {
+    @if (thumbnail(); as thumb) {
     <!-- Show thumbnail when file is uploaded -->
-    <div class="thumbnail-section">
-      <app-thumbnail [id]="uploadedFileId() || 'temp'" [thumbnailUrl]="thumbnailUrl()" [pageCount]="pageCount()"
-        [fileName]="fileName()" [uploadStatus]="isUploading() ? 'uploading' : 'completed'" (remove)="removeThumbnail()">
-      </app-thumbnail>
+    <div class="thumbnail-list">
+      <div class="thumbnail-wrapper">
+        <app-thumbnail [id]="thumb.fileId || thumb.thumbnailUrl" [thumbnailUrl]="thumb.thumbnailUrl"
+          [pageCount]="thumb.pageCount" [fileName]="thumb.fileName" [uploadStatus]="thumb.uploadStatus"
+          (remove)="removePdf()">
+        </app-thumbnail>
+
+        @if (thumb.uploadStatus === 'failed') {
+        <div class="upload-overlay error">
+          <mat-icon>error</mat-icon>
+          <button matMiniFab matTooltip="Retry" (click)="retryUpload(thumb.tempId)" class="error-button">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+        }
+      </div>
     </div>
     }
 
-    @if (!thumbnailUrl()) {
+    @if (thumbnail() === null) {
     <!-- Show file uploader when no file is uploaded -->
     <div class="file-uploader-wrapper">
       <app-file-uploader [allowedTypes]="['pdf']" [fileType]="'pdf'" (onFileSelected)="onFileUploaded($event)"
-        (fileRemoved)="onFileRemoved()" [isUploading]="isUploading()">
+        (fileRemoved)="onFileRemoved()">
       </app-file-uploader>
     </div>
     }

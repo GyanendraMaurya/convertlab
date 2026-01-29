@@ -8,9 +8,12 @@ import { PdfService } from '../../../services/pdf.service';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { SplitType } from '../../../models/split-pdf.model';
 import { ThumbnailComponent } from '../../shared/thumbnail/thumbnail.component';
-import { ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
+import { PdfMetadata, ThumbnailGeneratorService } from '../../../services/thumbnail-generator.service';
 import { MatIconModule } from '@angular/material/icon';
 import { SeoService } from '../../../seo/seo.service';
+import { Thumbnail } from '../../../models/thumbnail.model';
+import { SnackbarService } from '../../../services/snackbar.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-split-pdf',
@@ -21,7 +24,8 @@ import { SeoService } from '../../../seo/seo.service';
     FormsModule,
     MatButtonToggleModule,
     ThumbnailComponent,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './split-pdf.component.html',
   styleUrl: './split-pdf.component.scss',
@@ -31,30 +35,22 @@ export class SplitPdfComponent {
   private readonly pdfService = inject(PdfService);
   private readonly thumbnailGeneratorService = inject(ThumbnailGeneratorService);
   private seoService = inject(SeoService);
+  private readonly snackbarService = inject(SnackbarService);
 
-  public uploadedFileId = signal<string | null>(null);
   public pageRange = signal<string>('');
-  isUploading = signal(false);
-  selectedFile = signal<File | null>(null);
   splitType = signal<SplitType>(SplitType.EACH_PAGE);
   isSplitting = signal(false);
   isWaitingForUpload = signal(false);
+  isUploading = computed(() => this.thumbnail()?.uploadStatus === 'uploading' || this.thumbnail()?.uploadStatus === 'pending');
 
-  // Thumbnail data
-  thumbnailUrl = signal<string>('');
-  pageCount = signal<number>(0);
-  fileName = signal<string>('');
+  thumbnail = signal<Thumbnail | null>(null);
 
   // Show/hide page range input based on split type
   showPageRangeInput = signal(false);
 
-  // Computed states
-  uploadCompleted = computed(() =>
-    this.uploadedFileId() !== null && !this.isUploading()
-  );
 
   canSplit = computed(() => {
-    const uploadReady = !this.isSplitting() && !this.isWaitingForUpload();
+    const uploadReady = this.thumbnail() && !this.isSplitting() && !this.isWaitingForUpload();
 
     // If split by range, also check if page range is provided
     if (this.splitType() === SplitType.BY_RANGE) {
@@ -70,64 +66,94 @@ export class SplitPdfComponent {
     return 'Split PDF';
   });
 
+  hasFailedUploads = computed(() => this.thumbnail()?.uploadStatus === 'failed')
+
   ngOnInit() {
     this.seoService.applySEO('split-pdf');
   }
 
-  async onFileUploaded($event: File | null) {
-    if (!$event) return;
 
-    this.isUploading.set(true);
-    this.selectedFile.set($event);
+  private addPlaceholderThumbnail(file: File, tempId: string): void {
+    const placeholder: Thumbnail = {
+      fileId: null,
+      fileName: file.name,
+      pageCount: 0,
+      thumbnailUrl: '', // Empty for now
+      uploadStatus: 'pending',
+      file,
+      tempId
+    };
 
+    this.thumbnail.set(placeholder);
+  }
+
+  private async generateThumbnail(file: File, tempId: string): Promise<void> {
     try {
-      // Generate thumbnail and get page count
-      const { thumbnailUrl, pageCount } = await this.thumbnailGeneratorService.getPdfInfo($event);
-      this.thumbnailUrl.set(thumbnailUrl);
-      this.pageCount.set(pageCount);
-      this.fileName.set($event.name);
+      const { thumbnailUrl, pageCount }: PdfMetadata =
+        await this.thumbnailGeneratorService.getPdfInfo(file);
 
-      // Upload file to backend
-      this.fileUploadService.uploadPdf($event).subscribe({
-        next: res => {
-          this.uploadedFileId.set(res.data.fileId);
-          this.isUploading.set(false);
-        },
-        error: err => {
-          this.isUploading.set(false);
-          // Revoke thumbnail URL on error
-          if (this.thumbnailUrl()) {
-            this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnailUrl());
-          }
-        }
-      });
+      // Update the existing placeholder with thumbnail data
+      this.thumbnail.update(t => (t && { ...t, thumbnailUrl, pageCount }));
     } catch (error) {
-      console.error('Failed to process PDF:', error);
-      this.isUploading.set(false);
+      console.error(`Failed to generate thumbnail for ${file.name}`, error);
+
+      // Mark thumbnail generation as failed (but keep trying upload)
+      this.thumbnail.update(t => (t && { ...t, error: 'Thumbnail generation failed' }));
     }
   }
+
+  async onFileUploaded(file: File | null) {
+    if (!file) return;
+
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+
+    this.addPlaceholderThumbnail(file, tempId);
+    this.generateThumbnail(file, tempId);
+    this.uploadFileInBackground(file, tempId);
+
+  }
+
+  private uploadFileInBackground(file: File, tempId: string): void {
+    // Update status to uploading
+    this.thumbnail.update(t => (t && { ...t, uploadStatus: 'uploading' as const }));
+
+    this.fileUploadService.uploadPdf(file).subscribe({
+      next: (res) => {
+        // Update with backend response
+        this.thumbnail.update(t => (t && {
+          ...t,
+          fileId: res.data.fileId,
+          uploadStatus: 'completed'
+        }));
+      },
+      error: (err) => {
+        this.thumbnail.update(t => (t && {
+          ...t,
+          uploadStatus: 'failed',
+          error: err.message || 'Upload failed'
+        }));
+      }
+    });
+  }
+
 
   onFileRemoved() {
     // Revoke thumbnail URL
-    if (this.thumbnailUrl()) {
-      this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnailUrl());
+    const thumbnail = this.thumbnail();
+
+    if (thumbnail?.thumbnailUrl && thumbnail.thumbnailUrl.startsWith('blob:')) {
+      this.thumbnailGeneratorService.revokeThumbnailUrl(thumbnail.thumbnailUrl);
     }
 
-    // Reset all state
-    this.selectedFile.set(null);
-    this.uploadedFileId.set(null);
-    this.thumbnailUrl.set('');
-    this.pageCount.set(0);
-    this.fileName.set('');
-    this.pageRange.set('');
+    this.thumbnail.set(null);
   }
 
-  removeThumbnail() {
+  removePdf() {
     this.onFileRemoved();
   }
 
   async split(): Promise<void> {
-    if (this.selectedFile() == null) return;
+    if (!this.thumbnail()) return;
 
     // Validate page range if split by range
     if (this.splitType() === SplitType.BY_RANGE && !this.pageRange()) {
@@ -144,15 +170,16 @@ export class SplitPdfComponent {
       this.isWaitingForUpload.set(false);
     }
 
-    // Check if upload completed successfully
-    if (this.uploadedFileId() == null) {
+    // Check if any uploads failed
+    if (this.hasFailedUploads()) {
+      this.snackbarService.error('Upload failed. Please re-upload and try again.');
       return;
     }
 
     this.isSplitting.set(true);
     this.pdfService
       .splitPdf({
-        fileId: this.uploadedFileId()!,
+        fileId: this.thumbnail()!.fileId!,
         pageRange: this.pageRange(),
         splitType: this.splitType(),
       })
@@ -200,10 +227,21 @@ export class SplitPdfComponent {
     }
   }
 
+  retryUpload(id: string | undefined) {
+    if (!id) return;
+    const thumbnail = this.thumbnail();
+    if (thumbnail && thumbnail.file && thumbnail.uploadStatus === 'failed') {
+      // Generate new tempId for retry
+      const newTempId = thumbnail.tempId || `temp-${Date.now()}-${Math.random()}`;
+      this.generateThumbnail(thumbnail.file, newTempId);
+      this.uploadFileInBackground(thumbnail.file, newTempId);
+    }
+  }
+
   ngOnDestroy(): void {
     // Clean up thumbnail URL on component destroy
-    if (this.thumbnailUrl()) {
-      this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnailUrl());
+    if (this.thumbnail()) {
+      this.thumbnailGeneratorService.revokeThumbnailUrl(this.thumbnail()!.thumbnailUrl);
     }
     this.seoService.cleanup();
   }

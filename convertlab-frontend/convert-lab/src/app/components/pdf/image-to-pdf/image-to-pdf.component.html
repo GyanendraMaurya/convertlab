@@ -11,7 +11,7 @@
   <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
     @for (image of thumbnails(); track image.tempId; let i = $index) {
 
-    <div class="thumbnail-wrapper" cdkDrag [class.failed]="image.uploadStatus === 'failed'">
+    <div class="thumbnail-wrapper" cdkDrag>
 
       <app-image-thumbnail [id]="image.fileId || image.thumbnailUrl" [thumbnailUrl]="image.thumbnailUrl"
         [fileName]="image.fileName" [dimensions]="image.width + ' × ' + image.height" [rotation]="image.rotation"
@@ -21,15 +21,6 @@
 
       <!-- Order indicator -->
       <div class="order-badge">{{ i + 1 }}</div>
-
-      @if (image.uploadStatus === 'failed') {
-      <div class="upload-overlay error">
-        <mat-icon>error</mat-icon>
-        <button mat-mini-fab matTooltip="Retry" (click)="retryUpload(image.tempId)" class="error-button">
-          <mat-icon>refresh</mat-icon>
-        </button>
-      </div>
-      }
 
       <!-- Drag handle -->
       <div class="drag-hint">

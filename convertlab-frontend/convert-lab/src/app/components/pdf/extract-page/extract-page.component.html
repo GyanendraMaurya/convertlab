@@ -7,17 +7,8 @@
       <div class="thumbnail-wrapper">
         <app-thumbnail [id]="thumb.fileId || thumb.thumbnailUrl" [thumbnailUrl]="thumb.thumbnailUrl"
           [pageCount]="thumb.pageCount" [fileName]="thumb.fileName" [uploadStatus]="thumb.uploadStatus"
-          (remove)="removePdf()">
+          (remove)="removePdf()" (retry)="retryUpload(thumb.tempId)">
         </app-thumbnail>
-
-        @if (thumb.uploadStatus === 'failed') {
-        <div class="upload-overlay error">
-          <mat-icon>error</mat-icon>
-          <button matMiniFab matTooltip="Retry" (click)="retryUpload(thumb.tempId)" class="error-button">
-            <mat-icon>refresh</mat-icon>
-          </button>
-        </div>
-        }
       </div>
     </div>
     }

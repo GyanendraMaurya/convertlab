@@ -13,7 +13,7 @@
   <div class="thumbnail-list" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="onDrop($event)">
     @for (pdf of thumbnails(); track pdf.tempId; let i = $index) {
 
-    <div class="thumbnail-wrapper" cdkDrag [class.failed]="pdf.uploadStatus === 'failed'">
+    <div class="thumbnail-wrapper" cdkDrag>
 
       <app-thumbnail [id]="pdf.fileId || pdf.thumbnailUrl" [thumbnailUrl]="pdf.thumbnailUrl" [pageCount]="pdf.pageCount"
         [fileName]="pdf.fileName" [uploadStatus]="pdf.uploadStatus" (remove)="removePdf($event)"
@@ -22,15 +22,6 @@
 
       <!-- Order indicator -->
       <div class="order-badge">{{ i + 1 }}</div>
-
-      @if (pdf.uploadStatus === 'failed') {
-      <div class="upload-overlay error">
-        <mat-icon>error</mat-icon>
-        <button matMiniFab matTooltip="Retry" (click)="retryUpload(pdf.tempId)" class="error-button">
-          <mat-icon>refresh</mat-icon>
-        </button>
-      </div>
-      }
 
       <!-- Drag handle -->
       <div class="drag-hint">

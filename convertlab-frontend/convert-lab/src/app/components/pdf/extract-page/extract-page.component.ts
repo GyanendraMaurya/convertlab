@@ -63,7 +63,7 @@ export class ExtractPageComponent {
   extractButtonLabel = computed(() => {
     if (this.isExtracting()) return 'Extracting...';
     if (this.isWaitingForUpload()) return 'Uploading...';
-    return 'Extract2';
+    return 'Extract';
   });
 
   hasFailedUploads = computed(() => this.thumbnail()?.uploadStatus === 'failed')

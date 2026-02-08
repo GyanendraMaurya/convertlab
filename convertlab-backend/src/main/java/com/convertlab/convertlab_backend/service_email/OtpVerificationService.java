@@ -4,6 +4,7 @@ import com.convertlab.convertlab_backend.entity.EmailOtp;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.repository.EmailOtpRepository;
 import com.convertlab.convertlab_backend.repository.UserRepository;
+import com.convertlab.convertlab_backend.service_util.OtpUtil;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.VerifyOtpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class OtpVerificationService {
             throw new IllegalStateException("OTP expired");
         }
 
-        if (!emailOtp.getOtpHash().equals("HASHED_" + request.otp())) {
+        if (!emailOtp.getOtpHash().equals(OtpUtil.hash(request.otp()))) {
             throw new IllegalStateException("Invalid OTP");
         }
 

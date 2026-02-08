@@ -54,4 +54,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponse.failure(ex.getMessage(), ""));
     }
+
+    @ExceptionHandler(SignUpValidationException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidSignUpInput(SignUpValidationException ex) {
+        log.warn("Invalid sign up input: {}", ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
 }

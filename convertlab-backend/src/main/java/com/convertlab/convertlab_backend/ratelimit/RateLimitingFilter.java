@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.ratelimit;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
+import com.convertlab.convertlab_backend.service_util.IpUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         RateLimitType type = resolveRateLimitType(request);
 
         if (type != null) {
-            String clientIp = extractClientIp(request);
+            String clientIp = IpUtil.extractClientIp(request);
 
             if (!rateLimiter.allowRequest(clientIp, type)) {
                 log.warn("Rate limit exceeded for {} on request type :{}", clientIp, type);
@@ -56,14 +57,6 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         return null; // no rate limit
-    }
-
-    private String extractClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 
     private void writeRateLimitResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {

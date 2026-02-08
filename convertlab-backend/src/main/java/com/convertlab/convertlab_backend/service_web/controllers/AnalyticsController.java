@@ -2,7 +2,9 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.service_core.AnalyticsService;
+import com.convertlab.convertlab_backend.service_util.IpUtil;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.PageVisitRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +23,17 @@ public class AnalyticsController {
 
     @PostMapping("/page-visit")
     public ResponseEntity<ApiResponse<String>> recordPageVisit(
-            @RequestBody PageVisitRequest request) {
+            @RequestBody PageVisitRequest request, HttpServletRequest httpRequest) {
         log.info("Recording page visit for path: {}", request.getPath());
 
         try {
-            analyticsService.recordPageVisit(request);
+            String clientIp = IpUtil.extractClientIp(httpRequest);
+            analyticsService.recordPageVisit(request, clientIp);
             return ResponseEntity.ok(ApiResponse.success(null));
         } catch (Exception e) {
             log.error("Error recording page visit for path: {}", request.getPath(), e);
             String error = "Error recording page visit for path: " + request.getPath();
-            return ResponseEntity.ok(ApiResponse.failure(error,"ERROR"));
+            return ResponseEntity.ok(ApiResponse.failure(error, "ERROR"));
         }
     }
 }

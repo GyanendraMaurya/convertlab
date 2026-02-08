@@ -30,6 +30,19 @@ public class PageVisit implements Persistable<UUID> {
     @Column(name = "visited_at")
     private Instant visitedAt;
 
+    // Geographic data
+    @Column(name = "ip_hash")
+    private String ipHash;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "country_code")
+    private String countryCode;
+
     protected PageVisit() {
         // JPA only
     }

@@ -1,0 +1,60 @@
+{
+  "ip": "103.6.187.50",
+  "location": {
+    "continent_code": "AS",
+    "continent_name": "Asia",
+    "country_code2": "IN",
+    "country_code3": "IND",
+    "country_name": "India",
+    "country_name_official": "Republic of India",
+    "country_capital": "New Delhi",
+    "state_prov": "Maharashtra",
+    "state_code": "IN-MH",
+    "district": "Mumbai Suburban",
+    "city": "Mumbai",
+    "zipcode": "400093",
+    "latitude": "19.14045",
+    "longitude": "72.88234",
+    "is_eu": false,
+    "country_flag": "https://ipgeolocation.io/static/flags/in_64.png",
+    "geoname_id": "10290240",
+    "country_emoji": "🇮🇳"
+  },
+  "country_metadata": {
+    "calling_code": "+91",
+    "tld": ".in",
+    "languages": [
+      "en-IN",
+      "hi",
+      "bn",
+      "te",
+      "mr",
+      "ta",
+      "ur",
+      "gu",
+      "kn",
+      "ml",
+      "or",
+      "pa",
+      "as",
+      "bh",
+      "sat",
+      "ks",
+      "ne",
+      "sd",
+      "kok",
+      "doi",
+      "mni",
+      "sit",
+      "sa",
+      "fr",
+      "lus",
+      "inc"
+    ]
+  },
+  "currency": {
+    "code": "INR",
+    "name": "Indian Rupee",
+    "symbol": "₹"
+  }
+}

@@ -73,12 +73,16 @@ public class SignupService {
     }
 
     private void validateSignupRequest(SignupRequest request) {
-        if (request.email() == null || request.password() == null) {
+        if (request.email() == null || request.password() == null || request.email().trim().isEmpty() || request.password().trim().isEmpty()) {
             throw new SignUpValidationException("Invalid email or password", "INVALID_EMAIL_PASSWORD");
         }
 
         if (!EmailUtil.isValid(request.email())) {
             throw new SignUpValidationException("Invalid email", "INVALID_EMAIL");
+        }
+
+        if(request.password().trim().length() < 5){
+            throw new SignUpValidationException("Password should be minimum 5 characters", "PASSWORD_TOO_SHORT");
         }
 
     }

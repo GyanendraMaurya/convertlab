@@ -1,0 +1,246 @@
+// Mobile-first approach matching existing ConvertLab patterns
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--mat-sys-surface);
+}
+
+.auth-card {
+  background: var(--mat-sys-surface-container);
+  border-radius: 16px;
+  padding: 2rem 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Brand Section
+.brand-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: var(--mat-sys-primary);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+}
+
+.logo-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--mat-sys-on-primary);
+}
+
+.brand-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 0.5rem 0;
+}
+
+.brand-subtitle {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}
+
+// Form Container
+.form-container {
+  position: relative;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+// Form Styles
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.5rem;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: var(--mat-sys-primary);
+  text-transform: none;
+  font-weight: 500;
+
+  &:hover {
+    background: var(--mat-sys-surface-variant);
+  }
+}
+
+// Submit Button
+.submit-btn {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0.5rem;
+
+  mat-spinner {
+    margin-right: 8px;
+  }
+
+  mat-icon {
+    transition: transform 0.2s ease;
+  }
+
+  &:not([disabled]):hover mat-icon {
+    transform: translateX(4px);
+  }
+}
+
+// Divider
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0 1rem 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--mat-sys-outline-variant);
+  }
+
+  span {
+    padding: 0 1rem;
+  }
+}
+
+// Alternate Action
+.alternate-action {
+  text-align: center;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+
+  p {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .link {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Footer
+.auth-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+
+  p {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .footer-link {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Desktop styles (≥720px) - matching existing patterns
+@media (min-width: 720px) {
+  .auth-container {
+    padding: 2rem;
+  }
+
+  .auth-card {
+    max-width: 480px;
+    padding: 3rem 2.5rem;
+  }
+
+  .brand-title {
+    font-size: 32px;
+  }
+
+  .form-title {
+    font-size: 28px;
+  }
+
+  .logo-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .logo-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .submit-btn {
+    height: 56px;
+  }
+
+  .auth-form {
+    gap: 1.5rem;
+  }
+
+  .form-subtitle {
+    margin-bottom: 2rem;
+  }
+}

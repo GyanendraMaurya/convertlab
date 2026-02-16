@@ -1,0 +1,112 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Logo/Brand Section -->
+    <div class="brand-section">
+      <div class="logo-wrapper">
+        <mat-icon class="logo-icon">description</mat-icon>
+      </div>
+      <h1 class="brand-title">ConvertLab</h1>
+      <p class="brand-subtitle">Transform your documents effortlessly</p>
+    </div>
+
+    @if (!showOtpStep()) {
+    <!-- Signup Form -->
+    <div class="form-container">
+      <h2 class="form-title">Create Account</h2>
+      <p class="form-subtitle">Get started with your free account</p>
+
+      <form [formGroup]="signupForm" (ngSubmit)="onSignup()" class="auth-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="you@example.com" />
+          <mat-icon matPrefix>email</mat-icon>
+          @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+          <mat-error>{{ getEmailError() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+            placeholder="At least 5 characters" />
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix (click)="togglePassword()" type="button"
+            [attr.aria-label]="'Toggle password visibility'">
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (signupForm.get('password')?.invalid && signupForm.get('password')?.touched) {
+          <mat-error>{{ getPasswordError() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button matButton="elevated" color="primary" type="submit" class="submit-btn" [disabled]="isLoading()">
+          @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Creating Account...</span>
+          } @else {
+          <span>Sign Up</span>
+          }
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <div class="alternate-action">
+        <p>Already have an account?</p>
+        <a routerLink="/login" class="link">Sign in here</a>
+      </div>
+    </div>
+    } @else {
+    <!-- OTP Verification Step -->
+    <div class="form-container">
+      <button mat-icon-button class="back-btn" (click)="backToSignup()" [disabled]="isLoading()">
+      </button>
+
+      <h2 class="form-title">Verify Email</h2>
+      <p class="form-subtitle">
+        We've sent a 6-digit code to<br />
+        <strong>{{ userEmail() }}</strong>
+      </p>
+
+      <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="auth-form otp-form">
+        <mat-form-field appearance="outline" class="full-width otp-field">
+          <mat-label>Enter OTP</mat-label>
+          <input matInput type="text" formControlName="otp" placeholder="000000" maxlength="6" />
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          @if (otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched) {
+          <mat-error>{{ getOtpError() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="submit-btn" [disabled]="isLoading()">
+          @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Verifying...</span>
+          } @else {
+          <span>Verify OTP</span>
+          }
+        </button>
+
+        <div class="resend-section">
+          <p>Didn't receive the code?</p>
+          <button type="button" mat-button color="primary" (click)="resendOtp()" [disabled]="isLoading()">
+            Resend OTP
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+
+    <!-- Footer -->
+    <div class="auth-footer">
+      <p>By signing up, you agree to our</p>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Terms of Service</a>
+        <span>•</span>
+        <a href="#" class="footer-link">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</div>

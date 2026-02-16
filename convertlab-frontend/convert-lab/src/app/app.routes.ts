@@ -6,6 +6,14 @@ export const routes: Routes = [
     loadComponent: () => import('./components/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'signup',
+    loadComponent: () => import('./components/authentication/signup/signup.component').then(m => m.SignupComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./components/authentication/login/login.component').then(m => m.LoginComponent)
+  },
+  {
     path: 'merge-pdf',
     loadComponent: () => import('./components/pdf/merge-pdf/merge-pdf.component').then(m => m.MergePdfComponent)
   },

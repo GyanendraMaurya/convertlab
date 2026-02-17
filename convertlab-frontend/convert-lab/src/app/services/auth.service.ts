@@ -39,7 +39,6 @@ export class AuthService {
     );
   }
 
-  // Placeholder for future login implementation
   login(request: LoginRequest): Observable<ApiResponse<string>> {
     return this.httpService.post<ApiResponse<string>>(
       `${this.apiUrl}/auth/login`,

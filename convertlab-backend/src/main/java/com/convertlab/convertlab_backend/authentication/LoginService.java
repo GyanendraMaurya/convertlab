@@ -3,10 +3,14 @@ package com.convertlab.convertlab_backend.authentication;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.LoginException;
 import com.convertlab.convertlab_backend.repository.UserRepository;
+import com.convertlab.convertlab_backend.security_util.CookieUtil;
+import com.convertlab.convertlab_backend.security_util.JwtUtil;
 import com.convertlab.convertlab_backend.security_util.PasswordUtil;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.AuthTokenResponse;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.LoginRequest;
-import lombok.AllArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,21 +23,76 @@ public class LoginService {
 
     private final UserRepository userRepository;
     private final PasswordUtil passwordUtil;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    private final CookieUtil cookieUtil;
 
+    @Value("${app.cookie.secure:true}")
+    private boolean secureCookie;
+
+    @Value("${app.cookie.same-site:Strict}")
+    private String sameSite;
+
+
+    /**
+     * Authenticates the user, then:
+     *  - Creates a refresh token, saves it to DB, sets it in an HttpOnly cookie
+     *  - Returns an access token in the response body
+     */
     @Transactional
-    public void login(LoginRequest request) {
-        boolean userExistAndVerified = userRepository.existsByEmailAndEmailVerifiedTrue(request.email());
+    public AuthTokenResponse login(LoginRequest request, HttpServletResponse response) {
+
+        boolean userExistAndVerified =
+                userRepository.existsByEmailAndEmailVerifiedTrue(request.email());
+
         if (!userExistAndVerified) {
-            throw new LoginException("User not found or not verified", "USER_NOT_FOUND_OR_NOT_VERIFIED", HttpStatus.NOT_FOUND);
+            throw new LoginException(
+                    "User not found or not verified",
+                    "USER_NOT_FOUND_OR_NOT_VERIFIED",
+                    HttpStatus.NOT_FOUND
+            );
         }
+
         Optional<User> user = userRepository.findByEmail(request.email());
         if (user.isEmpty()) {
-            return;
-        }
-        boolean isAuthenticated = passwordUtil.matches(request.password(), user.get().getPasswordHash());
-        if (!isAuthenticated) {
-            throw new LoginException("Invalid email or password", "INVALID_EMAIL_PASSWORD", HttpStatus.UNAUTHORIZED);
+            // Should never happen given the check above, but be safe
+            throw new LoginException("User not found", "USER_NOT_FOUND", HttpStatus.NOT_FOUND);
         }
 
+        boolean isAuthenticated =
+                passwordUtil.matches(request.password(), user.get().getPasswordHash());
+
+        if (!isAuthenticated) {
+            throw new LoginException(
+                    "Invalid email or password",
+                    "INVALID_EMAIL_PASSWORD",
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+
+        return issueTokens(request.email(), response);
+    }
+
+    // Called by LoginService AND the token-refresh flow
+    public AuthTokenResponse issueTokens(String email, HttpServletResponse response) {
+
+        // 1. Access token — short-lived, goes in the JSON body
+        String accessToken = jwtUtil.generateAccessToken(email);
+
+        // 2. Refresh token — long-lived, goes in HttpOnly cookie
+        String refreshToken = refreshTokenService.createAndSave(email);
+        cookieUtil.setRefreshTokenCookie(
+                response,
+                refreshToken,
+                jwtUtil.getRefreshTokenExpirySeconds(),
+                secureCookie,
+                sameSite
+        );
+
+        return AuthTokenResponse.builder()
+                .accessToken(accessToken)
+                .accessTokenExpiresInSeconds(jwtUtil.getAccessTokenExpirySeconds())
+                .email(email)
+                .build();
     }
 }

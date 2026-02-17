@@ -38,6 +38,14 @@ public class SecurityConfig {
 
                 // allow all requests
                 .authorizeHttpRequests(auth -> auth
+                        // Public auth endpoints
+                        .requestMatchers(
+                                "/auth/signup",
+                                "/auth/verify-otp",
+                                "/auth/login",
+                                "/auth/refresh",   // refresh uses HttpOnly cookie, not Bearer
+                                "/auth/logout"
+                        ).permitAll()
                         .anyRequest().permitAll()
                 )
 

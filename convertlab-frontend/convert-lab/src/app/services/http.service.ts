@@ -31,6 +31,7 @@ export class HttpService {
       // signal: ctrl?.signal,    // OPTIONAL
       params: new HttpParams({ fromObject: options?.params }),
       headers: new HttpHeaders(options?.headers),
+      withCredentials: true
     });
   }
 
@@ -42,7 +43,8 @@ export class HttpService {
       headers: new HttpHeaders(options?.headers),
       responseType: options?.responseType,
       observe: options?.observe,
-      context: options?.context
+      context: options?.context,
+      withCredentials: true
     } as object);
   }
 
@@ -51,7 +53,8 @@ export class HttpService {
     return this.http.put<T>(url, body, {
       // signal: ctrl?.signal,
       params: new HttpParams({ fromObject: options?.params }),
-      headers: new HttpHeaders(options?.headers)
+      headers: new HttpHeaders(options?.headers),
+      withCredentials: true
     });
   }
 
@@ -60,7 +63,8 @@ export class HttpService {
     return this.http.delete<T>(url, {
       // signal: ctrl?.signal,
       params: new HttpParams({ fromObject: options?.params }),
-      headers: new HttpHeaders(options?.headers)
+      headers: new HttpHeaders(options?.headers),
+      withCredentials: true
     });
   }
 }

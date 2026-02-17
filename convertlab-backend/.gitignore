@@ -39,6 +39,7 @@ logs/
 
 ### Environment Variables ###
 .env
+.env.dev
 
 ### Cloud Scripts ###
 /ec2-setup-1.sh

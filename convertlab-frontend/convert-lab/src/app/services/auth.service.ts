@@ -41,7 +41,9 @@ export class AuthService {
 
   // Placeholder for future login implementation
   login(request: LoginRequest): Observable<ApiResponse<string>> {
-    // This will be implemented when the backend API is ready
-    throw new Error('Login API not yet implemented');
+    return this.httpService.post<ApiResponse<string>>(
+      `${this.apiUrl}/auth/login`,
+      request
+    );
   }
 }

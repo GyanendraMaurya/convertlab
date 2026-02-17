@@ -62,4 +62,11 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidLogin(LoginException ex) {
+        log.warn("Login failed: {}", ex.getMessage());
+        return ResponseEntity.status(ex.getHttpStatus())
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
 }

@@ -69,23 +69,16 @@ export class LoginComponent {
     this.isLoading.set(true);
     const { email, password } = this.loginForm.value;
 
-    // TODO: Implement when backend API is ready
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.snackbarService.info('Login API will be implemented soon!');
-    }, 1000);
-
-    // Future implementation:
-    // this.authService.login({ email, password }).subscribe({
-    //   next: (response) => {
-    //     this.isLoading.set(false);
-    //     this.snackbarService.success('Login successful!');
-    //     this.router.navigate(['/']);
-    //   },
-    //   error: (error) => {
-    //     this.isLoading.set(false);
-    //     this.snackbarService.error(error.message || 'Login failed. Please try again.');
-    //   }
-    // });
+    this.authService.login({ email, password }).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        this.snackbarService.success('Login successful!');
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.snackbarService.error(error.message || 'Login failed. Please try again.');
+      }
+    });
   }
 }

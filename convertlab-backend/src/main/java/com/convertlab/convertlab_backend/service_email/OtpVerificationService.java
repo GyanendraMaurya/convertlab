@@ -4,7 +4,9 @@ import com.convertlab.convertlab_backend.entity.EmailOtp;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.repository.EmailOtpRepository;
 import com.convertlab.convertlab_backend.repository.UserRepository;
+import com.convertlab.convertlab_backend.security_util.PasswordUtil;
 import com.convertlab.convertlab_backend.service_util.OtpUtil;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.LoginRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.VerifyOtpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class OtpVerificationService {
 
     private final EmailOtpRepository emailOtpRepository;
     private final UserRepository userRepository;
+    private final PasswordUtil passwordUtil;
 
     @Transactional
     public void verifyOtp(VerifyOtpRequest request) {
@@ -47,5 +50,6 @@ public class OtpVerificationService {
         user.setUpdatedAt(Instant.now());
         userRepository.save(user);
     }
+
 }
 

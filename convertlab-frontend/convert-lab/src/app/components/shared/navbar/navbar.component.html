@@ -8,10 +8,44 @@
     ConvertLab
   </button>
   <a matButton="text" class="nowrap" [routerLink]="['/merge-pdf']" routerLinkActive="active-link">Merge PDF</a>
-  <a matButton="text" class="nowrap" [routerLink]="['/extract-pdf']" routerLinkActive="active-link">Extract PDF</a>
+  <!-- <a matButton="text" class="nowrap" [routerLink]="['/extract-pdf']" routerLinkActive="active-link">Extract PDF</a> -->
   <span class="extra-nav-links">
     <a matButton="text" class="nowrap" [routerLink]="['/split-pdf']" routerLinkActive="active-link">Split PDF</a>
-    <a matButton="text" class="nowrap" [routerLink]="['/image-to-pdf']" routerLinkActive="active-link">Image to PDF</a>
   </span>
   <span class="spacer"></span>
+
+  @if (isAuthenticated()) {
+  <!-- Profile Menu -->
+  <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">
+    <div class="profile-circle">{{ userInitial() }}</div>
+  </button>
+  <mat-menu #profileMenu="matMenu" xPosition="before">
+    <div class="profile-menu-header" mat-menu-item disabled>
+      <div class="profile-circle-large">{{ userInitial() }}</div>
+      <div class="profile-info">
+        <div class="profile-email">{{ userEmail() }}</div>
+      </div>
+    </div>
+    <!-- <mat-divider></mat-divider>
+    <button mat-menu-item [routerLink]="['/']">
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/']">
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </button> -->
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+  } @else {
+  <!-- Login/Signup for non-authenticated users -->
+  <a mat-button [routerLink]="['/login']" class="auth-button">
+    <mat-icon>login</mat-icon>
+    <span class="hide-mobile">Login</span>
+  </a>
+  }
 </nav>

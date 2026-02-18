@@ -1,4 +1,3 @@
-// convertlab-frontend/convert-lab/src/app/guards/auth.guard.ts
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthStateService } from '../services/auth-state.service';

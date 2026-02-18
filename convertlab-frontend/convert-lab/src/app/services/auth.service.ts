@@ -3,6 +3,8 @@ import { environment } from '../../environments/environment';
 import { ApiResponse, HttpService } from './http.service';
 import { Observable } from 'rxjs';
 import { AuthTokens } from './auth-state.service';
+import { HttpContext } from '@angular/common/http';
+import { SUPPRESS_ERROR } from '../interceptors/http-context';
 
 export interface SignupRequest {
   email: string;
@@ -50,7 +52,8 @@ export class AuthService {
   refreshToken(): Observable<ApiResponse<AuthTokens>> {
     return this.httpService.post<ApiResponse<AuthTokens>>(
       `${this.apiUrl}/auth/refresh`,
-      {}
+      {},
+      { context: new HttpContext().set(SUPPRESS_ERROR, true) }
     );
   }
 

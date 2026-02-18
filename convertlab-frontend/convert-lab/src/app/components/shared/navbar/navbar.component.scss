@@ -27,8 +27,114 @@ nav {
   display: none;
 }
 
+// Profile Circle
+.profile-button {
+  padding: 4px;
+}
+
+.profile-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.profile-button:hover .profile-circle {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+// Profile Menu Header
+.profile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  cursor: default;
+  opacity: 1 !important;
+}
+
+.profile-circle-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-email {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+// Auth button for non-logged in users
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .hide-mobile {
+    display: none;
+  }
+}
+
+// Desktop styles
 @media (min-width: 768px) {
   .extra-nav-links {
     display: block;
+  }
+
+  .profile-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .auth-button .hide-mobile {
+    display: inline;
+  }
+}
+
+// Menu items with icons
+::ng-deep .mat-mdc-menu-content {
+  button[mat-menu-item] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    mat-icon {
+      margin-right: 0;
+    }
+  }
+  .profile-menu-header .mat-mdc-menu-item-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 }

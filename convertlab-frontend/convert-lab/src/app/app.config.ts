@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -7,6 +7,7 @@ import { errorInterceptor } from './interceptors/error.interceptor';
 import { blobErrorInterceptor } from './interceptors/blob-error.interceptor';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { AuthInitService } from './services/auth-init.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +21,10 @@ export const appConfig: ApplicationConfig = {
         errorInterceptor
       ]),
       withFetch()),
-    provideClientHydration(withEventReplay())
+    provideClientHydration(withEventReplay()),
+    provideAppInitializer(() => {
+      const authService = inject(AuthInitService);
+      return authService.init();
+    }),
   ]
 };

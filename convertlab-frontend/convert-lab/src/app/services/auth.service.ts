@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { ApiResponse, HttpService } from './http.service';
 import { Observable } from 'rxjs';
+import { AuthTokens } from './auth-state.service';
 
 export interface SignupRequest {
   email: string;
@@ -39,10 +40,24 @@ export class AuthService {
     );
   }
 
-  login(request: LoginRequest): Observable<ApiResponse<string>> {
-    return this.httpService.post<ApiResponse<string>>(
+  login(request: LoginRequest): Observable<ApiResponse<AuthTokens>> {
+    return this.httpService.post<ApiResponse<AuthTokens>>(
       `${this.apiUrl}/auth/login`,
       request
+    );
+  }
+
+  refreshToken(): Observable<ApiResponse<AuthTokens>> {
+    return this.httpService.post<ApiResponse<AuthTokens>>(
+      `${this.apiUrl}/auth/refresh`,
+      {}
+    );
+  }
+
+  logout(): Observable<ApiResponse<string>> {
+    return this.httpService.post<ApiResponse<string>>(
+      `${this.apiUrl}/auth/logout`,
+      {}
     );
   }
 }

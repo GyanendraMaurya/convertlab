@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { guestGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -7,11 +8,13 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    loadComponent: () => import('./components/authentication/signup/signup.component').then(m => m.SignupComponent)
+    loadComponent: () => import('./components/authentication/signup/signup.component').then(m => m.SignupComponent),
+    canActivate: [guestGuard]
   },
   {
     path: 'login',
-    loadComponent: () => import('./components/authentication/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () => import('./components/authentication/login/login.component').then(m => m.LoginComponent),
+    canActivate: [guestGuard]
   },
   {
     path: 'merge-pdf',

@@ -1,3 +1,4 @@
+// convertlab-frontend/convert-lab/src/app/components/authentication/login/login.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
+import { AuthStateService } from '../../../services/auth-state.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +30,7 @@ import { SnackbarService } from '../../../services/snackbar.service';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private authState = inject(AuthStateService);
   private snackbarService = inject(SnackbarService);
   private router = inject(Router);
 
@@ -72,6 +75,10 @@ export class LoginComponent {
     this.authService.login({ email, password }).subscribe({
       next: (response) => {
         this.isLoading.set(false);
+
+        // Store tokens in auth state
+        this.authState.setTokens(response.data);
+
         this.snackbarService.success('Login successful!');
         this.router.navigate(['/']);
       },

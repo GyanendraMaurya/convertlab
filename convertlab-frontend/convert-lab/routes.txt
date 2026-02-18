@@ -5,3 +5,5 @@
 /image-to-pdf
 /compress-pdf
 /compress-image
+/login
+/signup

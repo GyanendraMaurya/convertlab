@@ -106,7 +106,7 @@
 }
 
 // Submit Button
-.submit-btn {
+:host ::ng-deep .submit-btn {
   height: 48px;
   font-size: 16px;
   font-weight: 600;
@@ -117,6 +117,9 @@
   gap: 8px;
   margin-top: 0.5rem;
 
+  .mdc-button__label {
+    display: flex;
+  }
   mat-spinner {
     margin-right: 8px;
   }

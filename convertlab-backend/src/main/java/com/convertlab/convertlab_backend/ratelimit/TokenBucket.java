@@ -20,8 +20,12 @@ public class TokenBucket {
         this.lastRefillTimestamp = Instant.now().toEpochMilli();
     }
 
-    public int getRetryAfterInSec() {
-        return (int) (refillTokensPerMillis * 1000);
+    public int getRetryAfterTimeInSec() {
+        if (tokens < 1) {
+            double pendingToken = 1 - tokens;
+            return (int) (pendingToken / (refillTokensPerMillis * 1000));
+        }
+        return 1;
     }
 
     public synchronized boolean tryConsume() {

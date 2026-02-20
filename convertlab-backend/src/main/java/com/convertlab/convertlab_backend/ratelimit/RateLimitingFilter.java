@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,6 +20,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Log4j2
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final IpRateLimiter rateLimiter;
@@ -29,6 +32,12 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        // 1. Skip Rate Limiting for CORS pre-flight
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         RateLimitType type = resolveRateLimitType(request);
 
@@ -67,7 +76,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         TokenBucket bucket = rateLimiter.getTokenBucket(ip, type);
         System.out.println(bucket);
         ApiResponse<Void> body = ApiResponse.failure(
-                "Rate limit exceeded. Please try after " + bucket.getRetryAfterInSec() + "s" ,
+                "Rate limit exceeded. Please try after " + bucket.getRetryAfterTimeInSec() + "s",
                 "RATE_LIMIT_EXCEEDED"
         );
 

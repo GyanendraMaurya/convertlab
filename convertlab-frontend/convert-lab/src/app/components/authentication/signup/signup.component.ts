@@ -90,7 +90,7 @@ export class SignupComponent {
         this.isLoading.set(false);
         this.userEmail.set(email);
         this.showOtpStep.set(true);
-
+        this.startResendOtpTimer();
         this.snackbarService.success(response.data || 'OTP sent to your email!');
       },
       error: (error) => {
@@ -131,6 +131,7 @@ export class SignupComponent {
       next: (response) => {
         this.isLoading.set(false);
         this.snackbarService.success('New OTP sent to your email!');
+        this.startResendOtpTimer();
       },
       error: (error) => {
         this.isLoading.set(false);

@@ -37,7 +37,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
             if (!rateLimiter.allowRequest(clientIp, type)) {
                 log.warn("Rate limit exceeded for {} on request type :{}", clientIp, type);
-                writeRateLimitResponse(request, response);
+                writeRateLimitResponse(request, response, clientIp, type);
                 return;
             }
         }
@@ -56,13 +56,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             return RateLimitType.ACTION;
         }
 
+        if (path.startsWith("/api/auth/signup")) {
+            return RateLimitType.SIGNUP;
+        }
+
         return null; // no rate limit
     }
 
-    private void writeRateLimitResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+    private void writeRateLimitResponse(HttpServletRequest request, HttpServletResponse response, String ip, RateLimitType type) throws IOException {
+        TokenBucket bucket = rateLimiter.getTokenBucket(ip, type);
+        System.out.println(bucket);
         ApiResponse<Void> body = ApiResponse.failure(
-                "Rate limit exceeded. Please try again later.",
+                "Rate limit exceeded. Please try after " + bucket.getRetryAfterInSec() + "s" ,
                 "RATE_LIMIT_EXCEEDED"
         );
 

@@ -38,6 +38,7 @@ export class SignupComponent {
   showPassword = signal(false);
   showOtpStep = signal(false);
   userEmail = signal('');
+  resendOtpTimer = signal(0);
 
   constructor() {
     this.signupForm = this.fb.group({
@@ -89,6 +90,7 @@ export class SignupComponent {
         this.isLoading.set(false);
         this.userEmail.set(email);
         this.showOtpStep.set(true);
+
         this.snackbarService.success(response.data || 'OTP sent to your email!');
       },
       error: (error) => {
@@ -135,6 +137,16 @@ export class SignupComponent {
         this.snackbarService.error(error.message || 'Failed to resend OTP.');
       }
     });
+  }
+
+  startResendOtpTimer() {
+    this.resendOtpTimer.set(30);
+    const interval = setInterval(() => {
+      this.resendOtpTimer.update(v => v - 1);
+      if (this.resendOtpTimer() === 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
   }
 
   backToSignup() {

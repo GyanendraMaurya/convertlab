@@ -40,10 +40,11 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(@RequestBody SignupRequest request) {
-        signupService.signup(request);
-        return ResponseEntity.ok(ApiResponse.success(
-                "Signup successful. Please verify OTP sent to your email."
-        ));
+        return null;
+//        signupService.signup(request);
+//        return ResponseEntity.ok(ApiResponse.success(
+//                "Signup successful. Please verify OTP sent to your email."
+//        ));
     }
 
     @PostMapping("/verify-otp")

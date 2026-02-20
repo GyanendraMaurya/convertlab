@@ -1,7 +1,10 @@
 package com.convertlab.convertlab_backend.ratelimit;
 
+import lombok.ToString;
+
 import java.time.Instant;
 
+@ToString
 public class TokenBucket {
 
     private final int capacity;
@@ -15,6 +18,10 @@ public class TokenBucket {
         this.tokens = capacity;
         this.refillTokensPerMillis = refillPerMinute / 60000.0;
         this.lastRefillTimestamp = Instant.now().toEpochMilli();
+    }
+
+    public int getRetryAfterInSec() {
+        return (int) (refillTokensPerMillis * 1000);
     }
 
     public synchronized boolean tryConsume() {

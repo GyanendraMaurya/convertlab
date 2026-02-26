@@ -1,3 +1,5 @@
+@use '../../../../styles/variables' as vars;
+
 .thumbnail-list {
   display: flex;
   gap: 16px;
@@ -10,13 +12,13 @@
   justify-content: center;
 
   &:empty {
-    border-color: #e0e0e0;
+    border-color: vars.$color-border-empty-list;
     justify-content: center;
     align-items: center;
 
     &::after {
       content: 'Upload PDFs to start merging';
-      color: #999;
+      color: vars.$color-text-placeholder;
       font-size: 14px;
     }
   }
@@ -26,9 +28,7 @@
   position: relative;
   cursor: grab;
   min-width: 120px;
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
+  transition: transform 0.2s, opacity 0.2s;
   touch-action: none;
 
   &:active {
@@ -52,7 +52,7 @@
 .upload-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: vars.$color-overlay-white-strong;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +62,7 @@
   gap: 8px;
 
   &.error {
-    background: rgba(244, 67, 54, 0.1);
+    background: vars.$color-overlay-error-faint;
   }
 
   mat-icon {
@@ -78,7 +78,7 @@
 
   .retry-btn {
     background: var(--mat-sys-error);
-    color: white;
+    color: vars.$color-text-white;
   }
 }
 
@@ -87,12 +87,8 @@
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .error-message {
@@ -139,13 +135,8 @@
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%,  100% { opacity: 1; }
+  50%        { opacity: 0.5; }
 }
 
 .compress-button {

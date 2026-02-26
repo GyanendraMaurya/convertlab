@@ -1,0 +1,66 @@
+// =============================================================================
+// ConvertLab Design Tokens — Color Variables
+// =============================================================================
+// Usage: @use 'variables' as vars; then use vars.$variable-name
+// Or with @import (legacy): @import 'variables'; then use $variable-name
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Brand / Accent (raw palette — prefer mat-sys tokens for themed components)
+// -----------------------------------------------------------------------------
+$color-blue-light:        #90caf9;   // dropzone border (idle)
+$color-blue-medium:       #42a5f5;   // dropzone border (dragging)
+$color-blue-vivid:        #2196f3;   // rotate button (rgba base: 33,150,243)
+$color-success:           #4caf50;   // success snackbar / success states
+$color-error-material:    #d32f2f;   // inline error text (Material red 700)
+
+// -----------------------------------------------------------------------------
+// Backgrounds
+// -----------------------------------------------------------------------------
+$color-bg-dropzone:       #f5f9ff;   // file-uploader default background
+$color-bg-dropzone-drag:  #e3f2fd;   // file-uploader background while dragging
+$color-bg-thumbnail:      #f5f5f5;   // thumbnail card background
+$color-bg-white:          #ffffff;   // pure white
+
+// -----------------------------------------------------------------------------
+// Borders & Dividers
+// -----------------------------------------------------------------------------
+$color-border-thumbnail:  #e0e0e0;   // thumbnail border / empty-list dashed border
+$color-border-empty-list: #e0e0e0;   // alias — same shade, semantic name
+
+// -----------------------------------------------------------------------------
+// Text
+// -----------------------------------------------------------------------------
+$color-text-primary:      #333333;   // filename, page-count labels
+$color-text-secondary:    #666666;   // validation info, size labels
+$color-text-muted:        #777777;   // "or" divider text
+$color-text-placeholder:  #999999;   // empty-list placeholder text
+$color-text-icon-dark:    #424242;   // file icon in uploader (Material grey 800)
+$color-text-white:        #ffffff;   // text on dark/colored backgrounds
+
+// -----------------------------------------------------------------------------
+// Overlays — Black (rgba)
+// -----------------------------------------------------------------------------
+$color-overlay-black-heavy:   rgba(0, 0, 0, 0.65);  // delete button background
+$color-overlay-black-medium:  rgba(0, 0, 0, 0.60);  // drag-hint pill background
+$color-overlay-black-soft:    rgba(0, 0, 0, 0.20);  // box-shadow (order badge)
+$color-overlay-black-lighter: rgba(0, 0, 0, 0.15);  // box-shadow (profile circle)
+$color-overlay-black-faint:   rgba(0, 0, 0, 0.10);  // auth card box-shadow
+
+// -----------------------------------------------------------------------------
+// Overlays — White (rgba)
+// -----------------------------------------------------------------------------
+$color-overlay-white-strong:  rgba(255, 255, 255, 0.90); // upload-overlay backdrop
+
+// -----------------------------------------------------------------------------
+// Overlays — Error / Red (rgba)  base: rgb(244, 67, 54) = Material red 500
+// -----------------------------------------------------------------------------
+$color-overlay-error-strong:  rgba(244, 67, 54, 0.90);  // delete-btn hover, status badge
+$color-overlay-error-medium:  rgba(244, 67, 54, 0.50);  // image upload-overlay (error)
+$color-overlay-error-faint:   rgba(244, 67, 54, 0.10);  // PDF upload-overlay (error)
+
+// -----------------------------------------------------------------------------
+// Overlays — Blue / Rotate button  base: rgb(33, 150, 243) = Material blue 600
+// -----------------------------------------------------------------------------
+$color-overlay-blue-strong:   rgba(33, 150, 243, 0.90);  // rotate button idle
+$color-overlay-blue-vivid:    rgba(33, 150, 243, 1.00);  // rotate button hover

@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'variables' as vars;
 
 .big-button-64 {
   @include mat.button-overrides(
@@ -13,7 +14,7 @@
   @include mat.button-overrides(
     (
       protected-container-color: red,
-      filled-label-text-color: #ffffff,
+      filled-label-text-color: vars.$color-text-white,
     )
   );
 }
@@ -22,8 +23,8 @@
   @include mat.snack-bar-overrides(
     (
       container-color: var(--mat-sys-error),
-      button-color: #ffffff,
-      supporting-text-color: #ffffff,
+      button-color: vars.$color-text-white,
+      supporting-text-color: vars.$color-text-white,
     )
   );
 }
@@ -31,9 +32,9 @@
 .snackbar-success {
   @include mat.snack-bar-overrides(
     (
-      container-color: #4caf50,
-      button-color: #ffffff,
-      supporting-text-color: #ffffff,
+      container-color: vars.$color-success,
+      button-color: vars.$color-text-white,
+      supporting-text-color: vars.$color-text-white,
     )
   );
 }
@@ -42,8 +43,8 @@
   @include mat.snack-bar-overrides(
     (
       container-color: var(--mat-sys-on-primary),
-      button-color: #ffffff,
-      supporting-text-color: #ffffff,
+      button-color: vars.$color-text-white,
+      supporting-text-color: vars.$color-text-white,
     )
   );
 }

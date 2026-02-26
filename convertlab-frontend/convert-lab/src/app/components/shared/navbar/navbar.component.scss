@@ -1,3 +1,5 @@
+@use '../../../../styles/variables' as vars;
+
 nav {
   color: var(--mat-sys-primary);
   background: var(--mat-sys-primary-container);
@@ -48,7 +50,7 @@ nav {
 
 .profile-button:hover .profile-circle {
   transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px vars.$color-overlay-black-soft;
 }
 
 // Profile Menu Header

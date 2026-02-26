@@ -1,4 +1,5 @@
-// Mobile-first approach matching existing ConvertLab patterns
+@use '../../../../styles/variables' as vars;
+
 .auth-container {
   display: flex;
   flex-direction: column;
@@ -14,7 +15,7 @@
   padding: 2rem 1rem;
   width: 100%;
   max-width: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px vars.$color-overlay-black-faint;
 }
 
 // Brand Section
@@ -64,7 +65,7 @@
   top: -8px;
   left: -8px;
   background: var(--mat-sys-surface);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px vars.$color-overlay-black-faint;
 
   &:hover {
     background: var(--mat-sys-surface-variant);
@@ -226,7 +227,7 @@
   }
 }
 
-// Desktop styles (≥720px) - matching existing patterns
+// Desktop styles (≥720px)
 @media (min-width: 720px) {
   .auth-container {
     padding: 2rem;

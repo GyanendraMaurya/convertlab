@@ -1,22 +1,24 @@
+@use '../../../../styles/variables' as vars;
+
 :host {
   min-width: 100%;
   flex: 1 1 0;
 }
 
 .dropzone {
-  border: 2px dashed #90caf9;
+  border: 2px dashed vars.$color-blue-light;
   border-radius: 8px;
   padding: 32px;
   text-align: center;
-  background: #f5f9ff;
+  background: vars.$color-bg-dropzone;
   transition: background 0.2s, border-color 0.2s;
   cursor: pointer;
   justify-content: center;
 }
 
 .dropzone.dragging {
-  background: #e3f2fd;
-  border-color: #42a5f5;
+  background: vars.$color-bg-dropzone-drag;
+  border-color: vars.$color-blue-medium;
 }
 
 .upload-icon {
@@ -24,12 +26,12 @@
 }
 
 .or {
-  color: #777;
+  color: vars.$color-text-muted;
 }
 
 .validation-info {
   font-size: 12px;
-  color: #666;
+  color: vars.$color-text-secondary;
   margin-top: 12px;
   margin-bottom: 0;
 }
@@ -43,7 +45,7 @@
 }
 
 .file-icon {
-  color: #424242;
+  color: vars.$color-text-icon-dark;
 }
 
 .filename {
@@ -59,7 +61,7 @@
 }
 
 .error {
-  color: #d32f2f;
+  color: vars.$color-error-material;
   margin-top: 12px;
   font-size: 14px;
   max-width: 400px;

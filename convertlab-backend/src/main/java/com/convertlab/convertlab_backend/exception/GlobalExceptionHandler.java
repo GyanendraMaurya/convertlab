@@ -69,4 +69,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getHttpStatus())
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
+
+    @ExceptionHandler(PdfPasswordException.class)
+    public ResponseEntity<ApiResponse<?>> handlePdfPassword(PdfPasswordException ex) {
+        log.warn("PDF password error: {} (code: {})", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
 }

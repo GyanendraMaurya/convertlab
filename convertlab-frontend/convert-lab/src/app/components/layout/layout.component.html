@@ -33,6 +33,11 @@
         <mat-icon matListItemIcon>compress</mat-icon>
         <span matListItemTitle>Compress PDF</span>
       </a>
+      <a mat-list-item [routerLink]="['/pdf-password']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/pdf-password')">
+        <mat-icon matListItemIcon>lock</mat-icon>
+        <span matListItemTitle>PDF Password</span>
+      </a>
 
       <h3 mat-subheader>Image Tools</h3>
 

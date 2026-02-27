@@ -21,7 +21,7 @@ export interface SEOConfig {
 }
 
 export type PageIds =
-  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image';
+  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image' | 'pdf-password';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
@@ -190,6 +190,30 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'Compress image', url: 'https://www.easyconvertlab.com/compress-pdf' }
     ]
-  }
+  },
+  'pdf-password': {
+    meta: {
+      title: 'PDF Password Protection - Add or Remove PDF Password Online | EasyConvertLab',
+      description: 'Add or remove password protection from PDF files online for free. Secure your PDFs with strong encryption or unlock password-protected PDFs. Fast and easy to use.',
+      keywords: 'pdf password protection, add password to pdf, remove pdf password, encrypt pdf, decrypt pdf, secure pdf online, free pdf password tool',
+      url: 'https://www.easyconvertlab.com/pdf-password',
+      image: 'https://www.easyconvertlab.com/assets/images/pdf-password-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'PDF Password Protection - EasyConvertLab',
+      description: 'Add or remove password protection from PDF files online. Secure your PDFs with strong encryption or unlock password-protected PDFs.',
+      url: 'https://www.easyconvertlab.com/pdf-password',
+      featureList: 'Add password protection, Remove existing password, Strong encryption, Fast and secure processing',
+      aggregateRating: {
+        ratingValue: '4.7',
+        ratingCount: '650'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'PDF Password', url: 'https://www.easyconvertlab.com/pdf-password' }
+    ]
+   }
 
 };

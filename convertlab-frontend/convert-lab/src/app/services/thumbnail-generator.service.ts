@@ -11,6 +11,8 @@ export interface PdfMetadata {
   size: number; // in bytes
 }
 
+const PROTECTED_THUMBNAIL = '/thumbnail-locked.jpg';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -50,10 +52,10 @@ export class ThumbnailGeneratorService {
       worker: this.getWorker(), // Reuse the same worker instance
     });
 
+  try {
     const pdf = await loadingTask.promise;
     const pageCount = pdf.numPages;
 
-    // Generate thumbnail from first page
     const page = await pdf.getPage(1);
     const scale = 1.5;
     const viewport = page.getViewport({ scale });
@@ -74,5 +76,17 @@ export class ThumbnailGeneratorService {
         resolve({ thumbnailUrl: url, pageCount, size: file.size });
       }, 'image/png');
     });
+  } catch (err: unknown) {
+    const e = err as any;
+    // pdfjs throws a PasswordException when the document is locked
+    if (
+      e?.name === 'PasswordException' ||
+      /password/i.test(e?.message || '')
+    ) {
+      // cannot generate thumbnail for a protected PDF
+      return { thumbnailUrl: PROTECTED_THUMBNAIL, pageCount: 0, size: file.size };
+    }
+    throw err;
+  }
   }
 }

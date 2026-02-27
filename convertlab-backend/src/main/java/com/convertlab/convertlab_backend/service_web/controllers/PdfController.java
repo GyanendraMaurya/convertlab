@@ -3,10 +3,8 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.api.enums.ActionType;
 import com.convertlab.convertlab_backend.api.enums.SplitType;
-import com.convertlab.convertlab_backend.service_core.ImageService;
-import com.convertlab.convertlab_backend.service_core.PdfCompressionService;
-import com.convertlab.convertlab_backend.service_core.PdfService;
-import com.convertlab.convertlab_backend.service_core.PdfSplitService;
+import com.convertlab.convertlab_backend.exception.PdfPasswordException;
+import com.convertlab.convertlab_backend.service_core.*;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
@@ -37,6 +35,7 @@ public class PdfController {
     private final PdfSplitService pdfSplitService;
     private final ImageService imageService;
     private final PdfCompressionService pdfCompressionService;
+    private final PdfPasswordService pdfPasswordService;
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
@@ -252,6 +251,51 @@ public class PdfController {
 
         } catch (Exception e) {
             log.error("Error compressing PDFs for fileIds: {}", request.getFileIds(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * Single endpoint that handles both ADD and REMOVE password actions.
+     * <pre>
+     * Request body:
+     * {
+     *   "fileId": "uuid_filename.pdf",
+     *   "password": "secret123",
+     *   "action": "ADD"        // or "REMOVE"
+     * }
+     * </pre>
+     * Returns the resulting PDF as a file download.
+     */
+    @PostMapping("/password")
+    public ResponseEntity<Resource> managePassword(@RequestBody PdfPasswordRequest request) throws Exception {
+        log.info("PDF password request - fileId: {}, action: {}", request.getFileId(), request.getAction());
+
+        try {
+            ExtractedFile resultFile = pdfPasswordService.processPassword(
+                    request.getFileId(),
+                    request.getPassword(),
+                    request.getAction()
+            );
+
+            ByteArrayResource resource = new ByteArrayResource(resultFile.getFileBytes());
+
+            log.info("PDF password action {} completed successfully for fileId: {}",
+                    request.getAction(), request.getFileId());
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + resultFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(resultFile.getFileBytes().length)
+                    .body(resource);
+
+        } catch (IllegalArgumentException e) {
+            // Wrong password supplied during REMOVE
+            log.warn("Incorrect password for fileId: {}", request.getFileId());
+            throw new PdfPasswordException(e.getMessage(), "INCORRECT_PASSWORD");
+        } catch (Exception e) {
+            log.error("Error processing PDF password for fileId: {}", request.getFileId(), e);
             throw e;
         }
     }

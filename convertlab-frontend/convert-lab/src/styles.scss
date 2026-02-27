@@ -61,3 +61,7 @@ body {
 .active-link {
   background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent) !important;
 }
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}

@@ -39,5 +39,9 @@ export const routes: Routes = [
   {
     path: 'compress-image',
     loadComponent: () => import('./components/image/compress-image/compress-image.component').then(m => m.CompressImageComponent)
+  },
+  {
+    path: 'pdf-password',
+    loadComponent: () => import('./components/pdf/pdf-password/pdf-password.component').then(m => m.PdfPasswordComponent)
   }
 ];

@@ -7,3 +7,4 @@
 /compress-image
 /login
 /signup
+/pdf-password

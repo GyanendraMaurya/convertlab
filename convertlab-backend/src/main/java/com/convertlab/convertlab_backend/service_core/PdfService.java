@@ -36,8 +36,8 @@ public class PdfService {
         log.debug("File saved with assetId: {}", assetId);
 
         File savedFile = storageService.loadPdf(assetId);
-        int pageCount = PdfUtils.getPageCount(savedFile);
-        log.debug("PDF has {} pages", pageCount);
+//        int pageCount = PdfUtils.getPageCount(savedFile);
+//        log.debug("PDF has {} pages", pageCount);
 
         return new UploadResponse(
                 assetId,

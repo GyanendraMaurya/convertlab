@@ -6,10 +6,6 @@
     <input matInput [(ngModel)]="inputValue" (ngModelChange)="onChange($event)" />
   </mat-form-field>
 
-  <!-- <button mat-raised-button color="primary" class="action-btn" (click)="submit()">
-    Process
-  </button> -->
-
   @if (errorMessage()) {
   <p class="error">{{ errorMessage() }}</p>
   }

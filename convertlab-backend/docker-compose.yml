@@ -1,10 +1,9 @@
 services:
   db:
-    image: postgres:latest
+    image: pgvector/pgvector:pg16
     container_name: convertlab_db
     restart: always
     environment:
-      # Explicitly mapping from .env to the Postgres internal variable names
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -12,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
     build: .
@@ -22,7 +21,7 @@ services:
     ports:
       - "${HOST_PORT:-8081}:8080"
     env_file:
-      - .env
+      - .env.dev
     environment:
       # Tells Spring Boot to connect to the 'db' container on the internal network
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME}

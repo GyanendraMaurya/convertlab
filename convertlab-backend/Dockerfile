@@ -1,5 +1,5 @@
 # ---------- Build stage ----------
-FROM maven:3.9-amazoncorretto-25 AS builder
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
@@ -9,10 +9,19 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
+
 # ---------- Runtime stage ----------
-FROM amazoncorretto:25
+FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /app
+
+# Install Tesseract normally (works instantly)
+RUN apt-get update && \
+    apt-get install -y \
+        tesseract-ocr \
+        libtesseract-dev \
+        libleptonica-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/target/convertlab-backend-0.0.1-SNAPSHOT.jar app.jar
 

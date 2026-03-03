@@ -90,3 +90,7 @@ jwt:
   #   JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
   access-secret:  ${JWT_ACCESS_SECRET:local-dev-access-secret-min32chars!!}
   refresh-secret: ${JWT_REFRESH_SECRET:local-dev-refresh-secret-min32chars!}
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}

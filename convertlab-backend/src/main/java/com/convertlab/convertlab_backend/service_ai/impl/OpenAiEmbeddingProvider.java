@@ -1,8 +1,7 @@
 package com.convertlab.convertlab_backend.service_ai.impl;
 
 import com.convertlab.convertlab_backend.service_ai.EmbeddingProvider;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -11,14 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class OpenAiEmbeddingProvider implements EmbeddingProvider {
 
     private static final String MODEL = "text-embedding-3-small";
     private static final int DIMENSION = 1536;
-    private final WebClient webClient;
-    @Value("${openai.api.key}")
-    private String apiKey;
+    private final WebClient openAiWebClient;
+
+    public OpenAiEmbeddingProvider(@Qualifier("openAiWebClient") WebClient webClient) {
+        this.openAiWebClient = webClient;
+    }
 
     @Override
     public float[] embed(String text) {
@@ -32,12 +32,12 @@ public class OpenAiEmbeddingProvider implements EmbeddingProvider {
         try {
             Map<String, Object> request = Map.of(
                     "model", MODEL,
+//                    "input", List.of(texts.getFirst())
                     "input", texts
             );
 
-            Map response = webClient.post()
-                    .uri("https://api.openai.com/v1/embeddings")
-                    .header("Authorization", "Bearer " + apiKey)
+            Map response = openAiWebClient.post()
+                    .uri("embeddings")
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(Map.class)

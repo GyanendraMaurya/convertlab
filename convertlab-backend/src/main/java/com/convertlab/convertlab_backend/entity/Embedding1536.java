@@ -1,8 +1,12 @@
 package com.convertlab.convertlab_backend.entity;
 
+import com.convertlab.convertlab_backend.service_ai.FloatArrayToVectorConverter;
+import com.convertlab.convertlab_backend.service_ai.VectorType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 
 import java.time.Instant;
 
@@ -30,8 +34,19 @@ public class Embedding1536 {
     @Column(name = "embedding_dimension")
     private Integer embeddingDimension;
 
+    //    @Column(name = "embedding", columnDefinition = "vector(1536)")
+//    @JdbcTypeCode(SqlTypes.OTHER)
+//    private PGvector embedding;
+//    @Column(name = "embedding", columnDefinition = "vector(1536)")
+//    private String embedding;
+//    @Column(name = "embedding", columnDefinition = "vector(1536)")
+//    @JdbcTypeCode(java.sql.Types.OTHER)
+//    @Convert(converter = FloatArrayToVectorConverter.class)
+//    private float[] embedding;
+
     @Column(name = "embedding", columnDefinition = "vector(1536)")
-    private String embedding;
+    @Type(VectorType.class)
+    private float[] embedding;
 
     @Column(name = "created_at")
     private Instant createdAt;

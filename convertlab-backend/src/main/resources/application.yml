@@ -94,3 +94,4 @@ jwt:
 openai:
   api:
     key: ${OPENAI_API_KEY}
+  base-url: ${OPENAI_API_BASE_URL}

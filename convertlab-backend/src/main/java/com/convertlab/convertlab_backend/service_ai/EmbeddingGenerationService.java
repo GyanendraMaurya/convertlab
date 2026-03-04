@@ -3,7 +3,6 @@ package com.convertlab.convertlab_backend.service_ai;
 import com.convertlab.convertlab_backend.entity.DocumentChunk;
 import com.convertlab.convertlab_backend.entity.Embedding1536;
 import com.convertlab.convertlab_backend.repository.Embedding1536Repository;
-import com.pgvector.PGvector;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,13 +29,12 @@ public class EmbeddingGenerationService {
 
         List<Embedding1536> embeddings = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) {
-//        for (int i = 0; i < chunks.size(); i++) {
+        for (int i = 0; i < chunks.size(); i++) {
             Embedding1536 e = new Embedding1536();
             e.setChunk(chunks.get(i));
             e.setEmbeddingModel(embeddingProvider.modelName());
             e.setEmbeddingDimension(embeddingProvider.dimension());
-            e.setEmbedding(toPgVector(vectors.get(i)));
+            e.setEmbedding(vectors.get(i));
             e.setCreatedAt(Instant.now());
 
             embeddings.add(e);
@@ -45,15 +43,16 @@ public class EmbeddingGenerationService {
         embeddingRepository.saveAll(embeddings);
     }
 
-    public static String toPgVector(float[] vector) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < vector.length; i++) {
-            sb.append(vector[i]);
-            if (i < vector.length - 1) {
-                sb.append(",");
-            }
+    public float[] generateQueryEmbedding(String query) {
+        try {
+            float[] embeddingFromApi = embeddingProvider.embed(query);
+            return embeddingFromApi;
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            throw new RuntimeException("Failed to generate embedding for query: " + query);
         }
-        sb.append("]");
-        return sb.toString();
     }
+
+
 }

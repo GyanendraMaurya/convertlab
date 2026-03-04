@@ -1,7 +1,7 @@
 package com.convertlab.convertlab_backend.service_web.controllers;
 
-import com.convertlab.convertlab_backend.service_ai.DocumentIngestionService;
-import com.convertlab.convertlab_backend.service_ai.DocumentProcessingService;
+import com.convertlab.convertlab_backend.service_ai.PdfTextExtractionService;
+import com.convertlab.convertlab_backend.service_ai.RagService;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractTextRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.QueryRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DocumentController {
 
-    private final DocumentProcessingService documentProcessingService;
-    private final DocumentIngestionService documentIngestionService;
+    private final PdfTextExtractionService pdfTextExtractionService;
+    private final RagService ragService;
 
     @PostMapping("/ingest")
     public ResponseEntity<String> extractText(@RequestBody ExtractTextRequest request) {
-        documentIngestionService.ingestDocument(request.fileId());
+        ragService.ingest(request.fileId());
         return ResponseEntity.ok("");
     }
 
     @PostMapping("/query")
     public ResponseEntity<String> query(@RequestBody QueryRequest request) {
-        String result = documentIngestionService.queryDocument(request.fileId(), request.query());
+        String result = ragService.answerQuery(request.fileId(), request.query());
         return ResponseEntity.ok(result);
     }
 

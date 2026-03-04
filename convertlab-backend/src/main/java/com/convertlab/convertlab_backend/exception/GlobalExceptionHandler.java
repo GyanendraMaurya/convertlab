@@ -1,10 +1,14 @@
 package com.convertlab.convertlab_backend.exception;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
+import com.convertlab.convertlab_backend.service_ai.exception.AiException;
+import com.convertlab.convertlab_backend.service_ai.exception.DocumentIngestionException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Log4j2
@@ -75,6 +79,22 @@ public class GlobalExceptionHandler {
         log.warn("PDF password error: {} (code: {})", ex.getMessage(), ex.getCode());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
+    @ExceptionHandler(DocumentIngestionException.class)
+    public ResponseEntity<ApiResponse<?>> handleDocumentIngestion(DocumentIngestionException ex) {
+        log.error("Document ingestion error: {} (code: {})", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
+    @ExceptionHandler(AiException.class)
+    public ResponseEntity<ApiResponse<?>> handleAiError(AiException ex) {
+        log.error("AI service error: {} (code: {})", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
 

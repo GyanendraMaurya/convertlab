@@ -2,11 +2,14 @@ package com.convertlab.convertlab_backend.exception;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.service_ai.exception.AiException;
+import com.convertlab.convertlab_backend.service_ai.exception.AiRateLimitException;
 import com.convertlab.convertlab_backend.service_ai.exception.DocumentIngestionException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -39,7 +42,7 @@ public class GlobalExceptionHandler {
         String msg = "Uploaded file is too large. Max allowed size is " + maxUploadSize + ".";
         log.warn("Max upload size exceeded: {}", ex.getMessage());
         return ResponseEntity
-                .status(HttpStatus.PAYLOAD_TOO_LARGE) // 413
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(ApiResponse.failure(msg, "MAX_UPLOAD_EXCEEDED"));
     }
 
@@ -86,7 +89,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleDocumentIngestion(DocumentIngestionException ex) {
         log.error("Document ingestion error: {} (code: {})", ex.getMessage(), ex.getCode());
         return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
 
@@ -98,4 +101,27 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
 
+    @ExceptionHandler(AiRateLimitException.class)
+    public ResponseEntity<ApiResponse<?>> handleAiRateLimit(AiRateLimitException ex) {
+        log.warn("AI rate limit exceeded: {} (code: {})", ex.getMessage(), ex.getCode());
+        return ResponseEntity
+                .status(ex.getHttpStatus())
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccessDenied(AccessDeniedException ex) {
+        log.warn("Access denied: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.failure("Access denied", "ACCESS_DENIED"));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnauthenticated(AuthenticationException ex) {
+        log.warn("Authentication required: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.failure("Authentication required", "UNAUTHORIZED"));
+    }
 }

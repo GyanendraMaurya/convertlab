@@ -1,35 +1,64 @@
 package com.convertlab.convertlab_backend.service_web.controllers;
 
-import com.convertlab.convertlab_backend.service_ai.PdfTextExtractionService;
 import com.convertlab.convertlab_backend.service_ai.RagService;
+import com.convertlab.convertlab_backend.service_ai.UserAiUsageService;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractTextRequest;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.QueryRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Log4j2
 @RestController
 @RequestMapping("/documents")
 @RequiredArgsConstructor
 public class DocumentController {
 
-    private final PdfTextExtractionService pdfTextExtractionService;
     private final RagService ragService;
+    private final UserAiUsageService userAiUsageService;
 
+    /**
+     * Ingest a PDF into the vector store.
+     * Requires authentication. Subject to per-user daily limit and per-IP rate limiting.
+     *
+     * @param principal the authenticated user's email (from JWT subject)
+     */
     @PostMapping("/ingest")
-    public ResponseEntity<String> extractText(@RequestBody ExtractTextRequest request) {
+    public ResponseEntity<String> ingest(
+            @RequestBody ExtractTextRequest request,
+            @AuthenticationPrincipal String principal
+    ) {
+        log.info("Ingest request from user: {} for fileId: {}", principal, request.fileId());
+
+        // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
+        userAiUsageService.checkAndIncrementIngest(principal);
+
         ragService.ingest(request.fileId());
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("Document ingested successfully.");
     }
 
+    /**
+     * Query the vector store with a natural language question.
+     * Requires authentication. Subject to per-user daily limit and per-IP rate limiting.
+     *
+     * @param principal the authenticated user's email (from JWT subject)
+     */
     @PostMapping("/query")
-    public ResponseEntity<String> query(@RequestBody QueryRequest request) {
+    public ResponseEntity<String> query(
+            @RequestBody QueryRequest request,
+            @AuthenticationPrincipal String principal
+    ) {
+        log.info("Query request from user: {} for fileId: {}", principal, request.fileId());
+
+        // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
+        userAiUsageService.checkAndIncrementQuery(principal);
+
         String result = ragService.answerQuery(request.fileId(), request.query());
         return ResponseEntity.ok(result);
     }
-
-
 }

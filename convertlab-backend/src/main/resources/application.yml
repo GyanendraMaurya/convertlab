@@ -95,3 +95,17 @@ openai:
   api:
     key: ${OPENAI_API_KEY}
   base-url: ${OPENAI_API_BASE_URL}
+
+ai:
+  rate-limit:
+    # Per authenticated user: max PDF ingestions per calendar day
+    user-daily-ingest-limit: ${AI_USER_DAILY_INGEST_LIMIT:5}
+
+    # Per authenticated user: max RAG queries per calendar day
+    user-daily-query-limit: ${AI_USER_DAILY_QUERY_LIMIT:20}
+
+    # Per IP: ingest requests allowed per minute (token bucket)
+    ip-ingest-per-minute: ${AI_IP_INGEST_PER_MINUTE:5}
+
+    # Per IP: query requests allowed per minute (token bucket)
+    ip-query-per-minute: ${AI_IP_QUERY_PER_MINUTE:15}

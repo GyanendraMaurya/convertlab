@@ -33,7 +33,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 1. Skip Rate Limiting for CORS pre-flight
+        // Skip Rate Limiting for CORS pre-flight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
@@ -45,7 +45,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             String clientIp = IpUtil.extractClientIp(request);
 
             if (!rateLimiter.allowRequest(clientIp, type)) {
-                log.warn("Rate limit exceeded for {} on request type :{}", clientIp, type);
+                log.warn("Rate limit exceeded for {} on request type: {}", clientIp, type);
                 writeRateLimitResponse(request, response, clientIp, type);
                 return;
             }
@@ -60,28 +60,35 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/upload")) {
             return RateLimitType.UPLOAD;
         }
-
         if (path.startsWith("/api/pdf") || path.startsWith("/api/image")) {
             return RateLimitType.ACTION;
         }
-
         if (path.startsWith("/api/auth/signup")) {
             return RateLimitType.SIGNUP;
+        }
+        if (path.startsWith("/api/documents/ingest")) {
+            return RateLimitType.AI_INGEST;
+        }
+        if (path.startsWith("/api/documents/query")) {
+            return RateLimitType.AI_QUERY;
         }
 
         return null; // no rate limit
     }
 
-    private void writeRateLimitResponse(HttpServletRequest request, HttpServletResponse response, String ip, RateLimitType type) throws IOException {
+    private void writeRateLimitResponse(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String ip,
+            RateLimitType type
+    ) throws IOException {
         TokenBucket bucket = rateLimiter.getTokenBucket(ip, type);
-        System.out.println(bucket);
         ApiResponse<Void> body = ApiResponse.failure(
                 "Rate limit exceeded. Please try after " + bucket.getRetryAfterTimeInSec() + "s",
                 "RATE_LIMIT_EXCEEDED"
         );
 
         String origin = request.getHeader("Origin");
-
         if (origin != null) {
             response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Credentials", "true");
@@ -93,6 +100,4 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
         objectMapper.writeValue(response.getWriter(), body);
     }
-
 }
-

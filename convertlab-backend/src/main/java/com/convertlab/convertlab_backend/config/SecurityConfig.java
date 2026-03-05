@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -17,38 +18,42 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final RateLimitingFilter rateLimitingFilter;
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
-                // IMPORTANT: enable CORS inside Security
                 .cors(Customizer.withDefaults())
 
-                // disable everything auth-related
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
 
-                // allow all requests
                 .authorizeHttpRequests(auth -> auth
                         // Public auth endpoints
                         .requestMatchers(
                                 "/auth/signup",
                                 "/auth/verify-otp",
                                 "/auth/login",
-                                "/auth/refresh",   // refresh uses HttpOnly cookie, not Bearer
+                                "/auth/refresh",
                                 "/auth/logout"
                         ).permitAll()
+
+                        // AI document endpoints require authentication
+                        .requestMatchers("/documents/**").authenticated()
+
                         .anyRequest().permitAll()
                 )
 
-                // no session creation
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                )
+
+                // Rate limiting runs before JWT auth so unauthenticated requests are still throttled
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

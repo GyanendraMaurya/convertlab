@@ -1,0 +1,13 @@
+<div class="upload-zone" [class.drag-over]="isDragging()" (click)="onZoneClick()">
+  <!-- Hidden file input -->
+  <input
+    #fileInput
+    type="file"
+    accept=".pdf,.docx,.txt"
+    (change)="onFileInputChange($event)"
+  />
+
+  <div class="upload-icon-wrap">📄</div>
+  <div class="upload-title">Drop your document</div>
+  <div class="upload-hint">PDF / DOCX / TXT · max 25 MB</div>
+</div>

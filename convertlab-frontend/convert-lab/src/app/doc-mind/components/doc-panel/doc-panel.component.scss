@@ -1,0 +1,59 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+// ── Suggestions panel ────────────────────────────────────────────────────────
+.help-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.help-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.prompt-chip {
+  display: block;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 6px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+  &:last-child { margin-bottom: 0; }
+
+  &::before {
+    content: '✦ ';
+    color: var(--gold);
+    font-size: 9px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--gold-dim);
+    border-color: rgba(245, 158, 11, 0.25);
+    color: var(--text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

@@ -48,7 +48,10 @@
               "src/styles/material-overrides.scss",
               "src/styles/util.scss"
             ],
-            "server": "src/main.server.ts"
+            "server": "src/main.server.ts",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src"]
+            }
           },
           "configurations": {
             "production": {

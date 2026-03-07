@@ -1,0 +1,22 @@
+<div class="input-wrap" [class.disabled]="disabled()">
+  <textarea
+    #textarea
+    placeholder="Ask a question about the document…"
+    rows="1"
+    [disabled]="disabled()"
+    (keydown)="onKeydown($event)"
+    (input)="onInput($event)"
+  ></textarea>
+
+  <button
+    class="send-btn"
+    [disabled]="disabled()"
+    (click)="onSendClick()"
+    aria-label="Send message"
+  >➤</button>
+</div>
+
+<div class="input-hint">
+  <span><kbd>⏎ Enter</kbd> to send</span>
+  <span><kbd>⇧ Shift + ⏎</kbd> for new line</span>
+</div>

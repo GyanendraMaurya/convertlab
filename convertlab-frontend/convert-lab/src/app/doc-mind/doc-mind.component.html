@@ -1,0 +1,34 @@
+<div class="atmosphere"></div>
+
+<div class="shell">
+
+  <!-- ── Header ────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div class="logo">
+      <div class="logo-mark">🧠</div>
+      <div class="logo-text">Doc<span>Mind</span></div>
+    </div>
+    <div class="header-badge">RAG · v2.1</div>
+  </header>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Left: doc panel -->
+    <app-doc-panel
+      [docState]="docState()"
+      (fileSelected)="onFileSelected($event)"
+      (promptSelected)="onPromptSelected($event)"
+    />
+
+    <!-- Right: chat panel -->
+    <app-chat-panel
+      [messages]="messages()"
+      [docState]="docState()"
+      [isThinking]="isThinking()"
+      [ingestSteps]="docState().ingestSteps"
+      (messageSent)="onMessageSent($event)"
+    />
+
+  </div>
+</div>

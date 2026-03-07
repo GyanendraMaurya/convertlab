@@ -1,0 +1,70 @@
+<div class="chat-panel">
+
+  <!-- ── Locked overlay (no document) ──────────────────────────────────── -->
+  @if (showLockedOverlay()) {
+    <div class="overlay locked-overlay">
+      <div class="lock-icon">🔒</div>
+      <p>upload a document to begin</p>
+    </div>
+  }
+
+  <!-- ── Ingesting overlay ─────────────────────────────────────────────── -->
+  @if (showIngestOverlay()) {
+    <div class="overlay ingest-overlay">
+
+      <!-- Spinning neural ring -->
+      <div class="neural-ring">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="ring-center">⚡</div>
+      </div>
+
+      <div class="ingest-title">Analyzing document…</div>
+
+      <!-- Step list -->
+      <div class="ingest-steps">
+        @for (step of ingestSteps(); track step.label; let i = $index) {
+          <div
+            class="ingest-step"
+            [class.active]="step.status === 'active'"
+            [class.done]="step.status === 'done'"
+            [style.animation-delay]="(i * 0.4) + 's'"
+          >
+            @if (step.status === 'done') {
+              <span class="step-check">✓</span>
+            } @else {
+              <div class="ingest-step-dot"></div>
+            }
+            {{ step.label }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Chat header ───────────────────────────────────────────────────── -->
+  <div class="chat-header">
+    <div class="chat-header-icon">🤖</div>
+    <div class="chat-header-text">
+      <div class="chat-header-name">Document Assistant</div>
+      <div class="chat-header-sub">{{ subtitle() }}</div>
+    </div>
+    <span class="model-tag">GPT-4o · RAG</span>
+  </div>
+
+  <!-- ── Messages ──────────────────────────────────────────────────────── -->
+  <app-chat-messages
+    [messages]="messages()"
+    [isThinking]="isThinking()"
+  />
+
+  <!-- ── Input ─────────────────────────────────────────────────────────── -->
+  <div class="input-area">
+    <app-chat-input
+      [disabled]="isInputDisabled()"
+      (messageSent)="onMessageSent($event)"
+    />
+  </div>
+
+</div>

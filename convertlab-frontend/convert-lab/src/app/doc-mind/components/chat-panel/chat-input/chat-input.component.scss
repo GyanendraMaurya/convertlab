@@ -1,0 +1,87 @@
+:host { display: block; }
+
+// ── Input row ─────────────────────────────────────────────────────────────────
+.input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 10px 10px 14px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+
+  &:focus-within {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.06);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+textarea {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  resize: none;
+  max-height: 120px;
+  min-height: 22px;
+  overflow-y: auto;
+
+  &::placeholder { color: var(--text-muted); }
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+}
+
+// ── Send button ───────────────────────────────────────────────────────────────
+.send-btn {
+  width: 34px; height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold), var(--teal));
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #0a0d12;
+  font-size: 15px;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+
+  &:hover:not(:disabled) {
+    transform: scale(1.07);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+  }
+
+  &:active:not(:disabled) { transform: scale(0.95); }
+
+  &:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+}
+
+// ── Hint row ──────────────────────────────────────────────────────────────────
+.input-hint {
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  padding-left: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+kbd {
+  display: inline-flex; align-items: center; gap: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+}

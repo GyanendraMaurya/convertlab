@@ -1,0 +1,19 @@
+<!-- Upload zone (always visible) -->
+<app-upload-zone (fileSelected)="onFileSelected($event)" />
+
+<!-- Doc card (visible once a file is chosen) -->
+@if (docState().status !== 'idle') {
+  <app-doc-card [state]="docState()" />
+}
+
+<!-- Suggested prompts -->
+<div class="help-section">
+  <div class="help-title">Suggested prompts</div>
+  @for (s of suggestions; track s) {
+    <button
+      class="prompt-chip"
+      [disabled]="docState().status !== 'ready'"
+      (click)="onPromptClick(s)"
+    >{{ s }}</button>
+  }
+</div>

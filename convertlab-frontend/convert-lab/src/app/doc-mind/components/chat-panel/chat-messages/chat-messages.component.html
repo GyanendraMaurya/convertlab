@@ -1,0 +1,70 @@
+<div class="messages-scroll">
+
+  <!-- ── Empty state ──────────────────────────────────────────────────── -->
+  @if (messages().length === 0 && !isThinking()) {
+    <div class="empty-state">
+      <div class="empty-orb">🧠</div>
+      <div class="empty-title">Ask anything</div>
+      <div class="empty-desc">
+        Once your document is analyzed, you can ask questions and I'll answer using its content.
+      </div>
+    </div>
+  }
+
+  <!-- ── Message list ──────────────────────────────────────────────────── -->
+  @for (msg of messages(); track trackById($index, msg)) {
+    <div class="message" [class.user]="msg.role === 'user'">
+
+      @if (msg.role === 'ai') {
+        <div class="avatar avatar-ai">🤖</div>
+      }
+
+      <div class="bubble-wrap">
+        <div
+          class="bubble"
+          [class.bubble-ai]="msg.role === 'ai'"
+          [class.bubble-user]="msg.role === 'user'"
+          [innerHTML]="msg.text"
+        ></div>
+
+        <!-- Source references -->
+        @if (msg.sources && msg.sources.length > 0) {
+          <div class="source-refs">
+            @for (src of msg.sources; track src) {
+              <span class="source-ref">{{ src }}</span>
+            }
+          </div>
+        }
+
+        <div class="bubble-meta">
+          <span>{{ msg.timestamp | date:'shortTime' }}</span>
+          @if (msg.role === 'ai') {
+            <span>· RAG</span>
+          }
+        </div>
+      </div>
+
+      @if (msg.role === 'user') {
+        <div class="avatar avatar-user">U</div>
+      }
+    </div>
+  }
+
+  <!-- ── Typing / thinking indicator ──────────────────────────────────── -->
+  @if (isThinking()) {
+    <div class="message typing-row">
+      <div class="avatar avatar-ai">🤖</div>
+      <div>
+        <div class="typing-bubble">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+        <div class="typing-label">searching vectors_</div>
+      </div>
+    </div>
+  }
+
+  <!-- Scroll anchor -->
+  <div #bottomAnchor></div>
+</div>

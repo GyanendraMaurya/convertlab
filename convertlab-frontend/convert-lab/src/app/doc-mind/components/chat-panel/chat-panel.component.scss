@@ -1,0 +1,195 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+// ── Panel shell ───────────────────────────────────────────────────────────────
+.chat-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+// ── Overlays ──────────────────────────────────────────────────────────────────
+.overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
+  z-index: 10;
+  border-radius: var(--radius-lg);
+}
+
+.locked-overlay {
+  background: rgba(8, 12, 20, 0.65);
+  backdrop-filter: blur(4px);
+
+  .lock-icon {
+    font-size: 28px;
+    animation: lock-pulse 2s ease-in-out infinite;
+  }
+
+  p {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+}
+
+@keyframes lock-pulse {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%       { transform: scale(1.1); opacity: 1; }
+}
+
+.ingest-overlay {
+  background: rgba(8, 12, 20, 0.82);
+  backdrop-filter: blur(6px);
+  gap: 20px;
+}
+
+// ── Neural ring ───────────────────────────────────────────────────────────────
+.neural-ring {
+  position: relative;
+  width: 90px; height: 90px;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ring-1 {
+  width: 90px; height: 90px;
+  border-top-color: var(--gold);
+  border-right-color: rgba(245, 158, 11, 0.3);
+  animation: spin 1.6s linear infinite;
+}
+
+.ring-2 {
+  width: 68px; height: 68px;
+  border-bottom-color: var(--teal);
+  border-left-color: rgba(20, 184, 166, 0.3);
+  animation: spin 1.1s linear infinite reverse;
+}
+
+.ring-3 {
+  width: 46px; height: 46px;
+  border-top-color: var(--blue-soft);
+  border-left-color: rgba(96, 165, 250, 0.3);
+  animation: spin 2s linear infinite;
+}
+
+.ring-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  animation: scale-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes scale-pulse {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); }
+  50%       { transform: translate(-50%,-50%) scale(1.12); }
+}
+
+// ── Ingest step list ──────────────────────────────────────────────────────────
+.ingest-title {
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.ingest-steps {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px;
+}
+
+.ingest-step {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text-muted);
+  opacity: 0;
+  animation: step-appear 0.5s ease forwards;
+
+  &.active { color: var(--gold); }
+  &.done   { color: var(--teal); }
+}
+
+.ingest-step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ingest-step.active .ingest-step-dot {
+  animation: pulse-dot 0.8s ease-in-out infinite;
+}
+
+.step-check { color: var(--teal); font-weight: 600; }
+
+@keyframes step-appear { to { opacity: 1; } }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(245,158,11,0); }
+}
+
+// ── Chat header ───────────────────────────────────────────────────────────────
+.chat-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255, 255, 255, 0.015);
+  flex-shrink: 0;
+}
+
+.chat-header-icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--teal) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+  flex-shrink: 0;
+}
+
+.chat-header-text { flex: 1; }
+
+.chat-header-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chat-header-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.model-tag {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--blue-soft);
+  background: var(--blue-dim);
+  border: 1px solid rgba(96, 165, 250, 0.12);
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+// ── Input area ────────────────────────────────────────────────────────────────
+.input-area {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.01);
+  flex-shrink: 0;
+}

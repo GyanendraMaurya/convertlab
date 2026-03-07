@@ -43,5 +43,9 @@ export const routes: Routes = [
   {
     path: 'pdf-password',
     loadComponent: () => import('./components/pdf/pdf-password/pdf-password.component').then(m => m.PdfPasswordComponent)
-  }
+  },
+  {
+    path: 'doc-mind',
+    loadComponent: () => import('./doc-mind/doc-mind.component').then(m => m.DocMindComponent),
+  },
 ];

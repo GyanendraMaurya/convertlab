@@ -1,0 +1,46 @@
+<div class="doc-card">
+  <!-- Top stripe -->
+  <div class="doc-card-top">
+    <div class="doc-icon">📄</div>
+    <div class="doc-meta">
+      <div class="doc-name" [title]="state().fileName">{{ state().fileName }}</div>
+      <div class="doc-size">{{ fileSizeLabel() }}</div>
+    </div>
+  </div>
+
+  <!-- Live ingest log -->
+  @if (showIngestVisual()) {
+    <div class="ingest-visual">
+      @for (line of state().ingestLog; track line.label) {
+        <div class="ingest-line">
+          <span class="label">{{ line.label }}</span>
+          <span class="val">{{ line.value }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Progress bar -->
+  @if (showProgress()) {
+    <div class="progress-wrap">
+      <div class="progress-bar"></div>
+    </div>
+  }
+
+  <!-- Status strip -->
+  <div class="status-strip" [class]="statusClass()">
+    <div class="status-dot"></div>
+    <div class="status-text">{{ statusText() }}</div>
+  </div>
+
+  <!-- Ready chips -->
+  @if (showChips()) {
+    <div class="doc-chips">
+      @if (state().chunkCount) {
+        <span class="chip chip-teal">{{ state().chunkCount }} chunks</span>
+      }
+      <span class="chip chip-gold">Embedded</span>
+      <span class="chip chip-blue">Ready</span>
+    </div>
+  }
+</div>

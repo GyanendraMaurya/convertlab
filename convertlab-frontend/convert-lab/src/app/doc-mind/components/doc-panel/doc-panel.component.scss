@@ -1,59 +1,109 @@
+
 :host {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 280px;
   flex-shrink: 0;
+
+  // Mobile: full width
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-shrink: unset;
+  }
 }
 
 // ── Suggestions panel ────────────────────────────────────────────────────────
 .help-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
   padding: 14px;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle accent line
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--mat-sys-primary), #00897b);
+    border-radius: 12px 12px 0 0;
+  }
+
+  // Mobile: collapse by default (still visible but more compact)
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 }
 
 .help-title {
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--mat-sys-on-surface-variant);
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '✦';
+    color: var(--mat-sys-primary);
+    font-size: 9px;
+  }
 }
 
 .prompt-chip {
   display: block;
   width: 100%;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
-  padding: 7px 10px;
+  padding: 8px 12px;
   cursor: pointer;
   text-align: left;
   margin-bottom: 6px;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+  position: relative;
+  overflow: hidden;
 
   &:last-child { margin-bottom: 0; }
 
   &::before {
-    content: '✦ ';
-    color: var(--gold);
-    font-size: 9px;
+    content: '→ ';
+    color: var(--mat-sys-primary);
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.7;
+    transition: opacity 0.2s;
   }
 
   &:hover:not(:disabled) {
-    background: var(--gold-dim);
-    border-color: rgba(245, 158, 11, 0.25);
-    color: var(--text-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-surface);
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(25,118,210,0.12);
+
+    &::before { opacity: 1; }
   }
 
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+    transform: none;
+  }
+
+  // Mobile: slightly larger tap targets
+  @media (max-width: 768px) {
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }

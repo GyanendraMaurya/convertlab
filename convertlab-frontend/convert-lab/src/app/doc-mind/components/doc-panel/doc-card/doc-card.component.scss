@@ -1,10 +1,12 @@
+// doc-card.component.scss — Light-mode AI theme
+
 :host { display: block; }
 
 // ── Card shell ───────────────────────────────────────────────────────────────
 .doc-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -12,13 +14,14 @@
   position: relative;
   overflow: hidden;
 
-  // accent line at the top
+  // AI accent line at the top
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gold), var(--teal));
+    height: 3px;
+    background: linear-gradient(90deg, var(--mat-sys-primary) 0%, #00897b 50%, #f59e0b 100%);
+    border-radius: 12px 12px 0 0;
   }
 }
 
@@ -32,7 +35,8 @@
 .doc-icon {
   width: 36px; height: 36px;
   flex-shrink: 0;
-  background: var(--gold-dim);
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, var(--mat-sys-surface));
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -45,7 +49,7 @@
 .doc-name {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--mat-sys-on-surface);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -54,19 +58,19 @@
 
 .doc-size {
   font-size: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  color: var(--mat-sys-on-surface-variant);
+  font-family: 'Courier New', monospace;
 }
 
 // ── Ingest log ───────────────────────────────────────────────────────────────
 .ingest-visual {
   padding: 10px;
-  background: rgba(245, 158, 11, 0.03);
-  border: 1px solid rgba(245, 158, 11, 0.1);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  background: color-mix(in srgb, var(--mat-sys-primary) 4%, var(--mat-sys-surface));
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
   font-size: 10px;
-  color: var(--text-muted);
+  color: var(--mat-sys-on-surface-variant);
   overflow: hidden;
   min-height: 50px;
 }
@@ -75,12 +79,19 @@
   opacity: 0;
   transform: translateY(4px);
   animation: line-appear 0.4s ease forwards;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
 
-  .label { color: var(--gold);            margin-right: 6px; }
-  .val   { color: var(--text-secondary); }
+  .label {
+    color: var(--mat-sys-primary);
+    margin-right: 6px;
+    font-weight: 600;
+  }
+
+  .val {
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 @keyframes line-appear {
@@ -89,25 +100,31 @@
 
 // ── Progress ─────────────────────────────────────────────────────────────────
 .progress-wrap {
-  height: 3px;
-  background: rgba(255, 255, 255, 0.05);
+  height: 4px;
+  background: var(--mat-sys-surface-container-highest);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--teal));
+  background: linear-gradient(90deg, var(--mat-sys-primary), #00897b, #f59e0b);
+  background-size: 200% 100%;
   border-radius: 2px;
-  animation: progress-anim 2.5s ease-in-out infinite;
+  animation: progress-anim 2.5s ease-in-out infinite, shimmer 2s linear infinite;
   transform-origin: left;
 }
 
 @keyframes progress-anim {
-  0%   { width: 5%;  opacity: 1; }
-  60%  { width: 85%; opacity: 1; }
-  90%  { width: 95%; opacity: 0.8; }
-  100% { width: 95%; opacity: 0.8; }
+  0%   { width: 5%;  }
+  60%  { width: 85%; }
+  90%  { width: 95%; }
+  100% { width: 95%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 // ── Status strip ─────────────────────────────────────────────────────────────
@@ -116,47 +133,59 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   font-size: 11px;
-  font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  font-family: 'Courier New', monospace;
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
   min-height: 34px;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 .status-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--text-muted);
+  background: var(--mat-sys-on-surface-variant);
   flex-shrink: 0;
   transition: background 0.3s;
 }
 
-.status-text { color: var(--text-secondary); flex: 1; }
+.status-text {
+  color: var(--mat-sys-on-surface-variant);
+  flex: 1;
+}
 
 // ── State variants ────────────────────────────────────────────────────────────
 .ingesting {
+  background: color-mix(in srgb, var(--mat-sys-primary) 5%, var(--mat-sys-surface));
+  border-color: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+
   .status-dot {
-    background: var(--gold);
+    background: var(--mat-sys-primary);
     animation: pulse-dot 1s ease-in-out infinite;
   }
-  .status-text { color: var(--gold); }
+  .status-text { color: var(--mat-sys-primary); }
 }
 
 .ready {
-  .status-dot  { background: var(--teal); animation: none; }
-  .status-text { color: var(--teal); }
+  background: color-mix(in srgb, #00897b 5%, var(--mat-sys-surface));
+  border-color: rgba(0,137,123,0.25);
+
+  .status-dot { background: #00897b; animation: none; }
+  .status-text { color: #00695c; font-weight: 600; }
 }
 
 .error {
-  .status-dot  { background: #ef4444; animation: none; }
-  .status-text { color: #ef4444; }
+  background: color-mix(in srgb, var(--mat-sys-error) 5%, var(--mat-sys-surface));
+  border-color: color-mix(in srgb, var(--mat-sys-error) 20%, transparent);
+
+  .status-dot  { background: var(--mat-sys-error); animation: none; }
+  .status-text { color: var(--mat-sys-error); }
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
-  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(25,118,210,0.5); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(25,118,210,0); }
 }
 
 // ── Chips ─────────────────────────────────────────────────────────────────────
@@ -167,13 +196,27 @@
 }
 
 .chip {
-  font-family: var(--font-mono);
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   padding: 3px 8px;
   border-radius: 20px;
   border: 1px solid;
+  font-weight: 600;
 }
 
-.chip-gold  { color: var(--gold);      background: var(--gold-dim);  border-color: rgba(245,158,11,0.2);  }
-.chip-teal  { color: var(--teal);      background: var(--teal-dim);  border-color: rgba(20,184,166,0.2);  }
-.chip-blue  { color: var(--blue-soft); background: var(--blue-dim);  border-color: rgba(96,165,250,0.15); }
+.chip-gold {
+  color: #b45309;
+  background: rgba(245,158,11,0.10);
+  border-color: rgba(245,158,11,0.25);
+}
+
+.chip-teal {
+  color: #00695c;
+  background: rgba(0,137,123,0.10);
+  border-color: rgba(0,137,123,0.25);
+}
+
+.chip-blue {
+  color: var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);

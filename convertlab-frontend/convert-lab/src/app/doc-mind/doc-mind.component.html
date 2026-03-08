@@ -17,6 +17,7 @@
     <!-- Left: doc panel -->
     <app-doc-panel
       [docState]="docState()"
+      [hideSuggestions]="hasMessageSent()"
       (fileSelected)="onFileSelected($event)"
       (promptSelected)="onPromptSelected($event)"
     />

@@ -5,33 +5,33 @@
 
 :host {
   // ── DocMind accent tokens (light-mode AI palette) ─────────────────────────
-  --dm-ai-primary:      #1976d2;           // matches mat azure primary
-  --dm-ai-primary-soft: rgba(25,118,210,0.08);
-  --dm-ai-accent:       #0288d1;           // deeper blue accent
-  --dm-ai-accent-soft:  rgba(2,136,209,0.10);
-  --dm-ai-teal:         #00897b;           // AI "intelligence" teal
-  --dm-ai-teal-soft:    rgba(0,137,123,0.10);
-  --dm-ai-amber:        #f59e0b;           // warm highlight
-  --dm-ai-amber-soft:   rgba(245,158,11,0.10);
+  --dm-ai-primary: #1976d2; // matches mat azure primary
+  --dm-ai-primary-soft: rgba(25, 118, 210, 0.08);
+  --dm-ai-accent: #0288d1; // deeper blue accent
+  --dm-ai-accent-soft: rgba(2, 136, 209, 0.10);
+  --dm-ai-teal: #00897b; // AI "intelligence" teal
+  --dm-ai-teal-soft: rgba(0, 137, 123, 0.10);
+  --dm-ai-amber: #f59e0b; // warm highlight
+  --dm-ai-amber-soft: rgba(245, 158, 11, 0.10);
 
   // ── Surface / background tokens ───────────────────────────────────────────
-  --dm-bg:              var(--mat-sys-surface);
-  --dm-bg-panel:        var(--mat-sys-surface-container-low);
-  --dm-bg-card:         var(--mat-sys-surface-container);
-  --dm-bg-input:        var(--mat-sys-surface-container-high);
-  --dm-border:          var(--mat-sys-outline-variant);
-  --dm-border-focus:    var(--mat-sys-primary);
+  --dm-bg: var(--mat-sys-surface);
+  --dm-bg-panel: var(--mat-sys-surface-container-low);
+  --dm-bg-card: var(--mat-sys-surface-container);
+  --dm-bg-input: var(--mat-sys-surface-container-high);
+  --dm-border: var(--mat-sys-outline-variant);
+  --dm-border-focus: var(--mat-sys-primary);
 
   // ── Text tokens ───────────────────────────────────────────────────────────
-  --dm-text-primary:    var(--mat-sys-on-surface);
-  --dm-text-secondary:  var(--mat-sys-on-surface-variant);
-  --dm-text-muted:      color-mix(in srgb, var(--mat-sys-on-surface-variant) 60%, transparent);
+  --dm-text-primary: var(--mat-sys-on-surface);
+  --dm-text-secondary: var(--mat-sys-on-surface-variant);
+  --dm-text-muted: color-mix(in srgb, var(--mat-sys-on-surface-variant) 60%, transparent);
 
   // ── Radius tokens ─────────────────────────────────────────────────────────
-  --dm-radius-sm:   6px;
-  --dm-radius-md:   12px;
-  --dm-radius-lg:   16px;
-  --dm-radius-xl:   24px;
+  --dm-radius-sm: 6px;
+  --dm-radius-md: 12px;
+  --dm-radius-lg: 16px;
+  --dm-radius-xl: 24px;
 
   // ── Font ──────────────────────────────────────────────────────────────────
   --dm-font-sans: Roboto, 'Helvetica Neue', sans-serif;
@@ -40,7 +40,8 @@
   // ── Layout ────────────────────────────────────────────────────────────────
   display: flex;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 60px); // was: height: 100%
+  max-height: calc(100vh - 60px);
   font-family: var(--dm-font-sans);
   background: var(--dm-bg);
   color: var(--dm-text-primary);
@@ -50,31 +51,35 @@
 
 // ── Subtle AI atmosphere (light-mode friendly) ────────────────────────────────
 .atmosphere {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
 
   // Very subtle colored radial blobs
   background:
-    radial-gradient(ellipse 70% 50% at 5% 0%,   rgba(25,118,210,0.04)  0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 95% 90%,  rgba(0,137,123,0.04)  0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 50% 50%,  rgba(245,158,11,0.02) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 5% 0%, rgba(25, 118, 210, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 95% 90%, rgba(0, 137, 123, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245, 158, 11, 0.02) 0%, transparent 60%);
 
   // Subtle dot grid — hallmark of AI/tech dashboards
   &::before {
     content: '';
-    position: absolute; inset: 0;
-    background-image: radial-gradient(
-      circle,
-      rgba(25,118,210,0.07) 1px,
-      transparent 1px
-    );
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle,
+        rgba(25, 118, 210, 0.07) 1px,
+        transparent 1px);
     background-size: 28px 28px;
   }
 }
 
 // ── Shell ─────────────────────────────────────────────────────────────────────
 .shell {
-  position: relative; z-index: 1;
-  width: 100%; height: 100%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
@@ -100,7 +105,8 @@
 }
 
 .logo-mark {
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--dm-ai-primary) 0%, var(--dm-ai-teal) 100%);
   display: flex;
@@ -108,8 +114,8 @@
   justify-content: center;
   font-size: 18px;
   box-shadow:
-    0 2px 8px rgba(25,118,210,0.25),
-    0 0 0 3px rgba(25,118,210,0.08);
+    0 2px 8px rgba(25, 118, 210, 0.25),
+    0 0 0 3px rgba(25, 118, 210, 0.08);
 }
 
 .logo-text {
@@ -132,7 +138,7 @@
   text-transform: uppercase;
   color: var(--dm-ai-teal);
   background: var(--dm-ai-teal-soft);
-  border: 1px solid rgba(0,137,123,0.25);
+  border: 1px solid rgba(0, 137, 123, 0.25);
   padding: 4px 10px;
   border-radius: 20px;
 }
@@ -146,11 +152,17 @@
   overflow: hidden;
   min-height: 0;
 
-  // Mobile: stack vertically
   @media (max-width: 768px) {
     flex-direction: column;
     overflow-y: auto;
     gap: 12px;
     padding: 12px 0;
+
+    // chat panel needs explicit height on mobile so it doesn't collapse
+    app-chat-panel {
+      height: 500px;
+      flex-shrink: 0;
+    }
   }
+
 }

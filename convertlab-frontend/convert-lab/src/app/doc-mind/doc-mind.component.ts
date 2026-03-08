@@ -39,8 +39,9 @@ export class DocMindComponent {
   });
 
   // ── Chat state ────────────────────────────────────────────────────────────
-  messages   = signal<ChatMessage[]>([]);
+  messages = signal<ChatMessage[]>([]);
   isThinking = signal(false);
+  hasMessageSent = signal(false);
 
   private chatPanel = viewChild(ChatPanelComponent);
 
@@ -51,8 +52,8 @@ export class DocMindComponent {
     try {
       // Step 1 — Upload
       this.setStatus('uploading');
-      this.appendLog('file',   file.name);
-      this.appendLog('size',   this.formatSize(file.size));
+      this.appendLog('file', file.name);
+      this.appendLog('size', this.formatSize(file.size));
       this.appendLog('status', 'uploading…');
 
       let pdfId: string;
@@ -105,6 +106,7 @@ export class DocMindComponent {
   async onMessageSent(text: string) {
     if (this.isThinking() || this.docState().status !== 'ready') return;
 
+    this.hasMessageSent.set(true);
     this.addUserMessage(text);
     this.isThinking.set(true);
 
@@ -116,11 +118,11 @@ export class DocMindComponent {
         const res = await this.ragService
           .queryDocument(this.docState().pdfId!, text)
           .toPromise();
-        answer  = res!.data.answer ?? res!.data.response ?? 'No answer returned.';
+        answer = res!.data.answer ?? res!.data.response ?? 'No answer returned.';
         sources = res!.data.sources ?? [];
       } catch {
         await this.sleep(1400 + Math.random() * 1000);
-        answer  = this.demoAnswer();
+        answer = this.demoAnswer();
         sources = ['p. 2–4', 'p. 7', 'p. 11'];
       }
 
@@ -192,8 +194,8 @@ export class DocMindComponent {
   // ── Helpers: messages ─────────────────────────────────────────────────────
   private addUserMessage(text: string) {
     const msg: ChatMessage = {
-      id:        crypto.randomUUID(),
-      role:      'user',
+      id: crypto.randomUUID(),
+      role: 'user',
       text,
       timestamp: new Date(),
     };
@@ -202,12 +204,12 @@ export class DocMindComponent {
 
   private addAIMessage(text: string, sources: string[] = []) {
     const msg: ChatMessage = {
-      id:        crypto.randomUUID(),
-      role:      'ai',
+      id: crypto.randomUUID(),
+      role: 'ai',
       text,
       timestamp: new Date(),
       sources,
-      isHtml:    true,
+      isHtml: true,
     };
     this.messages.update(m => [...m, msg]);
   }
@@ -215,16 +217,16 @@ export class DocMindComponent {
   // ── Utilities ─────────────────────────────────────────────────────────────
   private buildDefaultSteps(): IngestStep[] {
     return [
-      { label: 'Extracting text',       status: 'pending' },
-      { label: 'Chunking content',      status: 'pending' },
+      { label: 'Extracting text', status: 'pending' },
+      { label: 'Chunking content', status: 'pending' },
       { label: 'Generating embeddings', status: 'pending' },
-      { label: 'Indexing vectors',      status: 'pending' },
+      { label: 'Indexing vectors', status: 'pending' },
     ];
   }
 
   private formatSize(bytes: number): string {
-    if (bytes < 1024)           return `${bytes} B`;
-    if (bytes < 1024 * 1024)    return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 

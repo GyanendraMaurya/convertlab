@@ -12,7 +12,8 @@ import { DocCardComponent } from './doc-card/doc-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocPanelComponent {
-  docState  = input.required<DocumentState>();
+  docState = input.required<DocumentState>();
+  hideSuggestions = input<boolean>(false);
   fileSelected = output<File>();
 
   /** Suggested prompt chips — parent can customise later */

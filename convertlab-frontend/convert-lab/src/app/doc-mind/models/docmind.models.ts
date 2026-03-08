@@ -40,13 +40,10 @@ export interface UploadResponse {
 }
 
 export interface IngestResponse {
-  chunkCount?: number;
-  chunks?: number;
-  message?: string;
+  chunkCount: number;
 }
 
 export interface QueryResponse {
-  answer?: string;
-  response?: string;
-  sources?: string[];
+  answer: string;
+  // sources?: string[];
 }

@@ -1,4 +1,4 @@
-package com.convertlab.convertlab_backend.service_web.controllers.dto;
+package com.convertlab.convertlab_backend.service_ai.dto;
 
 public record QueryRequest(
         String fileId,

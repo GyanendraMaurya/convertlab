@@ -10,7 +10,7 @@ import { DocumentState } from '../../../models/docmind.models';
 @Component({
   selector: 'app-doc-card',
   standalone: true,
-  imports: [DecimalPipe],
+  // imports: [DecimalPipe],
   templateUrl: './doc-card.component.html',
   styleUrl: './doc-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

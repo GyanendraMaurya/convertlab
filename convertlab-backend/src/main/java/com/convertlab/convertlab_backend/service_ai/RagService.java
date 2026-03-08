@@ -26,7 +26,7 @@ public class RagService {
     private final DocumentChunkService documentChunkService;
     private final OpenAiChatService openAiChatService;
 
-    public void ingest(String fileId) {
+    public int ingest(String fileId) {
         if (fileId == null || fileId.isBlank()) {
             throw new DocumentIngestionException("File ID cannot be null or blank", "INVALID_FILE_ID", HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +66,7 @@ public class RagService {
 
             embeddingService.generateAndStore(documentChunks);
             log.info("Document ingestion completed successfully for fileId: {}", fileId);
-
+            return chunks.size();
         } catch (DocumentIngestionException e) {
             throw e;
         } catch (Exception e) {

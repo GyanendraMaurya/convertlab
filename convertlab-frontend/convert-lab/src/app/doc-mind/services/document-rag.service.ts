@@ -15,38 +15,26 @@ export class DocumentRagService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  /**
-   * Step 1 — upload the raw file (reuses the existing upload/pdf endpoint)
-   */
-  uploadPdf(file: File): Observable<ApiResponse<UploadResponse>> {
-    const form = new FormData();
-    form.append('file', file);
-    return this.http.post<ApiResponse<UploadResponse>>(
-      `${this.apiUrl}/upload/pdf`,
-      form,
-      { withCredentials: true }
-    );
-  }
 
   /**
    * Step 2 — ingest: OCR + chunking + embedding + vector store
    */
-  ingestDocument(pdfId: string): Observable<ApiResponse<IngestResponse>> {
+  ingestDocument(fileId: string): Observable<ApiResponse<IngestResponse>> {
     return this.http.post<ApiResponse<IngestResponse>>(
       `${this.apiUrl}/documents/ingest`,
-      { pdfId },
-      { withCredentials: true }
+      { fileId },
+      // { withCredentials: true }
     );
   }
 
   /**
    * Step 3 — query the indexed document
    */
-  queryDocument(pdfId: string, query: string): Observable<ApiResponse<QueryResponse>> {
+  queryDocument(fileId: string, query: string): Observable<ApiResponse<QueryResponse>> {
     return this.http.post<ApiResponse<QueryResponse>>(
       `${this.apiUrl}/documents/query`,
-      { pdfId, query },
-      { withCredentials: true }
+      { fileId, query },
+      // { withCredentials: true }
     );
   }
 }

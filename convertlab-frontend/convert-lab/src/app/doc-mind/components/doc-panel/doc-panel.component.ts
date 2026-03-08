@@ -18,10 +18,10 @@ export class DocPanelComponent {
 
   /** Suggested prompt chips — parent can customise later */
   readonly suggestions = [
-    'Summarize the key findings',
-    'What are the main conclusions?',
-    'List all mentioned dates or figures',
-    'Explain the methodology used',
+    'What does the document say about this topic?',
+    'Explain this concept from the document',
+    'What information is provided about this subject?',
+    'What details are mentioned about this topic?'
   ];
 
   promptSelected = output<string>();

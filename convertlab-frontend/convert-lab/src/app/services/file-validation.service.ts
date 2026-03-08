@@ -23,7 +23,7 @@ export class FileValidationService {
   // Default constraints for different file types
   private readonly constraints: Record<FileType, FileTypeConstraints> = {
     pdf: {
-      maxSizeBytes: 15 * 1024 * 1024, // 15MB
+      maxSizeBytes: 25 * 1024 * 1024, // 15MB
       minSizeBytes: 1024, // 1KB
       allowedMimeTypes: ['application/pdf'],
       allowedExtensions: ['pdf'],

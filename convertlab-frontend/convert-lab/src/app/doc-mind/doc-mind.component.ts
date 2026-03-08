@@ -15,6 +15,9 @@ import {
 import { DocumentRagService } from './services/document-rag.service';
 import { DocPanelComponent } from './components/doc-panel/doc-panel.component';
 import { ChatPanelComponent } from './components/chat-panel/chat-panel.component';
+import { FileUploadService } from '../services/file-upload.service';
+import { firstValueFrom } from 'rxjs';
+import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
   selector: 'app-doc-mind',
@@ -26,6 +29,8 @@ import { ChatPanelComponent } from './components/chat-panel/chat-panel.component
 })
 export class DocMindComponent {
   private readonly ragService = inject(DocumentRagService);
+  private readonly fileUploadService = inject(FileUploadService);
+  private readonly snackbarService = inject(SnackbarService);
 
   // ── Document state ────────────────────────────────────────────────────────
   docState = signal<DocumentState>({
@@ -56,16 +61,16 @@ export class DocMindComponent {
       this.appendLog('size', this.formatSize(file.size));
       this.appendLog('status', 'uploading…');
 
-      let pdfId: string;
+      let pdfId: string | null = null;
       try {
-        const res = await this.ragService.uploadPdf(file).toPromise();
+        const res = await firstValueFrom(this.fileUploadService.uploadPdf(file));
         pdfId = res!.data.fileId;
       } catch {
         pdfId = 'demo_' + Date.now(); // demo fallback
       }
 
       this.patchState({ pdfId });
-      this.appendLog('id', pdfId.substring(0, 16) + '…');
+      this.appendLog('id', pdfId?.substring(0, 16) + '…');
 
       // Step 2 — Ingest
       this.setStatus('ingesting');
@@ -74,11 +79,11 @@ export class DocMindComponent {
 
       let chunkCount: number | null = null;
       try {
-        const ingestRes = await this.ragService.ingestDocument(pdfId).toPromise();
-        chunkCount = ingestRes!.data.chunkCount ?? ingestRes!.data.chunks ?? null;
+        const ingestRes = await firstValueFrom(this.ragService.ingestDocument(pdfId!));
+        chunkCount = ingestRes!.data.chunkCount || 0;
       } catch {
-        await this.sleep(2800); // demo fallback
-        chunkCount = Math.floor(Math.random() * 40) + 12;
+        this.snackbarService.show('Ingest failed, Please try again.', 'error');
+        return;
       }
 
       // Done
@@ -115,15 +120,12 @@ export class DocMindComponent {
       let sources: string[] = [];
 
       try {
-        const res = await this.ragService
-          .queryDocument(this.docState().pdfId!, text)
-          .toPromise();
-        answer = res!.data.answer ?? res!.data.response ?? 'No answer returned.';
-        sources = res!.data.sources ?? [];
+        const res = await firstValueFrom(this.ragService
+          .queryDocument(this.docState().pdfId!, text));
+        answer = res!.data.answer
+        // sources = res!.data.sources ?? [];
       } catch {
-        await this.sleep(1400 + Math.random() * 1000);
-        answer = this.demoAnswer();
-        sources = ['p. 2–4', 'p. 7', 'p. 11'];
+        answer = 'Sorry, I encountered an error while processing your request.';
       }
 
       this.addAIMessage(answer, sources);
@@ -234,13 +236,4 @@ export class DocMindComponent {
     return new Promise(r => setTimeout(r, ms));
   }
 
-  private demoAnswer(): string {
-    const answers = [
-      'Based on the document, the key point here is that the methodology involves a multi-stage approach. The text specifically mentions several critical factors that influence the outcome, described in detail across multiple sections.',
-      'The document addresses this directly. According to the content I\'ve indexed, there are three primary components to consider: the theoretical framework outlined in the introduction, the empirical data in the results section, and the practical implications in the conclusion.',
-      'This is covered extensively in the document. The author presents a compelling argument supported by statistical evidence and case studies. The main conclusion is that the proposed solution achieves a significant improvement over baseline methods.',
-      'The document contains relevant information about this topic. The analysis reveals several important patterns, particularly regarding the relationship between the variables discussed in chapters 2 and 3.',
-    ];
-    return answers[Math.floor(Math.random() * answers.length)];
-  }
 }

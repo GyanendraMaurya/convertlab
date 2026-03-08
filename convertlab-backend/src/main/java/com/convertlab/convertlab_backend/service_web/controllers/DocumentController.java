@@ -1,9 +1,12 @@
 package com.convertlab.convertlab_backend.service_web.controllers;
 
+import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.service_ai.RagService;
 import com.convertlab.convertlab_backend.service_ai.UserAiUsageService;
+import com.convertlab.convertlab_backend.service_ai.dto.IngestResponse;
+import com.convertlab.convertlab_backend.service_ai.dto.QueryRequest;
+import com.convertlab.convertlab_backend.service_ai.dto.QueryResponse;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.ExtractTextRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.QueryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +32,7 @@ public class DocumentController {
      * @param principal the authenticated user's email (from JWT subject)
      */
     @PostMapping("/ingest")
-    public ResponseEntity<String> ingest(
+    public ResponseEntity<ApiResponse<IngestResponse>> ingest(
             @RequestBody ExtractTextRequest request,
             @AuthenticationPrincipal String principal
     ) {
@@ -38,8 +41,8 @@ public class DocumentController {
         // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
         userAiUsageService.checkAndIncrementIngest(principal);
 
-        ragService.ingest(request.fileId());
-        return ResponseEntity.ok("Document ingested successfully.");
+        int chunkCount = ragService.ingest(request.fileId());
+        return ResponseEntity.ok(ApiResponse.success(new IngestResponse(chunkCount)));
     }
 
     /**
@@ -49,7 +52,7 @@ public class DocumentController {
      * @param principal the authenticated user's email (from JWT subject)
      */
     @PostMapping("/query")
-    public ResponseEntity<String> query(
+    public ResponseEntity<ApiResponse<QueryResponse>> query(
             @RequestBody QueryRequest request,
             @AuthenticationPrincipal String principal
     ) {
@@ -59,6 +62,6 @@ public class DocumentController {
         userAiUsageService.checkAndIncrementQuery(principal);
 
         String result = ragService.answerQuery(request.fileId(), request.query());
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.success(new QueryResponse(result)));
     }
 }

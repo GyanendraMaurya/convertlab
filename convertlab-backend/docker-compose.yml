@@ -21,7 +21,7 @@ services:
     ports:
       - "${HOST_PORT:-8081}:8080"
     env_file:
-      - .env.dev
+      - .env
     environment:
       # Tells Spring Boot to connect to the 'db' container on the internal network
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${DB_NAME}

@@ -15,7 +15,7 @@
     color-mix(in srgb, var(--mat-sys-tertiary) 5%, transparent)
   );
   border-radius: 0 0 24px 24px;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 
   .hero-content {
     max-width: 600px;
@@ -64,6 +64,310 @@
   text-align: center;
   margin: 0 0 32px 0;
   color: var(--mat-sys-on-surface);
+}
+
+// ── DocMind AI Section ────────────────────────────────────────────────────────
+.docmind-section {
+  padding: 0 16px 40px 16px;
+}
+
+.docmind-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface-container)),
+    color-mix(in srgb, #00897b 4%, var(--mat-sys-surface-container))
+  );
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  // Animated gradient border via outline trick
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--mat-sys-primary),
+      #00897b,
+      #f59e0b,
+      #9c27b0,
+      var(--mat-sys-primary)
+    );
+    background-size: 400% 100%;
+    animation: docmind-border 4s linear infinite;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  // Subtle inner glow
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: radial-gradient(
+      ellipse 80% 60% at 20% 50%,
+      color-mix(in srgb, var(--mat-sys-primary) 8%, transparent),
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(25, 118, 210, 0.2);
+
+    &::before {
+      animation-duration: 1.5s;
+    }
+
+    .brain-orb {
+      animation: brain-spin 0.8s ease;
+    }
+  }
+}
+
+// Animated border keyframe
+@keyframes docmind-border {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 400% 0; }
+}
+
+.docmind-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.docmind-left {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+// Brain orb animation
+.docmind-brain-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.brain-orb {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  z-index: 2;
+  animation: brain-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(25, 118, 210, 0.5));
+}
+
+.brain-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ring-a {
+  width: 64px;
+  height: 64px;
+  border-top-color: var(--mat-sys-primary);
+  border-right-color: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  animation: ring-spin 2s linear infinite;
+}
+
+.ring-b {
+  width: 50px;
+  height: 50px;
+  border-bottom-color: #00897b;
+  border-left-color: rgba(0, 137, 123, 0.3);
+  animation: ring-spin 1.4s linear infinite reverse;
+}
+
+.ring-c {
+  width: 36px;
+  height: 36px;
+  border-top-color: #f59e0b;
+  border-left-color: rgba(245, 158, 11, 0.3);
+  animation: ring-spin 2.5s linear infinite;
+}
+
+@keyframes ring-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes brain-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes brain-spin {
+  0%   { transform: scale(1) rotate(0deg); }
+  50%  { transform: scale(1.2) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.docmind-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.docmind-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.docmind-mind {
+  color: var(--mat-sys-primary);
+}
+
+.docmind-ai-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+  border-radius: 5px;
+  padding: 2px 7px;
+  animation: ai-glow 2s ease-in-out infinite;
+}
+
+.docmind-new-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #00695c;
+  background: rgba(0, 137, 123, 0.12);
+  border: 1.5px solid rgba(0, 137, 123, 0.3);
+  border-radius: 5px;
+  padding: 2px 6px;
+  animation: new-pulse 2s ease-in-out infinite;
+}
+
+.docmind-description {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.docmind-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.d-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.docmind-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.docmind-btn {
+  background: linear-gradient(135deg, var(--mat-sys-primary), #00897b) !important;
+  color: white !important;
+  height: 44px;
+  border-radius: 22px !important;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3) !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 24px rgba(25, 118, 210, 0.4) !important;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s;
+  }
+
+  &:hover mat-icon {
+    transform: translateX(4px);
+  }
+}
+
+.docmind-hint {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  opacity: 0.7;
+}
+
+// Decorative particles
+.particle {
+  position: absolute;
+  color: var(--mat-sys-primary);
+  opacity: 0.12;
+  font-size: 14px;
+  pointer-events: none;
+  animation: particle-float 4s ease-in-out infinite;
+}
+
+.p1 { top: 12px; right: 40px; animation-delay: 0s; }
+.p2 { bottom: 16px; right: 80px; font-size: 10px; animation-delay: 1s; color: #00897b; }
+.p3 { top: 50%; right: 20px; font-size: 8px; animation-delay: 2s; color: #f59e0b; }
+
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.12; }
+  50%       { transform: translateY(-6px) rotate(20deg); opacity: 0.2; }
+}
+
+@keyframes ai-glow {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 8px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent); }
+}
+
+@keyframes new-pulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 8px rgba(0, 137, 123, 0.4); }
 }
 
 // Features Section
@@ -355,7 +659,7 @@
 @media (min-width: 720px) {
   .hero-section {
     padding: 64px 32px;
-    margin-bottom: 64px;
+    margin-bottom: 48px;
 
     .hero-icon {
       font-size: 96px;
@@ -370,6 +674,50 @@
     .hero-subtitle {
       font-size: 18px;
     }
+  }
+
+  .docmind-section {
+    padding: 0 32px 48px 32px;
+  }
+
+  .docmind-card {
+    padding: 32px;
+  }
+
+  .docmind-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .docmind-left {
+    flex: 1;
+  }
+
+  .docmind-cta {
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+
+  .docmind-brain-wrap {
+    width: 80px;
+    height: 80px;
+  }
+
+  .brain-orb {
+    font-size: 40px;
+  }
+
+  .ring-a { width: 80px; height: 80px; }
+  .ring-b { width: 62px; height: 62px; }
+  .ring-c { width: 44px; height: 44px; }
+
+  .docmind-heading {
+    font-size: 28px;
+  }
+
+  .docmind-description {
+    font-size: 15px;
   }
 
   .features-section,

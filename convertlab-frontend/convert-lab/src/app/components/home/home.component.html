@@ -14,6 +14,52 @@
     </div>
   </section>
 
+  <!-- DocMind AI Section -->
+  <section class="docmind-section">
+    <div class="docmind-card" (click)="navigateToFeature('/doc-mind')">
+      <!-- Animated gradient border -->
+      <div class="docmind-border-ring"></div>
+
+      <div class="docmind-content">
+        <div class="docmind-left">
+          <div class="docmind-brain-wrap">
+            <div class="brain-orb">🧠</div>
+            <div class="brain-ring ring-a"></div>
+            <div class="brain-ring ring-b"></div>
+            <div class="brain-ring ring-c"></div>
+          </div>
+          <div class="docmind-text">
+            <div class="docmind-heading">
+              Doc<span class="docmind-mind">Mind</span>
+              <span class="docmind-ai-badge">AI</span>
+              <span class="docmind-new-badge">NEW</span>
+            </div>
+            <p class="docmind-description">
+              Ask questions about any PDF — powered by RAG & vector search. Get instant, intelligent answers from your documents.
+            </p>
+            <div class="docmind-chips">
+              <span class="d-chip">📄 PDF Upload</span>
+              <span class="d-chip">🔍 Semantic Search</span>
+              <span class="d-chip">💬 Chat Interface</span>
+            </div>
+          </div>
+        </div>
+        <div class="docmind-cta">
+          <button mat-raised-button class="docmind-btn" (click)="$event.stopPropagation(); navigateToFeature('/doc-mind')">
+            Try DocMind
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+          <p class="docmind-hint">Free · No registration</p>
+        </div>
+      </div>
+
+      <!-- Decorative particles -->
+      <div class="particle p1">✦</div>
+      <div class="particle p2">◆</div>
+      <div class="particle p3">✦</div>
+    </div>
+  </section>
+
   <!-- Main Features -->
   <section class="features-section">
     <h2 class="section-title">Available Tools</h2>

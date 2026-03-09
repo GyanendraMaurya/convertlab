@@ -8,3 +8,4 @@
 /login
 /signup
 /pdf-password
+/doc-mind

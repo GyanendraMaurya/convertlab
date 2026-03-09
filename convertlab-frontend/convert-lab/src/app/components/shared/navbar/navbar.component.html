@@ -13,6 +13,13 @@
     <a matButton="text" class="nowrap" [routerLink]="['/split-pdf']" routerLinkActive="active-link">Split PDF</a>
   </span>
   <span class="spacer"></span>
+   <!-- DocMind AI button -->
+  <a class="docmind-nav-btn" [routerLink]="['/doc-mind']" routerLinkActive="active-link" aria-label="DocMind AI">
+    <span class="docmind-orb">🧠</span>
+    <span class="docmind-label hide-mobile">DocMind <span class="ai-tag">AI</span></span>
+    <span class="docmind-pulse-ring"></span>
+    <span class="docmind-pulse-ring ring-2"></span>
+  </a>
 
   @if (isAuthenticated()) {
   <!-- Profile Menu -->

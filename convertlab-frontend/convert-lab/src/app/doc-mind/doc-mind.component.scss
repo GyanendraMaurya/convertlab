@@ -1,80 +1,46 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// DocMind — Light-mode AI theme aligned with ConvertLab Material Design system
-// Tokens bridge app's --mat-sys-* variables with DocMind-specific accents
+// DocMind — Light-mode AI theme
 // ─────────────────────────────────────────────────────────────────────────────
 
 :host {
-  // ── DocMind accent tokens (light-mode AI palette) ─────────────────────────
-  --dm-ai-primary: #1976d2; // matches mat azure primary
-  --dm-ai-primary-soft: rgba(25, 118, 210, 0.08);
-  --dm-ai-accent: #0288d1; // deeper blue accent
-  --dm-ai-accent-soft: rgba(2, 136, 209, 0.10);
-  --dm-ai-teal: #00897b; // AI "intelligence" teal
-  --dm-ai-teal-soft: rgba(0, 137, 123, 0.10);
-  --dm-ai-amber: #f59e0b; // warm highlight
-  --dm-ai-amber-soft: rgba(245, 158, 11, 0.10);
+  --dm-primary: #1976d2;
+  --dm-primary-soft: rgba(25, 118, 210, 0.08);
+  --dm-teal: #00897b;
+  --dm-teal-soft: rgba(0, 137, 123, 0.10);
+  --dm-amber: #f59e0b;
+  --dm-purple: #9c27b0;
 
-  // ── Surface / background tokens ───────────────────────────────────────────
-  --dm-bg: var(--mat-sys-surface);
-  --dm-bg-panel: var(--mat-sys-surface-container-low);
-  --dm-bg-card: var(--mat-sys-surface-container);
-  --dm-bg-input: var(--mat-sys-surface-container-high);
-  --dm-border: var(--mat-sys-outline-variant);
-  --dm-border-focus: var(--mat-sys-primary);
-
-  // ── Text tokens ───────────────────────────────────────────────────────────
-  --dm-text-primary: var(--mat-sys-on-surface);
-  --dm-text-secondary: var(--mat-sys-on-surface-variant);
-  --dm-text-muted: color-mix(in srgb, var(--mat-sys-on-surface-variant) 60%, transparent);
-
-  // ── Radius tokens ─────────────────────────────────────────────────────────
-  --dm-radius-sm: 6px;
-  --dm-radius-md: 12px;
-  --dm-radius-lg: 16px;
-  --dm-radius-xl: 24px;
-
-  // ── Font ──────────────────────────────────────────────────────────────────
-  --dm-font-sans: Roboto, 'Helvetica Neue', sans-serif;
-  --dm-font-mono: 'Courier New', 'Lucida Console', monospace;
-
-  // ── Layout ────────────────────────────────────────────────────────────────
   display: flex;
   width: 100%;
-  height: calc(100vh - 60px); // was: height: 100%
+  height: calc(100vh - 60px);
   max-height: calc(100vh - 60px);
-  font-family: var(--dm-font-sans);
-  background: var(--dm-bg);
-  color: var(--dm-text-primary);
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   position: relative;
 }
 
-// ── Subtle AI atmosphere (light-mode friendly) ────────────────────────────────
+// ── Atmosphere ─────────────────────────────────────────────────────────────
 .atmosphere {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-
-  // Very subtle colored radial blobs
   background:
     radial-gradient(ellipse 70% 50% at 5% 0%, rgba(25, 118, 210, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 95% 90%, rgba(0, 137, 123, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245, 158, 11, 0.02) 0%, transparent 60%);
+    radial-gradient(ellipse 50% 60% at 95% 90%, rgba(0, 137, 123, 0.04) 0%, transparent 60%);
 
-  // Subtle dot grid — hallmark of AI/tech dashboards
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle,
-        rgba(25, 118, 210, 0.07) 1px,
-        transparent 1px);
+    background-image: radial-gradient(circle, rgba(25, 118, 210, 0.06) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 }
 
-// ── Shell ─────────────────────────────────────────────────────────────────────
+// ── Shell ──────────────────────────────────────────────────────────────────
 .shell {
   position: relative;
   z-index: 1;
@@ -85,17 +51,17 @@
   padding: 0 16px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-// ── Header ────────────────────────────────────────────────────────────────────
+// ── Header ─────────────────────────────────────────────────────────────────
 .app-header {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0 14px;
-  border-bottom: 1px solid var(--dm-border);
-  background: transparent;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .logo {
@@ -105,45 +71,351 @@
 }
 
 .logo-mark {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--dm-ai-primary) 0%, var(--dm-ai-teal) 100%);
+  background: linear-gradient(135deg, var(--dm-primary) 0%, var(--dm-teal) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  box-shadow:
-    0 2px 8px rgba(25, 118, 210, 0.25),
-    0 0 0 3px rgba(25, 118, 210, 0.08);
+  font-size: 17px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.25), 0 0 0 3px rgba(25, 118, 210, 0.08);
 }
 
 .logo-text {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: var(--dm-text-primary);
+  color: var(--mat-sys-on-surface);
 
-  span {
-    color: var(--dm-ai-primary);
-    font-weight: 800;
-  }
+  span { color: var(--dm-primary); }
 }
 
 .header-badge {
-  font-family: var(--dm-font-mono);
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--dm-ai-teal);
-  background: var(--dm-ai-teal-soft);
+  color: var(--dm-teal);
+  background: var(--dm-teal-soft);
   border: 1px solid rgba(0, 137, 123, 0.25);
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 20px;
 }
 
-// ── Main layout ───────────────────────────────────────────────────────────────
+// ── Intro Banner ───────────────────────────────────────────────────────────
+.intro-banner {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  margin: 12px 0 0;
+  padding: 18px 20px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--dm-primary) 5%, var(--mat-sys-surface-container-low)),
+    color-mix(in srgb, var(--dm-teal) 4%, var(--mat-sys-surface-container-low))
+  );
+
+  // Animated gradient border
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: linear-gradient(
+      90deg,
+      var(--dm-primary),
+      var(--dm-teal),
+      var(--dm-amber),
+      var(--dm-purple),
+      var(--dm-primary)
+    );
+    background-size: 400% 100%;
+    animation: banner-border 5s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  // Enter animation
+  animation: banner-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  // Exit — triggered by [class.banner-exit]
+  &.banner-exit {
+    animation: banner-exit 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+  }
+}
+
+@keyframes banner-border {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 400% 0; }
+}
+
+@keyframes banner-enter {
+  from { opacity: 0; transform: translateY(-10px) scaleY(0.96); max-height: 0; }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); max-height: 400px; }
+}
+
+@keyframes banner-exit {
+  from { opacity: 1; max-height: 400px; margin-top: 12px; padding: 18px 20px; }
+  to   { opacity: 0; max-height: 0; margin-top: 0; padding: 0 20px; }
+}
+
+// ── Banner inner layout ────────────────────────────────────────────────────
+.banner-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.banner-left {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+// Brain orb with 3-ring orbital spinner
+.banner-brain-wrap {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.banner-brain-orb {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  z-index: 2;
+  animation: brain-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 7px rgba(25, 118, 210, 0.45));
+}
+
+.banner-brain-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ring-a {
+  width: 60px; height: 60px;
+  border-top-color: var(--dm-primary);
+  border-right-color: rgba(25, 118, 210, 0.3);
+  animation: ring-spin 2s linear infinite;
+}
+.ring-b {
+  width: 46px; height: 46px;
+  border-bottom-color: var(--dm-teal);
+  border-left-color: rgba(0, 137, 123, 0.3);
+  animation: ring-spin 1.4s linear infinite reverse;
+}
+.ring-c {
+  width: 32px; height: 32px;
+  border-top-color: var(--dm-amber);
+  border-left-color: rgba(245, 158, 11, 0.3);
+  animation: ring-spin 2.5s linear infinite;
+}
+
+@keyframes ring-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes brain-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+// Text area
+.banner-text { flex: 1; min-width: 0; }
+
+.banner-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 7px;
+  letter-spacing: -0.3px;
+}
+
+.banner-mind { color: var(--dm-primary); }
+
+.banner-ai-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--dm-primary);
+  background: rgba(25, 118, 210, 0.1);
+  border: 1.5px solid rgba(25, 118, 210, 0.3);
+  border-radius: 5px;
+  padding: 2px 6px;
+  animation: badge-glow 2s ease-in-out infinite;
+}
+
+.banner-new-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #00695c;
+  background: rgba(0, 137, 123, 0.1);
+  border: 1.5px solid rgba(0, 137, 123, 0.3);
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+
+@keyframes badge-glow {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 6px rgba(25, 118, 210, 0.4); }
+}
+
+.banner-desc {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.65;
+  margin: 0 0 12px;
+  max-width: 560px;
+}
+
+// Steps
+.banner-steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.banner-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+}
+
+.step-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--dm-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-sep {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.4;
+}
+
+// Feature chips (right column)
+.banner-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.feat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 10px;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: rgba(25, 118, 210, 0.35);
+  }
+}
+
+.feat-icon { font-size: 18px; flex-shrink: 0; }
+
+.feat-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  line-height: 1.2;
+}
+
+.feat-sub {
+  font-size: 10px;
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: 1px;
+}
+
+// Decorative particles
+.b-particle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 11px;
+  opacity: 0.13;
+  animation: par-float 4s ease-in-out infinite;
+  z-index: 0;
+  color: var(--dm-primary);
+}
+
+.par-1 { top: 10px; right: 90px; animation-delay: 0s; }
+.par-2 { bottom: 10px; right: 55px; font-size: 8px; animation-delay: 1.2s; color: var(--dm-teal); }
+.par-3 { top: 50%; right: 22px; font-size: 7px; animation-delay: 2.5s; color: var(--dm-amber); }
+
+@keyframes par-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.13; }
+  50%       { transform: translateY(-6px) rotate(15deg); opacity: 0.22; }
+}
+
+// ── Desktop: side-by-side banner layout ────────────────────────────────────
+@media (min-width: 769px) {
+  .intro-banner {
+    padding: 20px 24px;
+  }
+
+  .banner-inner {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .banner-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .banner-features {
+    width: 250px;
+    flex-shrink: 0;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .feat-chip { padding: 7px 10px; }
+  .banner-heading { font-size: 21px; }
+  .banner-desc { font-size: 13px; }
+}
+
+// ── Main layout ─────────────────────────────────────────────────────────────
 .main {
   flex: 1;
   display: flex;
@@ -158,11 +430,9 @@
     gap: 12px;
     padding: 12px 0;
 
-    // chat panel needs explicit height on mobile so it doesn't collapse
     app-chat-panel {
       height: 500px;
       flex-shrink: 0;
     }
   }
-
 }

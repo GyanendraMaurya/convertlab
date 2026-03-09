@@ -32,6 +32,9 @@ export class DocMindComponent {
   private readonly fileUploadService = inject(FileUploadService);
   private readonly snackbarService = inject(SnackbarService);
 
+  readonly showBanner = signal(true);
+  readonly bannerExiting = signal(false);
+
   // ── Document state ────────────────────────────────────────────────────────
   docState = signal<DocumentState>({
     status: 'idle',
@@ -52,6 +55,7 @@ export class DocMindComponent {
 
   // ── File selected → upload + ingest ──────────────────────────────────────
   async onFileSelected(file: File) {
+    this.dismissBanner();
     this.resetState(file);
 
     try {
@@ -234,6 +238,13 @@ export class DocMindComponent {
 
   private sleep(ms: number): Promise<void> {
     return new Promise(r => setTimeout(r, ms));
+  }
+
+  private dismissBanner(): void {
+    if (!this.showBanner()) return;
+    this.bannerExiting.set(true);
+    // Remove from DOM after exit animation completes (350 ms)
+    setTimeout(() => this.showBanner.set(false), 360);
   }
 
 }

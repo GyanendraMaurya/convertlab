@@ -6,6 +6,22 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
+         <!-- DocMind AI featured entry -->
+      <div class="docmind-sidenav-item">
+        <a mat-list-item [routerLink]="['/doc-mind']" (click)="closeSidenav()"
+          [class.active-list-item]="isActive('/doc-mind')"
+          class="docmind-sidenav-link">
+          <span class="docmind-sidenav-icon">🧠</span>
+          <span matListItemTitle class="docmind-sidenav-title">
+            DocMind
+            <span class="docmind-sidenav-badge">AI</span>
+          </span>
+          <span class="docmind-sidenav-pulse"></span>
+          <span class="docmind-sidenav-pulse pulse-2"></span>
+        </a>
+      </div>
+
+      <mat-divider></mat-divider>
 
     <mat-nav-list>
       <h3 mat-subheader>PDF Tools</h3>

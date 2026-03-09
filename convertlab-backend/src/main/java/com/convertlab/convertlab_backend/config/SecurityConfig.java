@@ -42,7 +42,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // AI document endpoints require authentication
-                        .requestMatchers("/documents/**").authenticated()
+//                        .requestMatchers("/documents/**").authenticated() // temporarily allow all for initial period
 
                         .anyRequest().permitAll()
                 )

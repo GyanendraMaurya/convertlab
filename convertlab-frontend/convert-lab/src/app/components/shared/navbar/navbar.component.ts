@@ -9,6 +9,7 @@ import { AuthStateService } from '../../../services/auth-state.service';
 import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { MatDivider } from '@angular/material/divider';
+import { WebSocketService } from '../../../services/websocket.service';
 
 @Component({
   selector: 'app-navbar',
@@ -29,6 +30,7 @@ export class NavbarComponent {
   private authService = inject(AuthService);
   private snackbar = inject(SnackbarService);
   private router = inject(Router);
+  private ws = inject(WebSocketService);
 
   menuToggle = output<void>();
   isAuthenticated = this.authState.isAuthenticated;

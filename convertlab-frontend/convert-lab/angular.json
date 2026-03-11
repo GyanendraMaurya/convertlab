@@ -43,6 +43,7 @@
                 "output": "/assets/pdfjs"
               }
             ],
+            
             "styles": [
               "src/styles.scss",
               "src/styles/material-overrides.scss",
@@ -63,8 +64,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all",

@@ -8,6 +8,7 @@ import { blobErrorInterceptor } from './interceptors/blob-error.interceptor';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { AuthInitService } from './services/auth-init.service';
+import { sessionInterceptor } from './interceptors/session.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         authInterceptor,
+        sessionInterceptor,
         blobErrorInterceptor,
         errorInterceptor
       ]),

@@ -29,7 +29,7 @@ public class UserAiUsageService {
      * @throws AiRateLimitException when the daily limit is exceeded
      */
     @Transactional
-    public void checkAndIncrementIngest(String email) {
+    public void checkAndIncrementIngestLimit(String email) {
         LocalDate today = LocalDate.now();
         UserAiUsage usage = getOrCreate(email, today);
 

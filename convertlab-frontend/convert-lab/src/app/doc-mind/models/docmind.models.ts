@@ -5,6 +5,7 @@ export type IngestStepStatus = 'pending' | 'active' | 'done';
 export interface IngestStep {
   label: string;
   status: IngestStepStatus;
+  type: 'DOCUMENT_EXTRACTED' | 'DOCUMENT_CLEANED' | 'DOCUMENT_CHUNKED' | 'DOCUMENT_EMBEDDED';
 }
 
 export interface DocumentState {

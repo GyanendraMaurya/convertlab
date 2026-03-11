@@ -3,12 +3,16 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.api.enums.ActionType;
 import com.convertlab.convertlab_backend.api.enums.SplitType;
+import com.convertlab.convertlab_backend.config.RequestContext;
 import com.convertlab.convertlab_backend.exception.PdfPasswordException;
 import com.convertlab.convertlab_backend.service_core.*;
 import com.convertlab.convertlab_backend.service_core.pojos.ExtractedFile;
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import com.convertlab.convertlab_backend.service_util.PdfUtils;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.*;
+import com.convertlab.convertlab_backend.websocket.WebSocketEvent;
+import com.convertlab.convertlab_backend.websocket.WebSocketEventType;
+import com.convertlab.convertlab_backend.websocket.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
@@ -36,10 +40,13 @@ public class PdfController {
     private final ImageService imageService;
     private final PdfCompressionService pdfCompressionService;
     private final PdfPasswordService pdfPasswordService;
+    private final WebSocketService webSocketService;
+    private final RequestContext requestContext;
 
     @GetMapping("/test/{pathVariable}")
     public ResponseEntity<ApiResponse<String>> test(@PathVariable String pathVariable) {
         log.info("Test endpoint called with pathVariable: {}", pathVariable);
+        webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.NOTIFICATION, "hi from websocket" ));
         return ResponseEntity.ok(ApiResponse.success("test, path variable: " + pathVariable));
     }
 

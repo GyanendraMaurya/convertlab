@@ -1,10 +1,14 @@
 package com.convertlab.convertlab_backend.service_ai;
 
+import com.convertlab.convertlab_backend.config.RequestContext;
 import com.convertlab.convertlab_backend.entity.DocumentChunk;
 import com.convertlab.convertlab_backend.entity.Embedding1536;
 import com.convertlab.convertlab_backend.repository.Embedding1536Repository;
 import com.convertlab.convertlab_backend.service_ai.exception.DocumentIngestionException;
 import com.convertlab.convertlab_backend.service_ai.impl.OpenAiChatService;
+import com.convertlab.convertlab_backend.websocket.WebSocketEvent;
+import com.convertlab.convertlab_backend.websocket.WebSocketEventType;
+import com.convertlab.convertlab_backend.websocket.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,8 @@ public class RagService {
     private final Embedding1536Repository embeddingRepository;
     private final DocumentChunkService documentChunkService;
     private final OpenAiChatService openAiChatService;
+    private final RequestContext requestContext;
+    private final WebSocketService webSocketService;
 
     public int ingest(String fileId) {
         if (fileId == null || fileId.isBlank()) {
@@ -41,6 +47,7 @@ public class RagService {
                         "TEXT_EXTRACTION_EMPTY"
                 );
             }
+            webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_EXTRACTED, fileId ));
             log.debug("Extracted {} characters from fileId: {}", rawText.length(), fileId);
 
             String cleanedText = documentTextProcessor.process(rawText);
@@ -50,6 +57,8 @@ public class RagService {
                         "TEXT_PROCESSING_EMPTY"
                 );
             }
+
+            webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_CLEANED, fileId ));
             log.debug("Cleaned text length: {} for fileId: {}", cleanedText.length(), fileId);
 
             List<String> chunks = documentChunker.chunk(cleanedText);
@@ -62,9 +71,13 @@ public class RagService {
             log.debug("Generated {} chunks for fileId: {}", chunks.size(), fileId);
 
             List<DocumentChunk> documentChunks = documentChunkService.saveAllChunks(fileId, chunks);
+
+            webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_CHUNKED, fileId ));
             log.debug("Saved {} chunks for fileId: {}", documentChunks.size(), fileId);
 
             embeddingService.generateAndStore(documentChunks);
+            webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_EMBEDDED, fileId ));
+
             log.info("Document ingestion completed successfully for fileId: {}", fileId);
             return chunks.size();
         } catch (DocumentIngestionException e) {

@@ -5,6 +5,7 @@ import { MatToolbar, MatToolbarModule } from '@angular/material/toolbar';
 import { SessionService } from './services/session.service';
 import { PageVisitService } from './services/page-visit.service';
 import { isPlatformBrowser } from '@angular/common';
+import { WebSocketService } from './services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -16,12 +17,19 @@ export class App {
   protected readonly title = signal('convert-lab');
   private readonly session = inject(SessionService);
   private readonly pageVisit = inject(PageVisitService);
+  private readonly ws = inject(WebSocketService);
   private platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.session.init();
       this.pageVisit.init();
+      this.ws.connect();
     }
   }
+
+  ngOnDestroy() {
+    this.ws.disconnect();
+  }
+
 }

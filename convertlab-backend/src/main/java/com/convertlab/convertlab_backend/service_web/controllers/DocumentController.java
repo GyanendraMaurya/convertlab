@@ -39,7 +39,7 @@ public class DocumentController {
         log.info("Ingest request from user: {} for fileId: {}", principal, request.fileId());
 
         // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
-        userAiUsageService.checkAndIncrementIngest(principal);
+        userAiUsageService.checkAndIncrementIngestLimit(principal);
 
         int chunkCount = ragService.ingest(request.fileId());
         return ResponseEntity.ok(ApiResponse.success(new IngestResponse(chunkCount)));

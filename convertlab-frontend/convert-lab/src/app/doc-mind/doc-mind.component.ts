@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   OnInit,
+  PLATFORM_ID,
   signal,
   viewChild,
 } from '@angular/core';
@@ -18,6 +19,8 @@ import { ChatPanelComponent } from './components/chat-panel/chat-panel.component
 import { FileUploadService } from '../services/file-upload.service';
 import { firstValueFrom } from 'rxjs';
 import { SnackbarService } from '../services/snackbar.service';
+import { WebSocketService } from '../services/websocket.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-doc-mind',
@@ -27,10 +30,12 @@ import { SnackbarService } from '../services/snackbar.service';
   styleUrl: './doc-mind.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DocMindComponent {
+export class DocMindComponent implements OnInit {
   private readonly ragService = inject(DocumentRagService);
   private readonly fileUploadService = inject(FileUploadService);
   private readonly snackbarService = inject(SnackbarService);
+  private readonly ws = inject(WebSocketService);
+  private platformId = inject(PLATFORM_ID);
 
   readonly showBanner = signal(true);
   readonly bannerExiting = signal(false);
@@ -52,6 +57,13 @@ export class DocMindComponent {
   hasMessageSent = signal(false);
 
   private chatPanel = viewChild(ChatPanelComponent);
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.subscribeToIngestEvents();
+    }
+
+  }
 
   // ── File selected → upload + ingest ──────────────────────────────────────
   async onFileSelected(file: File) {
@@ -79,7 +91,6 @@ export class DocMindComponent {
       // Step 2 — Ingest
       this.setStatus('ingesting');
       this.appendLog('status', 'processing…');
-      this.tickSteps();
 
       let chunkCount: number | null = null;
       try {
@@ -127,7 +138,6 @@ export class DocMindComponent {
         const res = await firstValueFrom(this.ragService
           .queryDocument(this.docState().pdfId!, text));
         answer = res!.data.answer
-        // sources = res!.data.sources ?? [];
       } catch {
         answer = 'Sorry, I encountered an error while processing your request.';
       }
@@ -161,39 +171,14 @@ export class DocMindComponent {
   }
 
   private appendLog(label: string, value: string) {
-    this.docState.update(s => ({
-      ...s,
-      ingestLog: [...s.ingestLog, { label, value }],
-    }));
-  }
+    this.docState.update(s => {
+      // if there’s already an entry with this label, replace its value
+      const idx = s.ingestLog.findIndex(l => l.label === label);
+      const ingestLog = idx >= 0
+        ? s.ingestLog.map((l, i) => i === idx ? { label, value } : l)
+        : [...s.ingestLog, { label, value }];
 
-  // ── Animate through ingest steps ──────────────────────────────────────────
-  private tickSteps() {
-    const delays = [0, 700, 1500, 2300];
-    const durations = [600, 700, 900, 400];
-
-    delays.forEach((delay, i) => {
-      // Mark active
-      setTimeout(() => {
-        this.docState.update(s => ({
-          ...s,
-          ingestSteps: s.ingestSteps.map((step, idx) => ({
-            ...step,
-            status: idx === i ? 'active' : idx < i ? 'done' : 'pending',
-          })),
-        }));
-      }, delay);
-
-      // Mark done
-      setTimeout(() => {
-        this.docState.update(s => ({
-          ...s,
-          ingestSteps: s.ingestSteps.map((step, idx) => ({
-            ...step,
-            status: idx <= i ? 'done' : 'pending',
-          })),
-        }));
-      }, delay + durations[i]);
+      return { ...s, ingestLog };
     });
   }
 
@@ -223,10 +208,10 @@ export class DocMindComponent {
   // ── Utilities ─────────────────────────────────────────────────────────────
   private buildDefaultSteps(): IngestStep[] {
     return [
-      { label: 'Extracting text', status: 'pending' },
-      { label: 'Chunking content', status: 'pending' },
-      { label: 'Generating embeddings', status: 'pending' },
-      { label: 'Indexing vectors', status: 'pending' },
+      { label: 'Extracting text', status: 'pending', type: 'DOCUMENT_EXTRACTED' },
+      { label: 'Cleaning text', status: 'pending', type: 'DOCUMENT_CLEANED' },
+      { label: 'Chunking content', status: 'pending', type: 'DOCUMENT_CHUNKED' },
+      { label: 'Generating embeddings', status: 'pending', type: 'DOCUMENT_EMBEDDED' }
     ];
   }
 
@@ -236,15 +221,32 @@ export class DocMindComponent {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise(r => setTimeout(r, ms));
-  }
 
   private dismissBanner(): void {
     if (!this.showBanner()) return;
     this.bannerExiting.set(true);
     // Remove from DOM after exit animation completes (350 ms)
     setTimeout(() => this.showBanner.set(false), 360);
+  }
+
+  private subscribeToIngestEvents() {
+    this.ws.on<string>('DOCUMENT_EXTRACTED', 'DOCUMENT_CLEANED', 'DOCUMENT_CHUNKED', 'DOCUMENT_EMBEDDED')
+      .subscribe(event => {
+        if (this.docState().pdfId === event.payload)
+          console.log('Received WebSocket message:', event);
+        if (event.type === 'DOCUMENT_EXTRACTED') {
+          this.patchState({ ingestSteps: this.docState().ingestSteps.map(step => ({ ...step, status: step.type === 'DOCUMENT_EXTRACTED' ? 'done' : step.status })) });
+        }
+        if (event.type === 'DOCUMENT_CLEANED') {
+          this.patchState({ ingestSteps: this.docState().ingestSteps.map(step => ({ ...step, status: step.type === 'DOCUMENT_CLEANED' ? 'done' : step.status })) });
+        }
+        if (event.type === 'DOCUMENT_CHUNKED') {
+          this.patchState({ ingestSteps: this.docState().ingestSteps.map(step => ({ ...step, status: step.type === 'DOCUMENT_CHUNKED' ? 'done' : step.status })) });
+        }
+        if (event.type === 'DOCUMENT_EMBEDDED') {
+          this.patchState({ ingestSteps: this.docState().ingestSteps.map(step => ({ ...step, status: step.type === 'DOCUMENT_EMBEDDED' ? 'done' : step.status })) });
+        }
+      });
   }
 
 }

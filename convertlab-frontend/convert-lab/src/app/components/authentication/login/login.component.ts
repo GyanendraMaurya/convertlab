@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { AuthStateService } from '../../../services/auth-state.service';
+import { WebSocketService } from '../../../services/websocket.service';
 
 @Component({
   selector: 'app-login',
@@ -33,6 +34,8 @@ export class LoginComponent {
   private authState = inject(AuthStateService);
   private snackbarService = inject(SnackbarService);
   private router = inject(Router);
+  private ws = inject(WebSocketService);
+  
 
   loginForm: FormGroup;
 

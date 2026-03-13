@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Log4j2
 @Configuration
-@Profile("s3")
+@Profile("prod")
 public class AwsS3Config {
 
     @Value("${aws.s3.region}")

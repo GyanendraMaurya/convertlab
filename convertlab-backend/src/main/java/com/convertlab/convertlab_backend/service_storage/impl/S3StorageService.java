@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Log4j2
 @Service
-@Profile("s3")
+@Profile("prod")
 public class S3StorageService implements StorageService {
 
     private static final String PDF_PREFIX    = "pdf/";

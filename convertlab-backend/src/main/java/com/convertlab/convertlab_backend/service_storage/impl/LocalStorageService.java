@@ -2,6 +2,7 @@ package com.convertlab.convertlab_backend.service_storage.impl;
 
 import com.convertlab.convertlab_backend.service_storage.StorageService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Log4j2
 @Service
+@Profile("local")
 public class LocalStorageService implements StorageService {
 
     private final Path pdfDir = Paths.get("temp-files/pdf");

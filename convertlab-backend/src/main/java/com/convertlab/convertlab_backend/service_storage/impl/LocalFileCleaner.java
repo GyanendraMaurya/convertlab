@@ -3,6 +3,7 @@ package com.convertlab.convertlab_backend.service_storage.impl;
 import com.convertlab.convertlab_backend.service_storage.FileCleanerStrategy;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.*;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 @Component
+@Profile("local")
 public class LocalFileCleaner implements FileCleanerStrategy {
 
     @Value("${temp.folder:temp-files}")

@@ -11,13 +11,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /pgdata/postgres:/var/lib/postgresql/data
+#      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: .
     container_name: convertlab_backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "${HOST_PORT:-8081}:8080"
     env_file:
@@ -28,5 +36,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 
-volumes:
-  postgres_data:
+#For local development, you can uncomment the volumes section to persist PostgreSQL data on your host machine. Make sure to create the directory /pgdata/postgres on your host before running docker-compose.
+#volumes:
+#  postgres_data:

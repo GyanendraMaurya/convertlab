@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  ElementRef,
   inject,
   OnInit,
   PLATFORM_ID,
@@ -21,11 +23,12 @@ import { firstValueFrom } from 'rxjs';
 import { SnackbarService } from '../services/snackbar.service';
 import { WebSocketService } from '../services/websocket.service';
 import { isPlatformBrowser } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-doc-mind',
   standalone: true,
-  imports: [DocPanelComponent, ChatPanelComponent],
+  imports: [DocPanelComponent, ChatPanelComponent, MatIconModule],
   templateUrl: './doc-mind.component.html',
   styleUrl: './doc-mind.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +42,9 @@ export class DocMindComponent implements OnInit {
 
   readonly showBanner = signal(true);
   readonly bannerExiting = signal(false);
+
+  /** True once the user has uploaded a file on mobile — switches to chat view */
+  readonly isMobileChatMode = signal(false);
 
   // ── Document state ────────────────────────────────────────────────────────
   docState = signal<DocumentState>({
@@ -56,17 +62,35 @@ export class DocMindComponent implements OnInit {
   isThinking = signal(false);
   hasMessageSent = signal(false);
 
+  // ── Computed helpers for mobile doc bar ──────────────────────────────────
+  isIngesting = computed(() =>
+    this.docState().status === 'uploading' || this.docState().status === 'ingesting'
+  );
+  isReady = computed(() => this.docState().status === 'ready');
+
+  mobileDocStatus = computed(() => {
+    switch (this.docState().status) {
+      case 'uploading': return 'Uploading…';
+      case 'ingesting': return 'Analyzing…';
+      case 'ready': return '✓ Ready';
+      case 'error': return '✗ Error';
+      default: return '';
+    }
+  });
+
   private chatPanel = viewChild(ChatPanelComponent);
+  private mobileFileInput = viewChild<ElementRef<HTMLInputElement>>('mobileFileInput');
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.subscribeToIngestEvents();
     }
-
   }
 
   // ── File selected → upload + ingest ──────────────────────────────────────
   async onFileSelected(file: File) {
+    // Switch mobile to chat mode as soon as a file is chosen
+    this.isMobileChatMode.set(true);
     this.dismissBanner();
     this.resetState(file);
 
@@ -82,7 +106,7 @@ export class DocMindComponent implements OnInit {
         const res = await firstValueFrom(this.fileUploadService.uploadPdf(file));
         pdfId = res!.data.fileId;
       } catch {
-        pdfId = 'demo_' + Date.now(); // demo fallback
+        pdfId = 'demo_' + Date.now();
       }
 
       this.patchState({ pdfId });
@@ -108,12 +132,25 @@ export class DocMindComponent implements OnInit {
         ['Full document indexed', 'Embeddings ready']
       );
 
-      // Focus input after ready
       setTimeout(() => this.chatPanel()?.focusInput(), 100);
 
     } catch (err) {
       this.patchState({ status: 'error' });
       console.error('[DocMind] Processing error:', err);
+    }
+  }
+
+  // ── Mobile re-upload button ───────────────────────────────────────────────
+  onMobileReupload() {
+    this.mobileFileInput()?.nativeElement.click();
+  }
+
+  onMobileFileInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      input.value = '';
+      this.onFileSelected(file);
     }
   }
 
@@ -137,7 +174,7 @@ export class DocMindComponent implements OnInit {
       try {
         const res = await firstValueFrom(this.ragService
           .queryDocument(this.docState().pdfId!, text));
-        answer = res!.data.answer
+        answer = res!.data.answer;
       } catch {
         answer = 'Sorry, I encountered an error while processing your request.';
       }
@@ -172,12 +209,10 @@ export class DocMindComponent implements OnInit {
 
   private appendLog(label: string, value: string) {
     this.docState.update(s => {
-      // if there’s already an entry with this label, replace its value
       const idx = s.ingestLog.findIndex(l => l.label === label);
       const ingestLog = idx >= 0
         ? s.ingestLog.map((l, i) => i === idx ? { label, value } : l)
         : [...s.ingestLog, { label, value }];
-
       return { ...s, ingestLog };
     });
   }
@@ -211,7 +246,7 @@ export class DocMindComponent implements OnInit {
       { label: 'Extracting text', status: 'pending', type: 'DOCUMENT_EXTRACTED' },
       { label: 'Cleaning text', status: 'pending', type: 'DOCUMENT_CLEANED' },
       { label: 'Chunking content', status: 'pending', type: 'DOCUMENT_CHUNKED' },
-      { label: 'Generating embeddings', status: 'pending', type: 'DOCUMENT_EMBEDDED' }
+      { label: 'Generating embeddings', status: 'pending', type: 'DOCUMENT_EMBEDDED' },
     ];
   }
 
@@ -221,11 +256,9 @@ export class DocMindComponent implements OnInit {
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
   }
 
-
   private dismissBanner(): void {
     if (!this.showBanner()) return;
     this.bannerExiting.set(true);
-    // Remove from DOM after exit animation completes (350 ms)
     setTimeout(() => this.showBanner.set(false), 360);
   }
 
@@ -248,5 +281,4 @@ export class DocMindComponent implements OnInit {
         }
       });
   }
-
 }

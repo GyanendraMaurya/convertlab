@@ -11,98 +11,175 @@
     <div class="header-badge">RAG · v1.0</div>
   </header>
 
-  <!-- ── Intro Banner (visible until user uploads a file) ───────────────── -->
-  @if (showBanner()) {
-    <div class="intro-banner" [class.banner-exit]="bannerExiting()">
+  <!-- ── MOBILE VIEW ───────────────────────────────────────────────────── -->
+  <!-- Only visible on mobile (≤768px) -->
 
-      <div class="banner-inner">
+  @if (!isMobileChatMode()) {
+    <!-- Mobile: Pre-upload screen — banner + upload only -->
+    <div class="mobile-upload-screen">
 
-        <!-- Left: brain orb + text -->
-        <div class="banner-left">
-          <div class="banner-brain-wrap">
-            <div class="banner-brain-orb">🧠</div>
-            <div class="banner-brain-ring ring-a"></div>
-            <div class="banner-brain-ring ring-b"></div>
-            <div class="banner-brain-ring ring-c"></div>
+      <!-- Compact intro card -->
+      <div class="mobile-intro-card">
+        <div class="mobile-intro-top">
+          <div class="mobile-brain-wrap">
+            <div class="mobile-brain-orb">🧠</div>
+            <div class="mobile-brain-ring ring-a"></div>
+            <div class="mobile-brain-ring ring-b"></div>
           </div>
-
-          <div class="banner-text">
-            <div class="banner-heading">
-              Doc<span class="banner-mind">Mind</span>
-              <span class="banner-ai-badge">AI</span>
-              <span class="banner-new-badge">NEW</span>
+          <div class="mobile-intro-text">
+            <div class="mobile-intro-heading">
+              Doc<span class="mobile-mind">Mind</span>
+              <span class="mobile-ai-badge">AI</span>
             </div>
-            <p class="banner-desc">
-              Upload any PDF and chat with it in plain English. DocMind splits your document into semantic chunks, builds a vector index, and retrieves the most relevant context to give you precise, grounded answers — not hallucinations.
+            <p class="mobile-intro-desc">
+              Upload a PDF and chat with it. Powered by RAG &amp; vector search.
             </p>
-            <div class="banner-steps">
-              <div class="banner-step"><span class="step-num">1</span> Upload PDF</div>
-              <span class="step-sep">→</span>
-              <div class="banner-step"><span class="step-num">2</span> Auto-indexing</div>
-              <span class="step-sep">→</span>
-              <div class="banner-step"><span class="step-num">3</span> Ask anything</div>
-            </div>
           </div>
         </div>
 
-        <!-- Right: feature chips -->
-        <div class="banner-features">
-          <div class="feat-chip">
-            <span class="feat-icon">📄</span>
-            <div>
-              <div class="feat-title">Smart Chunking</div>
-              <div class="feat-sub">Semantic document splitting</div>
-            </div>
-          </div>
-          <div class="feat-chip">
-            <span class="feat-icon">🔍</span>
-            <div>
-              <div class="feat-title">Vector Search</div>
-              <div class="feat-sub">Finds relevant context fast</div>
-            </div>
-          </div>
-          <div class="feat-chip">
-            <span class="feat-icon">💬</span>
-            <div>
-              <div class="feat-title">GPT-4o Answers</div>
-              <div class="feat-sub">Grounded in your document</div>
-            </div>
-          </div>
-          <div class="feat-chip">
-            <span class="feat-icon">🔒</span>
-            <div>
-              <div class="feat-title">Private & Secure</div>
-              <div class="feat-sub">Files deleted after session</div>
-            </div>
-          </div>
+        <div class="mobile-steps">
+          <div class="mobile-step"><span class="step-num">1</span> Upload PDF</div>
+          <span class="step-sep">→</span>
+          <div class="mobile-step"><span class="step-num">2</span> Auto-index</div>
+          <span class="step-sep">→</span>
+          <div class="mobile-step"><span class="step-num">3</span> Ask anything</div>
         </div>
-
       </div>
 
-      <!-- Decorative particles -->
-      <div class="b-particle par-1">✦</div>
-      <div class="b-particle par-2">◆</div>
-      <div class="b-particle par-3">✦</div>
+      <!-- Upload zone -->
+      <app-doc-panel
+        [docState]="docState()"
+        [hideSuggestions]="true"
+        (fileSelected)="onFileSelected($event)"
+        (promptSelected)="onPromptSelected($event)"
+      />
+
     </div>
   }
 
-  <!-- ── Main layout ────────────────────────────────────────────────────── -->
-  <div class="main">
+  @if (isMobileChatMode()) {
+    <!-- Mobile: Chat screen -->
+    <div class="mobile-chat-screen">
 
-    <app-doc-panel
-      [docState]="docState()"
-      [hideSuggestions]="hasMessageSent()"
-      (fileSelected)="onFileSelected($event)"
-      (promptSelected)="onPromptSelected($event)"
-    />
+      <!-- Compact doc status bar -->
+      <div class="mobile-doc-bar" [class.ingesting]="isIngesting()" [class.ready]="isReady()">
+        <span class="doc-bar-icon">📄</span>
+        <span class="doc-bar-name">{{ docState().fileName }}</span>
+        <span class="doc-bar-status">{{ mobileDocStatus() }}</span>
+        <button class="doc-bar-reupload" (click)="onMobileReupload()" title="Upload new document">
+          <span>New Upload</span>
+        </button>
+      </div>
 
-    <app-chat-panel
-      [messages]="messages()"
-      [docState]="docState()"
-      [isThinking]="isThinking()"
-      [ingestSteps]="docState().ingestSteps"
-      (messageSent)="onMessageSent($event)"
-    />
+      <!-- Hidden file input for re-upload -->
+      <input
+        #mobileFileInput
+        type="file"
+        accept=".pdf"
+        style="display:none"
+        (change)="onMobileFileInputChange($event)"
+      />
+
+      <!-- Chat panel takes all remaining space -->
+      <app-chat-panel
+        [messages]="messages()"
+        [docState]="docState()"
+        [isThinking]="isThinking()"
+        [ingestSteps]="docState().ingestSteps"
+        (messageSent)="onMessageSent($event)"
+      />
+
+    </div>
+  }
+
+  <!-- ── DESKTOP VIEW ──────────────────────────────────────────────────── -->
+  <!-- Only visible on desktop (>768px) -->
+
+  <div class="desktop-view">
+
+    <!-- Intro Banner (visible until user uploads a file) -->
+    @if (showBanner()) {
+      <div class="intro-banner" [class.banner-exit]="bannerExiting()">
+        <div class="banner-inner">
+          <div class="banner-left">
+            <div class="banner-brain-wrap">
+              <div class="banner-brain-orb">🧠</div>
+              <div class="banner-brain-ring ring-a"></div>
+              <div class="banner-brain-ring ring-b"></div>
+              <div class="banner-brain-ring ring-c"></div>
+            </div>
+            <div class="banner-text">
+              <div class="banner-heading">
+                Doc<span class="banner-mind">Mind</span>
+                <span class="banner-ai-badge">AI</span>
+                <span class="banner-new-badge">NEW</span>
+              </div>
+              <p class="banner-desc">
+                Upload any PDF and chat with it in plain English. DocMind splits your document into semantic chunks, builds a vector index, and retrieves the most relevant context to give you precise, grounded answers — not hallucinations.
+              </p>
+              <div class="banner-steps">
+                <div class="banner-step"><span class="step-num">1</span> Upload PDF</div>
+                <span class="step-sep">→</span>
+                <div class="banner-step"><span class="step-num">2</span> Auto-indexing</div>
+                <span class="step-sep">→</span>
+                <div class="banner-step"><span class="step-num">3</span> Ask anything</div>
+              </div>
+            </div>
+          </div>
+          <div class="banner-features">
+            <div class="feat-chip">
+              <span class="feat-icon">📄</span>
+              <div>
+                <div class="feat-title">Smart Chunking</div>
+                <div class="feat-sub">Semantic document splitting</div>
+              </div>
+            </div>
+            <div class="feat-chip">
+              <span class="feat-icon">🔍</span>
+              <div>
+                <div class="feat-title">Vector Search</div>
+                <div class="feat-sub">Finds relevant context fast</div>
+              </div>
+            </div>
+            <div class="feat-chip">
+              <span class="feat-icon">💬</span>
+              <div>
+                <div class="feat-title">GPT-4o Answers</div>
+                <div class="feat-sub">Grounded in your document</div>
+              </div>
+            </div>
+            <div class="feat-chip">
+              <span class="feat-icon">🔒</span>
+              <div>
+                <div class="feat-title">Private &amp; Secure</div>
+                <div class="feat-sub">Files deleted after session</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="b-particle par-1">✦</div>
+        <div class="b-particle par-2">◆</div>
+        <div class="b-particle par-3">✦</div>
+      </div>
+    }
+
+    <!-- Desktop main layout (side-by-side) -->
+    <div class="main">
+      <app-doc-panel
+        [docState]="docState()"
+        [hideSuggestions]="hasMessageSent()"
+        (fileSelected)="onFileSelected($event)"
+        (promptSelected)="onPromptSelected($event)"
+      />
+      <app-chat-panel
+        [messages]="messages()"
+        [docState]="docState()"
+        [isThinking]="isThinking()"
+        [ingestSteps]="docState().ingestSteps"
+        (messageSent)="onMessageSent($event)"
+      />
+    </div>
 
   </div>
+
 </div>

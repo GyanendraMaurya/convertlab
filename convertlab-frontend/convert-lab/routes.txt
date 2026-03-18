@@ -5,6 +5,7 @@
 /image-to-pdf
 /compress-pdf
 /compress-image
+/crop-image
 /login
 /signup
 /pdf-password

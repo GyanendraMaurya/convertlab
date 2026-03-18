@@ -1,0 +1,176 @@
+// @use '../../../../../styles/variables' as vars;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}
+
+.ratio-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ratio-chip {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 5%, transparent);
+  }
+
+  &.active {
+    background: var(--mat-sys-primary);
+    border-color: var(--mat-sys-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(25,118,210,0.25);
+  }
+}
+
+.transform-btns {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.active-btn {
+  color: var(--mat-sys-primary) !important;
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent) !important;
+  border-radius: 50%;
+}
+
+// ── Canvas container ──────────────────────────────────────────────────────────
+.canvas-container {
+  position: relative;
+  width: 100%;
+  // Height is controlled by the canvas itself; container just wraps it.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  border-radius: 8px;
+  touch-action: none; // prevents browser scroll interfering with drag
+  user-select: none;
+  -webkit-user-select: none;
+
+  &.hidden {
+    visibility: hidden;
+    position: absolute;
+  }
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+.canvas-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skeleton-pulse {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-surface-container) 0%,
+    var(--mat-sys-surface-container-high) 50%,
+    var(--mat-sys-surface-container) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-wave {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Crop info badge ───────────────────────────────────────────────────────────
+.crop-info-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: var(--mat-sys-on-surface);
+  align-self: center;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.rotation-badge {
+  color: var(--mat-sys-primary);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 720px) {
+  .editor-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ratio-chips {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .ratio-chip {
+    flex-shrink: 0;
+  }
+
+  .transform-btns {
+    align-self: flex-end;
+  }
+}

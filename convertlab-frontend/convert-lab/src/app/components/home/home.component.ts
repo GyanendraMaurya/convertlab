@@ -81,6 +81,13 @@ export class HomeComponent {
       route: '/compress-image',
       available: true,
     },
+    {
+      icon: 'crop',
+      title: 'Crop Image',
+      description: 'Crop and rotate images with a precise drag-to-select editor',
+      route: '/crop-image',
+      available: true,
+    }
   ];
 
   comingSoonFeatures: Feature[] = [

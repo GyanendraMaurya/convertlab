@@ -6,22 +6,21 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
-         <!-- DocMind AI featured entry -->
-      <div class="docmind-sidenav-item">
-        <a mat-list-item [routerLink]="['/doc-mind']" (click)="closeSidenav()"
-          [class.active-list-item]="isActive('/doc-mind')"
-          class="docmind-sidenav-link">
-          <span class="docmind-sidenav-icon">🧠</span>
-          <span matListItemTitle class="docmind-sidenav-title">
-            DocMind
-            <span class="docmind-sidenav-badge">AI</span>
-          </span>
-          <span class="docmind-sidenav-pulse"></span>
-          <span class="docmind-sidenav-pulse pulse-2"></span>
-        </a>
-      </div>
+    <!-- DocMind AI featured entry -->
+    <div class="docmind-sidenav-item">
+      <a mat-list-item [routerLink]="['/doc-mind']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/doc-mind')" class="docmind-sidenav-link">
+        <span class="docmind-sidenav-icon">🧠</span>
+        <span matListItemTitle class="docmind-sidenav-title">
+          DocMind
+          <span class="docmind-sidenav-badge">AI</span>
+        </span>
+        <span class="docmind-sidenav-pulse"></span>
+        <span class="docmind-sidenav-pulse pulse-2"></span>
+      </a>
+    </div>
 
-      <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
     <mat-nav-list>
       <h3 mat-subheader>PDF Tools</h3>
@@ -68,15 +67,21 @@
         <mat-icon matListItemIcon>compress</mat-icon>
         <span matListItemTitle>Compress Images</span>
       </a>
+
+      <a mat-list-item [routerLink]="['/crop-image']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/crop-image')">
+        <mat-icon matListItemIcon>crop</mat-icon>
+        <span matListItemTitle>Crop Image</span>
+      </a>
       <mat-divider></mat-divider>
 
       <!-- Future options section -->
-      <h3 mat-subheader>Coming Soon</h3>
+      <!-- <h3 mat-subheader>Coming Soon</h3>
 
       <a mat-list-item disabled>
         <mat-icon matListItemIcon>crop_rotate</mat-icon>
         <span matListItemTitle>Crop Images</span>
-      </a>
+      </a> -->
 
     </mat-nav-list>
   </mat-sidenav>

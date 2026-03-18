@@ -1,0 +1,63 @@
+<!-- Toolbar -->
+<div class="editor-toolbar">
+
+  <!-- Aspect ratio chips -->
+  <div class="ratio-chips">
+    @for (opt of ratioOptions; track opt.value) {
+      <button
+        class="ratio-chip"
+        [class.active]="selectedRatio() === opt.value"
+        (click)="setAspectRatio(opt.value)"
+      >{{ opt.label }}</button>
+    }
+  </div>
+
+  <!-- Transform buttons -->
+  <div class="transform-btns">
+    <button mat-icon-button matTooltip="Rotate left 90°" (click)="rotateCCW()">
+      <mat-icon>rotate_left</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Rotate right 90°" (click)="rotateCW()">
+      <mat-icon>rotate_right</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Flip horizontal" [class.active-btn]="flipH()" (click)="toggleFlipH()">
+      <mat-icon>flip</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Flip vertical" [class.active-btn]="flipV()" (click)="toggleFlipV()">
+      <mat-icon style="transform:rotate(90deg)">flip</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Reset all" (click)="reset()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- Canvas container -->
+<div class="canvas-container" #editorContainer>
+  @if (!isLoaded()) {
+    <div class="canvas-skeleton">
+      <div class="skeleton-pulse"></div>
+    </div>
+  }
+
+  <canvas
+    #cropCanvas
+    [class.hidden]="!isLoaded()"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()"
+  ></canvas>
+</div>
+
+<!-- Crop dimensions badge -->
+@if (isLoaded() && cropInfo().w > 0) {
+  <div class="crop-info-badge">
+    <mat-icon matTooltip="Crop dimensions">crop</mat-icon>
+    <span>{{ cropInfo().w }} × {{ cropInfo().h }} px</span>
+    @if (rotation() !== 0) {
+      <span class="rotation-badge">{{ rotation() }}°</span>
+    }
+  </div>
+}

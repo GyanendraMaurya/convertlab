@@ -1,0 +1,69 @@
+<div class="page-wrap">
+
+  <!-- ── UPLOAD PHASE ─────────────────────────────────────────────────── -->
+  @if (pageState() === 'idle' || isUploading()) {
+    <div class="upload-phase">
+
+      <div class="page-header">
+        <mat-icon class="page-icon">crop</mat-icon>
+        <h1 class="page-title">Crop Image</h1>
+        <p class="page-subtitle">Upload an image, drag to select your crop area, then download</p>
+      </div>
+
+      <div class="uploader-wrap">
+        <app-file-uploader
+          [allowedTypes]="allowedTypes()"
+          [fileType]="'image'"
+          [multiple]="false"
+          [validateDimensions]="true"
+          [isUploading]="isUploading()"
+          (onFileSelected)="onFileSelected($event)"
+        />
+      </div>
+
+      @if (isUploading()) {
+        <div class="upload-status">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Uploading image…</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── EDITOR PHASE ─────────────────────────────────────────────────── -->
+  @if (showEditor() && previewUrl()) {
+    <div class="editor-phase">
+
+      <!-- Top bar -->
+      <div class="editor-topbar">
+        <button mat-button (click)="changeImage()" class="change-btn">
+          <mat-icon>arrow_back</mat-icon>
+          Change image
+        </button>
+
+        <div class="action-area">
+          <app-action-button
+            [label]="actionLabel()"
+            [loading]="isProcessing()"
+            [disabled]="!canProcess()"
+            variant="filled"
+            icon="download"
+            iconPosition="right"
+            inputClass="crop-btn"
+            (onClick)="process()"
+          />
+        </div>
+      </div>
+
+      <!-- Crop editor -->
+      <div class="editor-wrap">
+        <app-image-crop-editor
+          [imageSrc]="previewUrl()!"
+          (cropChanged)="onCropChanged($event)"
+        />
+      </div>
+
+    </div>
+  }
+
+</div>

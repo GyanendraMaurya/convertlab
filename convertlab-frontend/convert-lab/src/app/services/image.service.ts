@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { HttpService } from './http.service';
 import { IS_BLOB_REQUEST } from '../interceptors/http-context';
+import { CropImageRequest } from '../models/crop-image.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,18 @@ export class ImageService {
   compressImages(request: CompressImageRequest): Observable<HttpResponse<Blob>> {
     return this.httpService.post<HttpResponse<Blob>>(
       `${this.apiUrl}/image/compress`,
+      request,
+      {
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(IS_BLOB_REQUEST, true)
+      }
+    );
+  }
+
+  cropImage(request: CropImageRequest): Observable<HttpResponse<Blob>> {
+    return this.httpService.post<HttpResponse<Blob>>(
+      `${this.apiUrl}/image/crop`,
       request,
       {
         responseType: 'blob',

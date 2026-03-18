@@ -45,6 +45,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/pdf/pdf-password/pdf-password.component').then(m => m.PdfPasswordComponent)
   },
   {
+    path: 'crop-image',
+    loadComponent: () => import('./components/image/crop-image/crop-image.component').then(m => m.CropImageComponent)
+  },
+  {
     path: 'doc-mind',
     loadComponent: () => import('./doc-mind/doc-mind.component').then(m => m.DocMindComponent),
   },

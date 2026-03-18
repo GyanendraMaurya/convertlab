@@ -1,0 +1,110 @@
+:host {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.page-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Upload phase ──────────────────────────────────────────────────────────────
+.upload-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.page-header {
+  text-align: center;
+
+  .page-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--mat-sys-primary);
+    margin-bottom: 8px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--mat-sys-on-surface-variant);
+    margin: 0;
+  }
+}
+
+.uploader-wrap {
+  width: 100%;
+  max-width: 480px;
+}
+
+.upload-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// ── Editor phase ──────────────────────────────────────────────────────────────
+.editor-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.change-btn {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+}
+
+.action-area {
+  // Keep the button from stretching full width
+}
+
+:host ::ng-deep .crop-btn {
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 24px;
+  border-radius: 24px;
+}
+
+.editor-wrap {
+  width: 100%;
+}
+
+// ── Desktop ────────────────────────────────────────────────────────────────────
+@media (min-width: 720px) {
+  .page-wrap {
+    max-width: 860px;
+  }
+
+  .page-header .page-title {
+    font-size: 36px;
+  }
+
+  .uploader-wrap {
+    max-width: 520px;
+  }
+}

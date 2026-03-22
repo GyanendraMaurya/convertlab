@@ -33,6 +33,7 @@ interface Point { x: number; y: number; }
 const HANDLE_SIZE = 10;    // px – half-size for hit testing
 const MIN_CROP_PX = 20;    // minimum crop dimension in display pixels
 
+
 @Component({
   selector: 'app-image-crop-editor',
   imports: [CommonModule, MatIconModule, MatButtonModule, MatTooltipModule],
@@ -57,24 +58,24 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     naturalHeight: number;
   }>();
 
-  private canvasRef    = viewChild<ElementRef<HTMLCanvasElement>>('cropCanvas');
+  private canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('cropCanvas');
   private containerRef = viewChild<ElementRef<HTMLDivElement>>('editorContainer');
 
   // ── Public state (template-bound) ───────────────────────────────────────────
-  rotation     = signal(0);
-  flipH        = signal(false);
-  flipV        = signal(false);
-  cropInfo     = signal<{ w: number; h: number }>({ w: 0, h: 0 });
-  isLoaded     = signal(false);
+  rotation = signal(0);
+  flipH = signal(false);
+  flipV = signal(false);
+  cropInfo = signal<{ w: number; h: number }>({ w: 0, h: 0 });
+  isLoaded = signal(false);
   selectedRatio = signal<AspectRatio>('free');
 
   readonly ratioOptions: { label: string; value: AspectRatio }[] = [
-    { label: 'Free',  value: 'free'  },
-    { label: '1:1',   value: '1:1'   },
-    { label: '4:3',   value: '4:3'   },
-    { label: '16:9',  value: '16:9'  },
-    { label: '3:4',   value: '3:4'   },
-    { label: '9:16',  value: '9:16'  },
+    { label: 'Free', value: 'free' },
+    { label: '1:1', value: '1:1' },
+    { label: '4:3', value: '4:3' },
+    { label: '16:9', value: '16:9' },
+    { label: '3:4', value: '3:4' },
+    { label: '9:16', value: '9:16' },
   ];
 
   // ── Private state ───────────────────────────────────────────────────────────
@@ -99,14 +100,15 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   private crop: CropRect = { x: 0, y: 0, width: 0, height: 0 };
 
   // Drag state
-  private isDragging   = false;
+  private isDragging = false;
   private activeHandle: HandleType | null = null;
   private dragStart: Point = { x: 0, y: 0 };
   private cropAtDragStart: CropRect = { x: 0, y: 0, width: 0, height: 0 };
 
   private resizeObserver: ResizeObserver | null = null;
   private platformId = inject(PLATFORM_ID);
-  private cdr        = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef);
+  private readonly OVERFLOW = 10; // extra px on each side for handles
 
   // ── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -170,30 +172,30 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   /** Recalculate canvas size based on container width + current rotation */
   resize() {
     const container = this.containerRef()?.nativeElement;
-    const canvas    = this.canvasRef()?.nativeElement;
+    const canvas = this.canvasRef()?.nativeElement;
     if (!container || !canvas || !this.natW || !this.natH) return;
 
-    const containerW = container.clientWidth;
+    const OV = this.OVERFLOW;
+    const containerW = container.clientWidth - OV * 2;
     const containerH = container.clientHeight || window.innerHeight * 0.55;
 
-    // After rotation, logical natural dims may swap
     const [logicalNatW, logicalNatH] = this.logicalDimensions();
 
-    // Fit image inside container preserving aspect
-    const scaleX = containerW  / logicalNatW;
-    const scaleY = containerH / logicalNatH;
-    const fit    = Math.min(scaleX, scaleY, 1); // never upscale beyond 1:1 if natural size is smaller
+    const scaleX = containerW / logicalNatW;
+    const scaleY = (containerH - OV * 2) / logicalNatH;
+    const fit = Math.min(scaleX, scaleY, 1);
 
     this.canvasW = Math.round(logicalNatW * fit);
     this.canvasH = Math.round(logicalNatH * fit);
-    this.scale   = logicalNatW / this.canvasW; // natural pixels per display pixel
+    this.scale = logicalNatW / this.canvasW;
 
-    canvas.width  = this.canvasW;
-    canvas.height = this.canvasH;
-
-    // Set canvas CSS size explicitly (avoids DPR blurriness)
-    canvas.style.width  = this.canvasW + 'px';
-    canvas.style.height = this.canvasH + 'px';
+    // Canvas is larger by OVERFLOW on each side
+    canvas.width = this.canvasW + OV * 2;
+    canvas.height = this.canvasH + OV * 2;
+    canvas.style.width = (this.canvasW + OV * 2) + 'px';
+    canvas.style.height = (this.canvasH + OV * 2) + 'px';
+    // Negative margin so the extra pixels don't push layout
+    canvas.style.margin = `-${OV}px`;
 
     this.resetCropToAspect();
     this.draw();
@@ -209,42 +211,44 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   draw() {
     if (!this.ctx || !this.canvasW || !this.canvasH) return;
     const ctx = this.ctx;
+    const OV = this.OVERFLOW;
+    const totalW = this.canvasW + OV * 2;
+    const totalH = this.canvasH + OV * 2;
 
-    ctx.clearRect(0, 0, this.canvasW, this.canvasH);
+    ctx.clearRect(0, 0, totalW, totalH);
 
     // ── Draw transformed image ─────────────────────────────────────────────
     ctx.save();
-    ctx.translate(this.canvasW / 2, this.canvasH / 2);
-
+    ctx.translate(totalW / 2, totalH / 2);
     if (this.flipH() || this.flipV()) {
       ctx.scale(this.flipH() ? -1 : 1, this.flipV() ? -1 : 1);
     }
     ctx.rotate((this.rotation() * Math.PI) / 180);
-
-    // After rotation the image coords: back to natural, draw centred
     const drawW = (this.rotation() === 90 || this.rotation() === 270) ? this.canvasH : this.canvasW;
     const drawH = (this.rotation() === 90 || this.rotation() === 270) ? this.canvasW : this.canvasH;
     ctx.drawImage(this.img, -drawW / 2, -drawH / 2, drawW, drawH);
     ctx.restore();
 
-    // ── Dark overlay outside crop ──────────────────────────────────────────
+    // ── Dark overlay — only over the image area (offset by OV) ────────────
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(0, 0, this.canvasW, this.canvasH);
+    ctx.fillRect(OV, OV, this.canvasW, this.canvasH);
 
     const { x, y, width: w, height: h } = this.crop;
-    // Punch out crop area (destination-out then back to source-over)
+    // crop coords are relative to image area, so add OV
+    const cx = x + OV, cy = y + OV;
+
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = 'rgba(0,0,0,1)';
-    ctx.fillRect(x, y, w, h);
+    ctx.fillRect(cx, cy, w, h);
     ctx.restore();
 
-    // Re-draw the image inside crop region only (crisp, no overlay)
+    // Re-draw image inside crop
     ctx.save();
     ctx.beginPath();
-    ctx.rect(x, y, w, h);
+    ctx.rect(cx, cy, w, h);
     ctx.clip();
-    ctx.translate(this.canvasW / 2, this.canvasH / 2);
+    ctx.translate(totalW / 2, totalH / 2);
     if (this.flipH() || this.flipV()) {
       ctx.scale(this.flipH() ? -1 : 1, this.flipV() ? -1 : 1);
     }
@@ -256,27 +260,26 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
 
     // ── Crop border ────────────────────────────────────────────────────────
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth   = 1.5;
-    ctx.strokeRect(x, y, w, h);
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx, cy, w, h);
 
     // Rule-of-thirds grid
     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth   = 0.75;
+    ctx.lineWidth = 0.75;
     for (let i = 1; i < 3; i++) {
       ctx.beginPath();
-      ctx.moveTo(x + (w / 3) * i, y);
-      ctx.lineTo(x + (w / 3) * i, y + h);
+      ctx.moveTo(cx + (w / 3) * i, cy);
+      ctx.lineTo(cx + (w / 3) * i, cy + h);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(x, y + (h / 3) * i);
-      ctx.lineTo(x + w, y + (h / 3) * i);
+      ctx.moveTo(cx, cy + (h / 3) * i);
+      ctx.lineTo(cx + w, cy + (h / 3) * i);
       ctx.stroke();
     }
 
     // ── Handles ────────────────────────────────────────────────────────────
-    this.drawHandles(ctx, x, y, w, h);
+    this.drawHandles(ctx, cx, cy, w, h);
 
-    // Update info signal
     this.cropInfo.set({
       w: Math.round(w * this.scale),
       h: Math.round(h * this.scale),
@@ -297,9 +300,9 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     ];
 
     handles.forEach(p => {
-      ctx.fillStyle   = '#ffffff';
+      ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#1976d2';
-      ctx.lineWidth   = 1.5;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(p.x, p.y, hs / 2 + 2, 0, Math.PI * 2);
       ctx.fill();
@@ -317,8 +320,8 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     const ratio = this.selectedRatio();
     if (ratio !== 'free') {
       const [rw, rh] = ratio.split(':').map(Number);
-      const target   = rw / rh;
-      const current  = cw / ch;
+      const target = rw / rh;
+      const current = cw / ch;
       if (current > target) {
         cw = Math.round(ch * target);
       } else {
@@ -329,7 +332,7 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     this.crop = {
       x: Math.round((this.canvasW - cw) / 2),
       y: Math.round((this.canvasH - ch) / 2),
-      width:  cw,
+      width: cw,
       height: ch,
     };
   }
@@ -337,9 +340,9 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   /** Convert crop from display px → natural px for backend */
   getCropInNaturalPixels(): CropRect {
     return {
-      x:      Math.round(this.crop.x      * this.scale),
-      y:      Math.round(this.crop.y      * this.scale),
-      width:  Math.round(this.crop.width  * this.scale),
+      x: Math.round(this.crop.x * this.scale),
+      y: Math.round(this.crop.y * this.scale),
+      width: Math.round(this.crop.width * this.scale),
       height: Math.round(this.crop.height * this.scale),
     };
   }
@@ -348,11 +351,11 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     const natural = this.getCropInNaturalPixels();
     const [lw, lh] = this.logicalDimensions();
     this.cropChanged.emit({
-      cropRect:     natural,
-      rotation:     this.rotation(),
-      flipH:        this.flipH(),
-      flipV:        this.flipV(),
-      naturalWidth:  lw,
+      cropRect: natural,
+      rotation: this.rotation(),
+      flipH: this.flipH(),
+      flipV: this.flipV(),
+      naturalWidth: lw,
       naturalHeight: lh,
     });
   }
@@ -402,9 +405,10 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     const canvas = this.canvasRef()?.nativeElement;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
+    const OV = this.OVERFLOW;
     return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
+      x: event.clientX - rect.left - OV,
+      y: event.clientY - rect.top - OV,
     };
   }
 
@@ -412,14 +416,14 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     const { x, y, width: w, height: h } = this.crop;
     const hs = HANDLE_SIZE + 4; // slightly larger hit area for touch
     const corners: [HandleType, Point][] = [
-      ['tl', { x,         y         }],
-      ['tc', { x: x+w/2,  y         }],
-      ['tr', { x: x+w,    y         }],
-      ['ml', { x,         y: y+h/2  }],
-      ['mr', { x: x+w,    y: y+h/2  }],
-      ['bl', { x,         y: y+h    }],
-      ['bc', { x: x+w/2,  y: y+h    }],
-      ['br', { x: x+w,    y: y+h    }],
+      ['tl', { x, y }],
+      ['tc', { x: x + w / 2, y }],
+      ['tr', { x: x + w, y }],
+      ['ml', { x, y: y + h / 2 }],
+      ['mr', { x: x + w, y: y + h / 2 }],
+      ['bl', { x, y: y + h }],
+      ['bc', { x: x + w / 2, y: y + h }],
+      ['br', { x: x + w, y: y + h }],
     ];
 
     for (const [type, cp] of corners) {
@@ -472,10 +476,10 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   private startDrag(p: Point) {
     const handle = this.getHandle(p);
     if (!handle) return;
-    this.isDragging        = true;
-    this.activeHandle      = handle;
-    this.dragStart         = p;
-    this.cropAtDragStart   = { ...this.crop };
+    this.isDragging = true;
+    this.activeHandle = handle;
+    this.dragStart = p;
+    this.cropAtDragStart = { ...this.crop };
   }
 
   private doDrag(p: Point) {
@@ -483,7 +487,7 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
 
     const dx = p.x - this.dragStart.x;
     const dy = p.y - this.dragStart.y;
-    const c  = { ...this.cropAtDragStart };
+    const c = { ...this.cropAtDragStart };
     const ratio = this.selectedRatio();
 
     switch (this.activeHandle) {
@@ -492,13 +496,13 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
         c.y = Math.max(0, Math.min(c.y + dy, this.canvasH - c.height));
         break;
       case 'tl': this.resizeTL(c, dx, dy, ratio); break;
-      case 'tc': this.resizeTC(c, dy, ratio);      break;
-      case 'tr': this.resizeTR(c, dx, dy, ratio);  break;
-      case 'ml': this.resizeML(c, dx, ratio);      break;
-      case 'mr': this.resizeMR(c, dx, ratio);      break;
-      case 'bl': this.resizeBL(c, dx, dy, ratio);  break;
-      case 'bc': this.resizeBC(c, dy, ratio);      break;
-      case 'br': this.resizeBR(c, dx, dy, ratio);  break;
+      case 'tc': this.resizeTC(c, dy, ratio); break;
+      case 'tr': this.resizeTR(c, dx, dy, ratio); break;
+      case 'ml': this.resizeML(c, dx, ratio); break;
+      case 'mr': this.resizeMR(c, dx, ratio); break;
+      case 'bl': this.resizeBL(c, dx, dy, ratio); break;
+      case 'bc': this.resizeBC(c, dy, ratio); break;
+      case 'br': this.resizeBR(c, dx, dy, ratio); break;
     }
 
     this.crop = c;
@@ -506,7 +510,7 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private endDrag() {
-    this.isDragging   = false;
+    this.isDragging = false;
     this.activeHandle = null;
     this.emitCrop();
   }
@@ -550,7 +554,7 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     [newW, newH] = this.applyAspect(newW, newH, ratio, 'w');
     newW = this.clamp(newW, MIN_CROP_PX, this.canvasW - c.x);
     newH = this.clamp(newH, MIN_CROP_PX, c.y + c.height);
-    c.y  = c.y + c.height - newH;
+    c.y = c.y + c.height - newH;
     c.width = newW; c.height = newH;
   }
 
@@ -608,16 +612,16 @@ export class ImageCropEditorComponent implements AfterViewInit, OnChanges, OnDes
     if (!canvas) return;
     const h = this.getHandle(p);
     const cursors: Record<HandleType, string> = {
-      tl: 'nw-resize', tc: 'n-resize',  tr: 'ne-resize',
-      ml: 'w-resize',                   mr: 'e-resize',
-      bl: 'sw-resize', bc: 's-resize',  br: 'se-resize',
+      tl: 'nw-resize', tc: 'n-resize', tr: 'ne-resize',
+      ml: 'w-resize', mr: 'e-resize',
+      bl: 'sw-resize', bc: 's-resize', br: 'se-resize',
       move: 'move',
     };
     canvas.style.cursor = h ? cursors[h] : 'default';
   }
 
 
-  getCurrentRotation()   { return this.rotation(); }
-  getCurrentFlipH()      { return this.flipH(); }
-  getCurrentFlipV()      { return this.flipV(); }
+  getCurrentRotation() { return this.rotation(); }
+  getCurrentFlipH() { return this.flipH(); }
+  getCurrentFlipV() { return this.flipV(); }
 }

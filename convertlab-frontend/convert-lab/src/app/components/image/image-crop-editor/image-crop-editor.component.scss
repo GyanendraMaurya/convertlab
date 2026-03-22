@@ -68,7 +68,6 @@
 .canvas-container {
   position: relative;
   width: 100%;
-  // Height is controlled by the canvas itself; container just wraps it.
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +75,7 @@
   background: var(--mat-sys-surface-container-low);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible; // keep visible so negative-margin canvas can bleed out
 }
 
 canvas {
@@ -85,6 +84,7 @@ canvas {
   touch-action: none; // prevents browser scroll interfering with drag
   user-select: none;
   -webkit-user-select: none;
+  // max-width: 100%;  
 
   &.hidden {
     visibility: hidden;

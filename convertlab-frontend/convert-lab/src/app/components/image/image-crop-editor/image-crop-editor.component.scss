@@ -48,7 +48,7 @@
     background: var(--mat-sys-primary);
     border-color: var(--mat-sys-primary);
     color: white;
-    box-shadow: 0 2px 8px rgba(25,118,210,0.25);
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.25);
   }
 }
 
@@ -103,19 +103,22 @@ canvas {
 .skeleton-pulse {
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--mat-sys-surface-container) 0%,
-    var(--mat-sys-surface-container-high) 50%,
-    var(--mat-sys-surface-container) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--mat-sys-surface-container) 0%,
+      var(--mat-sys-surface-container-high) 50%,
+      var(--mat-sys-surface-container) 100%);
   background-size: 200% 100%;
   animation: skeleton-wave 1.6s ease-in-out infinite;
 }
 
 @keyframes skeleton-wave {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 // ── Crop info badge ───────────────────────────────────────────────────────────
@@ -163,14 +166,26 @@ canvas {
     flex-wrap: nowrap;
     padding-bottom: 2px;
 
-    &::-webkit-scrollbar { display: none; }
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .ratio-chip {
     flex-shrink: 0;
   }
 
+
   .transform-btns {
     align-self: flex-end;
+  }
+
+
+}
+
+@media (min-width: 721px) {
+
+  .canvas-container {
+    min-height: 440px;
   }
 }

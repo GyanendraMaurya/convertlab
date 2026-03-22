@@ -9,4 +9,5 @@
 /login
 /signup
 /pdf-password
-/doc-mind
+/docmind
+/crop-image

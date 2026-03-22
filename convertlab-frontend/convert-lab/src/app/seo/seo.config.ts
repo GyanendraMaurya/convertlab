@@ -21,7 +21,8 @@ export interface SEOConfig {
 }
 
 export type PageIds =
-  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image' | 'pdf-password';
+  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image' | 'pdf-password'
+  | 'crop-image' | 'docmind';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
@@ -214,6 +215,54 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'PDF Password', url: 'https://www.easyconvertlab.com/pdf-password' }
     ]
-   }
+  },
+  'crop-image': {
+    meta: {
+      title: 'Crop Image Online - Free Image Cropper Tool | EasyConvertLab',
+      description: 'Crop images online for free with our easy-to-use image cropper tool. Adjust the crop area, maintain aspect ratio, and download your cropped image in seconds.',
+      keywords: 'crop image, image cropper, crop photo online, free image cropping tool, adjust crop area, maintain aspect ratio',
+      url: 'https://www.easyconvertlab.com/crop-image',
+      image: 'https://www.easyconvertlab.com/assets/images/crop-image-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'Crop Image - EasyConvertLab',
+      description: 'Crop images online with our user-friendly image cropper tool. Adjust the crop area and maintain aspect ratio for perfect results.',
+      url: 'https://www.easyconvertlab.com/crop-image',
+      featureList: 'Adjustable crop area, Maintain aspect ratio, Multiple output formats, Fast and secure processing',
+      aggregateRating: {
+        ratingValue: '4.8',
+        ratingCount: '540'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'Crop Image', url: 'https://www.easyconvertlab.com/crop-image' }
+    ]
+  },
+  'docmind': {
+    meta: {
+      title: 'DocMind - AI-Powered Document Analysis and Insights | EasyConvertLab',
+      description: 'DocMind is an AI-powered tool that analyzes your documents and provides insights, summaries, and key information extraction. Try it for free on EasyConvertLab.',
+      keywords: 'docmind, ai document analysis, document insights, document summarization, key information extraction, free document analysis tool',
+      url: 'https://www.easyconvertlab.com/docmind',
+      image: 'https://www.easyconvertlab.com/assets/images/docmind-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'DocMind - EasyConvertLab',
+      description: 'DocMind is an AI-powered tool that analyzes your documents and provides insights, summaries, and key information extraction.',
+      url: 'https://www.easyconvertlab.com/docmind',
+      featureList: 'AI document analysis, Generate insights, Document summarization, Key information extraction',
+      aggregateRating: {
+        ratingValue: '4.9',
+        ratingCount: '320'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'DocMind', url: 'https://www.easyconvertlab.com/docmind' }
+    ]
+  },
 
 };

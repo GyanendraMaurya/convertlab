@@ -50,6 +50,11 @@ export const routes: Routes = [
   },
   {
     path: 'doc-mind',
+    redirectTo: 'docmind',
+    pathMatch: 'full'
+  },
+  {
+    path: 'docmind',
     loadComponent: () => import('./doc-mind/doc-mind.component').then(m => m.DocMindComponent),
   },
 ];

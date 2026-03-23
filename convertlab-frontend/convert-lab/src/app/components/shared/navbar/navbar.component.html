@@ -5,12 +5,15 @@
 
   <button matButton="text" [routerLink]="['/']">
     <mat-icon class="medium-icon">home</mat-icon>
-    ConvertLab
+    <span class="brand-text">ConvertLab</span>
   </button>
-  <a matButton="text" class="nowrap" [routerLink]="['/merge-pdf']" routerLinkActive="active-link">Merge PDF</a>
-  <!-- <a matButton="text" class="nowrap" [routerLink]="['/extract-pdf']" routerLinkActive="active-link">Extract PDF</a> -->
   <span class="extra-nav-links">
-    <a matButton="text" class="nowrap" [routerLink]="['/split-pdf']" routerLinkActive="active-link">Split PDF</a>
+    <a matButton="text" class="nowrap tool-link tool-merge" [routerLink]="['/merge-pdf']" routerLinkActive="active-link">Merge PDF</a>
+    <a matButton="text" class="nowrap tool-link tool-split" [routerLink]="['/split-pdf']" routerLinkActive="active-link">Split PDF</a>
+    <a matButton="text" class="nowrap tool-link tool-compress-pdf" [routerLink]="['/compress-pdf']" routerLinkActive="active-link">Compress PDF</a>
+    <a matButton="text" class="nowrap tool-link tool-image-to-pdf" [routerLink]="['/image-to-pdf']" routerLinkActive="active-link">Image to PDF</a>
+    <a matButton="text" class="nowrap tool-link tool-compress-image" [routerLink]="['/compress-image']" routerLinkActive="active-link">Compress Image</a>
+    <a matButton="text" class="nowrap tool-link tool-crop-image" [routerLink]="['/crop-image']" routerLinkActive="active-link">Crop Image</a>
   </span>
   <span class="spacer"></span>
    <!-- DocMind AI button -->

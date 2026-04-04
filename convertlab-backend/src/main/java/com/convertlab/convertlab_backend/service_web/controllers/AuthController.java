@@ -131,7 +131,7 @@ public class AuthController {
             }
         });
 
-        cookieUtil.clearRefreshTokenCookie(response, secureCookie, sameSite);
+        cookieUtil.clearRefreshTokenCookie(response);
 
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully."));
     }

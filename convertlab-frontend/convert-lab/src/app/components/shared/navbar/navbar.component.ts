@@ -9,7 +9,7 @@ import { AuthStateService } from '../../../services/auth-state.service';
 import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { MatDivider } from '@angular/material/divider';
-import { WebSocketService } from '../../../services/websocket.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -28,9 +28,9 @@ import { WebSocketService } from '../../../services/websocket.service';
 export class NavbarComponent {
   private authState = inject(AuthStateService);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
   private snackbar = inject(SnackbarService);
   private router = inject(Router);
-  private ws = inject(WebSocketService);
 
   menuToggle = output<void>();
   isAuthenticated = this.authState.isAuthenticated;
@@ -57,5 +57,20 @@ export class NavbarComponent {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      this.userService.deleteAccount().subscribe({
+        next: () => {
+          this.authState.clearTokens();
+          this.snackbar.success('Account deleted successfully');
+          this.router.navigate(['/signup']);
+        },
+        error: () => {
+          this.snackbar.error('Failed to delete account. Please try again later.');
+        }
+      });
+    }
   }
 }

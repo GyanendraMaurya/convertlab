@@ -143,11 +143,9 @@ nav {
   border-radius: 20px;
   text-decoration: none;
   cursor: pointer;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--mat-sys-primary) 12%, transparent),
-    color-mix(in srgb, #00897b 8%, transparent)
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--mat-sys-primary) 12%, transparent),
+      color-mix(in srgb, #00897b 8%, transparent));
   border: 1.5px solid color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
   transition: all 0.3s ease;
   overflow: visible;
@@ -158,13 +156,11 @@ nav {
     position: absolute;
     inset: -2px;
     border-radius: 22px;
-    background: linear-gradient(
-      90deg,
-      var(--mat-sys-primary),
-      #00897b,
-      #f59e0b,
-      var(--mat-sys-primary)
-    );
+    background: linear-gradient(90deg,
+        var(--mat-sys-primary),
+        #00897b,
+        #f59e0b,
+        var(--mat-sys-primary));
     background-size: 300% 100%;
     animation: docmind-border-flow 3s linear infinite;
     z-index: -1;
@@ -196,11 +192,9 @@ nav {
   }
 
   &.docmind-active {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--mat-sys-primary) 20%, transparent),
-      color-mix(in srgb, #00897b 15%, transparent)
-    );
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--mat-sys-primary) 20%, transparent),
+        color-mix(in srgb, #00897b 15%, transparent));
 
     &::before {
       opacity: 1;
@@ -256,30 +250,67 @@ nav {
 
 // ── Keyframes ────────────────────────────────────────────────────────────────
 @keyframes docmind-border-flow {
-  0%   { background-position: 0% 0; }
-  100% { background-position: 300% 0; }
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 300% 0;
+  }
 }
 
 @keyframes docmind-pulse {
-  0%   { opacity: 0.5; transform: scale(1); }
-  70%  { opacity: 0; transform: scale(1.15); }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes orb-float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-2px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 @keyframes orb-spin {
-  0%   { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(180deg) scale(1.2); }
-  100% { transform: rotate(360deg) scale(1); }
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 @keyframes ai-tag-glow {
-  0%, 100% { box-shadow: none; }
-  50%       { box-shadow: 0 0 6px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent); }
+
+  0%,
+  100% {
+    box-shadow: none;
+  }
+
+  50% {
+    box-shadow: 0 0 6px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent);
+  }
 }
 
 // Profile Circle
@@ -394,10 +425,17 @@ nav {
       margin-right: 0;
     }
   }
+
   .profile-menu-header .mat-mdc-menu-item-text {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+  }
+}
+
+.delete-button:hover {
+  mat-icon {
+    color: red;
   }
 }

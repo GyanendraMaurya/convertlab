@@ -3,6 +3,7 @@ package com.convertlab.convertlab_backend.security_util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -25,6 +26,12 @@ public class CookieUtil {
     public static final String REFRESH_TOKEN_COOKIE = "refresh_token";
     private static final String COOKIE_PATH = "/api/auth";
 
+    @Value("${app.cookie.secure:true}")
+    private boolean secure;
+
+    @Value("${app.cookie.same-site:Strict}")
+    private String sameSite;
+
     /**
      * Writes the refresh token cookie to the response.
      *
@@ -46,8 +53,8 @@ public class CookieUtil {
     /**
      * Overwrites the refresh token cookie with an expired, empty value — effectively deleting it.
      */
-    public void clearRefreshTokenCookie(HttpServletResponse response, boolean secure, String sameSite) {
-        String cookie = buildSetCookieHeader(REFRESH_TOKEN_COOKIE, "", 0, secure, sameSite);
+    public void clearRefreshTokenCookie(HttpServletResponse response) {
+        String cookie = buildSetCookieHeader(REFRESH_TOKEN_COOKIE, "", 0, this.secure, this.sameSite);
         response.addHeader("Set-Cookie", cookie);
     }
 

@@ -23,8 +23,8 @@ public class User {
 
     private String email;
 
-    @Column(name = "password_hash")
-    private String passwordHash;
+//    @Column(name = "password_hash")
+//    private String passwordHash;
 
     @Column(name = "email_verified")
     private boolean emailVerified;

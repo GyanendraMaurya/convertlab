@@ -1,7 +1,9 @@
 package com.convertlab.convertlab_backend.authentication;
 
+import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.LoginException;
+import com.convertlab.convertlab_backend.repository.AuthProviderRepository;
 import com.convertlab.convertlab_backend.repository.UserRepository;
 import com.convertlab.convertlab_backend.security_util.CookieUtil;
 import com.convertlab.convertlab_backend.security_util.JwtUtil;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class LoginService {
 
     private final UserRepository userRepository;
+    private final AuthProviderRepository authProviderRepository;
     private final PasswordUtil passwordUtil;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
@@ -53,14 +56,18 @@ public class LoginService {
             );
         }
 
-        Optional<User> user = userRepository.findByEmail(request.email());
-        if (user.isEmpty()) {
-            // Should never happen given the check above, but be safe
-            throw new LoginException("User not found", "USER_NOT_FOUND", HttpStatus.NOT_FOUND);
+        Optional<AuthProvider> authProvider = authProviderRepository.findByProviderAndProviderUserId("local", request.email());
+
+        if (authProvider.isEmpty()) {
+            throw new LoginException(
+                    "Local authentication not configured for this user",
+                    "LOCAL_AUTH_NOT_CONFIGURED",
+                    HttpStatus.UNAUTHORIZED
+            );
         }
 
         boolean isAuthenticated =
-                passwordUtil.matches(request.password(), user.get().getPasswordHash());
+                passwordUtil.matches(request.password(), authProvider.get().getPasswordHash());
 
         if (!isAuthenticated) {
             throw new LoginException(

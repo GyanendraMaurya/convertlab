@@ -1,8 +1,10 @@
 package com.convertlab.convertlab_backend.authentication;
 
+import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.EmailOtp;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.SignUpValidationException;
+import com.convertlab.convertlab_backend.repository.AuthProviderRepository;
 import com.convertlab.convertlab_backend.repository.EmailOtpRepository;
 import com.convertlab.convertlab_backend.repository.UserRepository;
 import com.convertlab.convertlab_backend.security_util.PasswordUtil;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +27,7 @@ import java.util.UUID;
 public class SignupService {
 
     private final UserRepository userRepository;
+    private final AuthProviderRepository authProviderRepository;
     private final EmailOtpRepository emailOtpRepository;
     private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
@@ -41,21 +46,30 @@ public class SignupService {
         if (existingUser.isPresent()) {
             // user exists but not verified → reuse
             user = existingUser.get();
-            user.setPasswordHash(passwordUtil.hash(request.password()));
             user.setUpdatedAt(Instant.now());
         } else {
             // New user
             user = new User(
                     UUID.randomUUID(),
                     request.email(),
-                    passwordUtil.hash(request.password()),
                     false,
                     Instant.now(),
                     Instant.now()
             );
         }
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Create AuthProvider entry for local provider with password
+        AuthProvider authProvider = new AuthProvider();
+        authProvider.setId(UUID.randomUUID());
+        authProvider.setUser(savedUser);
+        authProvider.setProvider("local");
+        authProvider.setProviderUserId(request.email());
+        authProvider.setPasswordHash(passwordUtil.hash(request.password()));
+        authProvider.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+
+        authProviderRepository.save(authProvider);
 
         String otp = OtpUtil.generateOtp();
 

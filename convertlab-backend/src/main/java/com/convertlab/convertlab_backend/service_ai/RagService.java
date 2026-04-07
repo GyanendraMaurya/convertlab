@@ -75,7 +75,7 @@ public class RagService {
             webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_CHUNKED, fileId ));
             log.debug("Saved {} chunks for fileId: {}", documentChunks.size(), fileId);
 
-            embeddingService.generateAndStore(documentChunks);
+            embeddingService.generateAndStore(documentChunks, fileId);
             webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_EMBEDDED, fileId ));
 
             log.info("Document ingestion completed successfully for fileId: {}", fileId);
@@ -107,7 +107,7 @@ public class RagService {
             log.debug("Generated query embedding of dimension: {}", queryEmbedding.length);
 
             List<Embedding1536> similarEmbeddings = embeddingRepository.findSimilar(
-                    Arrays.toString(queryEmbedding), 5
+                    Arrays.toString(queryEmbedding), fileId, 5
             );
 
             if (similarEmbeddings == null || similarEmbeddings.isEmpty()) {

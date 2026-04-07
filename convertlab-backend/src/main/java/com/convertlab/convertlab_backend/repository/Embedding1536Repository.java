@@ -38,12 +38,13 @@ public interface Embedding1536Repository extends JpaRepository<Embedding1536, Lo
 
     // Cosine similarity — best for text embeddings (OpenAI, etc.)
     @Query(value = """
-            SELECT * FROM embeddings_1536
+            SELECT * FROM embeddings_1536 WHERE document_id = :documentId
             ORDER BY embedding <=> CAST(:embedding AS vector)
             LIMIT :limit
             """, nativeQuery = true)
     List<Embedding1536> findSimilar(
             @Param("embedding") String embedding,
+            @Param("documentId") String documentId,
             @Param("limit") int limit
     );
 

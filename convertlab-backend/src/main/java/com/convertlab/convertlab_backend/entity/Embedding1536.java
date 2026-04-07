@@ -9,6 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "embeddings_1536")
@@ -27,6 +28,9 @@ public class Embedding1536 {
             foreignKey = @ForeignKey(name = "fk_embedding_chunk")
     )
     private DocumentChunk chunk;
+
+    @Column(name = "document_id")
+    private String documentId;
 
     @Column(name = "embedding_model")
     private String embeddingModel;

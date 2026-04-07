@@ -24,7 +24,7 @@ public class EmbeddingService {
     private final Embedding1536Repository embeddingRepository;
 
     @Transactional
-    public void generateAndStore(List<DocumentChunk> chunks) {
+    public void generateAndStore(List<DocumentChunk> chunks, String documentId) {
         if (chunks == null || chunks.isEmpty()) {
             throw new DocumentIngestionException("Chunks list cannot be null or empty", "EMPTY_CHUNKS");
         }
@@ -66,6 +66,7 @@ public class EmbeddingService {
 
                 Embedding1536 e = new Embedding1536();
                 e.setChunk(chunks.get(i));
+                e.setDocumentId(documentId);
                 e.setEmbeddingModel(embeddingProvider.modelName());
                 e.setEmbeddingDimension(embeddingProvider.dimension());
                 e.setEmbedding(vector);

@@ -12,6 +12,7 @@ import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { AuthStateService } from '../../../services/auth-state.service';
 import { WebSocketService } from '../../../services/websocket.service';
+import { GoogleSigninButtonComponent } from '../google/google-signin-button.component';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ import { WebSocketService } from '../../../services/websocket.service';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    RouterLink
+    RouterLink,
+    GoogleSigninButtonComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

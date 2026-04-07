@@ -109,3 +109,7 @@ ai:
 
     # Per IP: query requests allowed per minute (token bucket)
     ip-query-per-minute: ${AI_IP_QUERY_PER_MINUTE:15}
+
+google:
+  oauth:
+    client-id: ${GOOGLE_CLIENT_ID}

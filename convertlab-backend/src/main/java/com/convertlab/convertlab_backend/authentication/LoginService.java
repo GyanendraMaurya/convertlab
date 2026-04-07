@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.authentication;
 
+import com.convertlab.convertlab_backend.api.enums.AuthProviders;
 import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.LoginException;
@@ -56,7 +57,7 @@ public class LoginService {
             );
         }
 
-        Optional<AuthProvider> authProvider = authProviderRepository.findByProviderAndProviderUserId("local", request.email());
+        Optional<AuthProvider> authProvider = authProviderRepository.findByProviderAndProviderUserId(AuthProviders.LOCAL, request.email());
 
         if (authProvider.isEmpty()) {
             throw new LoginException(

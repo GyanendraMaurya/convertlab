@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.authentication;
 
+import com.convertlab.convertlab_backend.api.enums.AuthProviders;
 import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.EmailOtp;
 import com.convertlab.convertlab_backend.entity.User;
@@ -64,7 +65,7 @@ public class SignupService {
         AuthProvider authProvider = new AuthProvider();
         authProvider.setId(UUID.randomUUID());
         authProvider.setUser(savedUser);
-        authProvider.setProvider("local");
+        authProvider.setProvider(AuthProviders.LOCAL);
         authProvider.setProviderUserId(request.email());
         authProvider.setPasswordHash(passwordUtil.hash(request.password()));
         authProvider.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));

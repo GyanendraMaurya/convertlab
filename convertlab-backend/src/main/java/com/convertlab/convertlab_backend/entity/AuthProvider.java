@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.entity;
 
+import com.convertlab.convertlab_backend.api.enums.AuthProviders;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,8 @@ public class AuthProvider {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    private AuthProviders provider;
 
     @Column(name = "provider_user_id")
     private String providerUserId;

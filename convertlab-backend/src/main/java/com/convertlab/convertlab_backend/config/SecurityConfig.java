@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/auth/verify-otp",
                                 "/auth/login",
                                 "/auth/refresh",
-                                "/auth/logout"
+                                "/auth/logout",
+                                "/auth/google"
                         ).permitAll()
 
                         // AI document endpoints require authentication

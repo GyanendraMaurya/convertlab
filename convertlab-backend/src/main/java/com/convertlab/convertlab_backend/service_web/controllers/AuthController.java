@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.service_web.controllers;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
+import com.convertlab.convertlab_backend.authentication.GoogleOAuthService;
 import com.convertlab.convertlab_backend.authentication.LoginService;
 import com.convertlab.convertlab_backend.authentication.RefreshTokenService;
 import com.convertlab.convertlab_backend.authentication.SignupService;
@@ -8,10 +9,7 @@ import com.convertlab.convertlab_backend.exception.LoginException;
 import com.convertlab.convertlab_backend.security_util.CookieUtil;
 import com.convertlab.convertlab_backend.security_util.JwtUtil;
 import com.convertlab.convertlab_backend.service_email.OtpVerificationService;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.AuthTokenResponse;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.LoginRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.SignupRequest;
-import com.convertlab.convertlab_backend.service_web.controllers.dto.VerifyOtpRequest;
+import com.convertlab.convertlab_backend.service_web.controllers.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +29,7 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final CookieUtil cookieUtil;
     private final JwtUtil jwtUtil;
+    private final GoogleOAuthService googleOAuthService;
 
     @Value("${app.cookie.secure:true}")
     private boolean secureCookie;
@@ -134,5 +133,14 @@ public class AuthController {
         cookieUtil.clearRefreshTokenCookie(response);
 
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully."));
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthTokenResponse>> googleLogin(
+            @RequestBody GoogleLoginRequest request,
+            HttpServletResponse response
+    ) {
+        AuthTokenResponse tokens = googleOAuthService.loginWithGoogle(request.idToken(), response);
+        return ResponseEntity.ok(ApiResponse.success(tokens));
     }
 }

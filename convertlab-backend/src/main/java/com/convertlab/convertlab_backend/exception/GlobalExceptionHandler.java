@@ -70,6 +70,14 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
 
+    @ExceptionHandler(ContactInquiryValidationException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidContactInquiry(ContactInquiryValidationException ex) {
+        log.warn("Invalid contact inquiry input: {}", ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<ApiResponse<?>> handleInvalidLogin(LoginException ex) {
         log.warn("Login failed: {}", ex.getMessage());

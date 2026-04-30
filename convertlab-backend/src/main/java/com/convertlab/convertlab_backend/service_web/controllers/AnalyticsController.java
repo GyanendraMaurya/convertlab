@@ -2,7 +2,7 @@ package com.convertlab.convertlab_backend.service_web.controllers;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
 import com.convertlab.convertlab_backend.service_core.AnalyticsService;
-import com.convertlab.convertlab_backend.service_util.IpUtil;
+import com.convertlab.convertlab_backend.service_util.ClientIpResolver;
 import com.convertlab.convertlab_backend.service_web.controllers.dto.PageVisitRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
+    private final ClientIpResolver clientIpResolver;
 
     @PostMapping("/page-visit")
     public ResponseEntity<ApiResponse<String>> recordPageVisit(
@@ -27,7 +28,7 @@ public class AnalyticsController {
         log.info("Recording page visit for path: {}", request.getPath());
 
         try {
-            String clientIp = IpUtil.extractClientIp(httpRequest);
+            String clientIp = clientIpResolver.extractClientIp(httpRequest);
             analyticsService.recordPageVisit(request, clientIp);
             return ResponseEntity.ok(ApiResponse.success(null));
         } catch (Exception e) {

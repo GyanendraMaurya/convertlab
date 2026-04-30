@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.service_email.impl;
 
 import com.convertlab.convertlab_backend.service_email.EmailSender;
+import com.convertlab.convertlab_backend.service_email.ContactInquiryEmail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,5 +33,42 @@ public class SmtpEmailSender implements EmailSender {
                 """.formatted(otp));
 
         mailSender.send(message);
+    }
+
+    @Override
+    public void sendContactInquiry(String toEmail, ContactInquiryEmail inquiry) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("New ConvertLab contact inquiry from " + inquiry.fullName());
+        message.setText("""
+                New ConvertLab contact inquiry
+
+                Name: %s
+                Email: %s
+                Phone: %s
+                Project type: %s
+                Budget range: %s
+                Submitted at: %s
+                Inquiry id: %s
+
+                Message:
+                %s
+                """.formatted(
+                inquiry.fullName(),
+                displayValue(inquiry.email()),
+                displayValue(inquiry.phone()),
+                displayValue(inquiry.inquiryType()),
+                displayValue(inquiry.budgetRange()),
+                inquiry.submittedAt(),
+                inquiry.inquiryId(),
+                inquiry.message()
+        ));
+
+        mailSender.send(message);
+    }
+
+    private static String displayValue(String value) {
+        return value == null || value.isBlank() ? "Not provided" : value;
     }
 }

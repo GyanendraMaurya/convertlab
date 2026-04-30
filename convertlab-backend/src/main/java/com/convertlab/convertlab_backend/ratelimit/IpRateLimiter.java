@@ -21,6 +21,7 @@ public class IpRateLimiter {
         TokenBucket bucket = buckets.computeIfAbsent(key, k -> switch (type) {
             case UPLOAD     -> new TokenBucket(30, 30);
             case SIGNUP     -> new TokenBucket(3, 3);
+            case CONTACT    -> new TokenBucket(3, 3);
             case AI_INGEST  -> new TokenBucket(
                     aiRateLimitConfig.getIpIngestPerMinute(),
                     aiRateLimitConfig.getIpIngestPerMinute()

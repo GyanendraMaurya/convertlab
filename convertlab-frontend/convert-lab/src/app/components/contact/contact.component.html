@@ -29,7 +29,14 @@
       @if (showSuccess()) {
       <div class="success-message" role="status">
         <mat-icon>check_circle</mat-icon>
-        <span>Your message is validated and ready. Backend email/database handling will be connected next.</span>
+        <span>Thanks, I received your message. I will get back to you soon.</span>
+      </div>
+      }
+
+      @if (errorMessage()) {
+      <div class="error-message" role="alert">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage() }}</span>
       </div>
       }
 

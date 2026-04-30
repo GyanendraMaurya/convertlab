@@ -13,7 +13,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { finalize } from 'rxjs';
+import { ContactInquiryRequest, ContactService } from '../../services/contact.service';
 import { SeoService } from '../../seo/seo.service';
+import { SnackbarService } from '../../services/snackbar.service';
 
 interface InquiryOption {
   value: string;
@@ -64,10 +67,13 @@ function optionalPhoneValidator(control: AbstractControl): ValidationErrors | nu
 export class ContactComponent {
   private fb = inject(FormBuilder);
   private seoService = inject(SeoService);
+  private contactService = inject(ContactService);
+  private snackbarService = inject(SnackbarService);
 
   readonly isSubmitting = signal(false);
   readonly submitted = signal(false);
   readonly showSuccess = signal(false);
+  readonly errorMessage = signal('');
 
   readonly inquiryTypes: InquiryOption[] = [
     { value: 'website', label: 'Website or landing page' },
@@ -166,6 +172,7 @@ export class ContactComponent {
   onSubmit() {
     this.submitted.set(true);
     this.showSuccess.set(false);
+    this.errorMessage.set('');
 
     if (this.contactForm.invalid) {
       this.contactForm.markAllAsTouched();
@@ -173,20 +180,50 @@ export class ContactComponent {
     }
 
     this.isSubmitting.set(true);
+    const payload = this.toContactInquiryRequest();
 
-    setTimeout(() => {
-      this.isSubmitting.set(false);
-      console.info('Contact inquiry ready for backend integration:', this.contactForm.getRawValue());
-      this.showSuccess.set(true);
-      this.contactForm.reset({
-        fullName: '',
-        email: '',
-        phone: '',
-        inquiryType: 'web-app',
-        budgetRange: 'not-sure',
-        message: '',
+    this.contactService.createInquiry(payload)
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.showSuccess.set(true);
+          this.snackbarService.success('Thanks, I received your message. I will get back to you soon.');
+          this.contactForm.reset({
+            fullName: '',
+            email: '',
+            phone: '',
+            inquiryType: 'web-app',
+            budgetRange: 'not-sure',
+            message: '',
+          });
+          this.submitted.set(false);
+        },
+        error: (error) => {
+          const message = error?.message || 'Unable to send your message. Please try again.';
+          this.errorMessage.set(message);
+        },
       });
-      this.submitted.set(false);
-    }, 600);
+  }
+
+  private toContactInquiryRequest(): ContactInquiryRequest {
+    const value = this.contactForm.getRawValue();
+
+    return {
+      fullName: this.trimOrEmpty(value.fullName),
+      email: this.trimOrNull(value.email),
+      phone: this.trimOrNull(value.phone),
+      inquiryType: this.trimOrNull(value.inquiryType),
+      budgetRange: this.trimOrNull(value.budgetRange),
+      message: this.trimOrEmpty(value.message),
+    };
+  }
+
+  private trimOrNull(value: string | null | undefined): string | null {
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : null;
+  }
+
+  private trimOrEmpty(value: string | null | undefined): string {
+    return value?.trim() ?? '';
   }
 }

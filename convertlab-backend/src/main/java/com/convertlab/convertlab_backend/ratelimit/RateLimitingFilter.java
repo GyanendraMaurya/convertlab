@@ -1,7 +1,7 @@
 package com.convertlab.convertlab_backend.ratelimit;
 
 import com.convertlab.convertlab_backend.api.ApiResponse;
-import com.convertlab.convertlab_backend.service_util.IpUtil;
+import com.convertlab.convertlab_backend.service_util.ClientIpResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +25,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final IpRateLimiter rateLimiter;
     private final ObjectMapper objectMapper;
+    private final ClientIpResolver clientIpResolver;
 
     @Override
     protected void doFilterInternal(
@@ -42,7 +43,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         RateLimitType type = resolveRateLimitType(request);
 
         if (type != null) {
-            String clientIp = IpUtil.extractClientIp(request);
+            String clientIp = clientIpResolver.extractClientIp(request);
 
             if (!rateLimiter.allowRequest(clientIp, type)) {
                 log.warn("Rate limit exceeded for {} on request type: {}", clientIp, type);
@@ -65,6 +66,9 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
         if (path.startsWith("/api/auth/signup")) {
             return RateLimitType.SIGNUP;
+        }
+        if (path.startsWith("/api/contact")) {
+            return RateLimitType.CONTACT;
         }
         if (path.startsWith("/api/documents/ingest")) {
             return RateLimitType.AI_INGEST;

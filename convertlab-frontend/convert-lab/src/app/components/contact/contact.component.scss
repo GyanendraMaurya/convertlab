@@ -172,6 +172,23 @@ mat-form-field {
   }
 }
 
+.error-message {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--mat-sys-error);
+  background: color-mix(in srgb, var(--mat-sys-error) 8%, var(--mat-sys-surface));
+  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 28%, transparent);
+  line-height: 1.45;
+
+  mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
 .submit-button {
   align-self: flex-start;
   min-height: 48px;

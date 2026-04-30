@@ -8,6 +8,8 @@
 /crop-image
 /login
 /signup
+/about
+/contact
 /pdf-password
 /docmind
 /crop-image

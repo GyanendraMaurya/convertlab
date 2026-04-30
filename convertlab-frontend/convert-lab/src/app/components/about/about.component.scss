@@ -1,0 +1,266 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+.about-page {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.about-hero,
+.proof-section,
+.services-section {
+  width: 100%;
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.identity-panel,
+.contact-panel,
+.proof-section,
+.service-card {
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.identity-panel {
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 28px;
+  padding: clamp(24px, 4vw, 44px);
+  align-items: start;
+}
+
+.avatar {
+  width: clamp(88px, 12vw, 136px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: 0;
+  color: var(--mat-sys-on-primary);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.36), transparent 32%),
+    linear-gradient(135deg, var(--mat-sys-primary), #00897b 62%, #f59e0b);
+}
+
+.identity-copy {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--mat-sys-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: clamp(2.1rem, 5vw, 4rem);
+  line-height: 1.02;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.title {
+  margin: 10px 0 18px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 1.16rem;
+  font-weight: 600;
+}
+
+.intro,
+.proof-copy p,
+.service-card p {
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.7;
+}
+
+.intro {
+  max-width: 760px;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+
+  a {
+    min-height: 44px;
+  }
+}
+
+.contact-panel {
+  border-radius: 8px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
+
+  a {
+    color: var(--mat-sys-on-surface);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  a:hover {
+    color: var(--mat-sys-primary);
+    text-decoration: underline;
+  }
+}
+
+.proof-section {
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
+  padding: clamp(22px, 4vw, 36px);
+}
+
+.proof-copy h2,
+.section-heading h2 {
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.proof-copy p {
+  margin: 14px 0 0;
+}
+
+.proof-stats {
+  display: grid;
+  gap: 12px;
+}
+
+.stat-item {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container);
+
+  mat-icon {
+    color: #00897b;
+  }
+
+  span {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.services-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  border-radius: 8px;
+  padding: 22px;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+  }
+
+  h3 {
+    margin: 16px 0 10px;
+    color: var(--mat-sys-on-surface);
+    font-size: 1.05rem;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.94rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .about-hero,
+  .proof-section {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .identity-panel {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .hero-actions {
+    a {
+      width: 100%;
+    }
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}

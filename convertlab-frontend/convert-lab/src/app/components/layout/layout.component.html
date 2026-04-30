@@ -22,7 +22,7 @@
 
     <mat-divider></mat-divider>
 
-    <mat-nav-list>
+    <mat-nav-list class="sidenav-tools">
       <h3 mat-subheader>PDF Tools</h3>
 
       <a mat-list-item [routerLink]="['/merge-pdf']" (click)="closeSidenav()"
@@ -84,6 +84,18 @@
       </a> -->
 
     </mat-nav-list>
+
+    <div class="sidenav-footer">
+      <mat-divider></mat-divider>
+      <a mat-list-item [routerLink]="['/about']" (click)="closeSidenav()" [class.active-list-item]="isActive('/about')">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>About</span>
+      </a>
+      <a mat-list-item [routerLink]="['/contact']" (click)="closeSidenav()" [class.active-list-item]="isActive('/contact')">
+        <mat-icon matListItemIcon>mail</mat-icon>
+        <span matListItemTitle>Contact</span>
+      </a>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>

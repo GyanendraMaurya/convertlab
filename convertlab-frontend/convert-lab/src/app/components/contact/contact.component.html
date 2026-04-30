@@ -1,0 +1,146 @@
+<section class="contact-page">
+  <div class="contact-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Project inquiry</p>
+      <h1>Let&apos;s build your next web project</h1>
+      <p>
+        Share what you want to build, improve, or fix. I work on practical web products,
+        Angular interfaces, Spring Boot APIs, document tools, AI workflows, and product features
+        that need clean execution.
+      </p>
+    </div>
+
+    <div class="availability-panel" aria-label="Freelance availability">
+      <mat-icon>handshake</mat-icon>
+      <div>
+        <h2>Available for freelance work</h2>
+        <p>Best fit: MVP builds, business tools, dashboard features, AI document workflows, and maintenance work.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-layout">
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form" novalidate>
+      <div class="form-heading">
+        <h2>Tell me about your project</h2>
+        <p>Full name and message are required. Add either email or contact number so I can reply.</p>
+      </div>
+
+      @if (showSuccess()) {
+      <div class="success-message" role="status">
+        <mat-icon>check_circle</mat-icon>
+        <span>Your message is validated and ready. Backend email/database handling will be connected next.</span>
+      </div>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName" autocomplete="name" />
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error>{{ getFieldError('fullName') }}</mat-error>
+      </mat-form-field>
+
+      <div class="field-row">
+        <div class="field-stack">
+          <mat-form-field appearance="outline">
+            <mat-label>Email address</mat-label>
+            <input matInput type="email" formControlName="email" autocomplete="email" />
+            <mat-icon matPrefix>mail</mat-icon>
+            <mat-error>{{ getFieldError('email') }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="field-stack">
+          <mat-form-field appearance="outline">
+            <mat-label>Contact number</mat-label>
+            <input matInput type="tel" formControlName="phone" autocomplete="tel" />
+            <mat-icon matPrefix>call</mat-icon>
+            <mat-error>{{ getFieldError('phone') }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      @if (contactMethodError()) {
+      <p class="form-error">Please provide either an email address or contact number.</p>
+      }
+
+      <div class="field-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Project type</mat-label>
+          <mat-select formControlName="inquiryType">
+            @for (type of inquiryTypes; track type.value) {
+            <mat-option [value]="type.value">{{ type.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Budget range</mat-label>
+          <mat-select formControlName="budgetRange">
+            @for (range of budgetRanges; track range.value) {
+            <mat-option [value]="range.value">{{ range.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>payments</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="message-field">
+        <mat-label>Message</mat-label>
+        <textarea
+          matInput
+          formControlName="message"
+          rows="7"
+          placeholder="Tell me about the goal, current problem, timeline, and anything important."
+        ></textarea>
+        <mat-icon matPrefix>notes</mat-icon>
+        <mat-error>{{ getFieldError('message') }}</mat-error>
+      </mat-form-field>
+
+      <button matButton="filled" color="primary" type="submit" class="submit-button" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>Preparing message...</span>
+        } @else {
+        <ng-container>
+          <mat-icon>send</mat-icon>
+          <span>Send message</span>
+        </ng-container>
+        }
+      </button>
+    </form>
+
+    <aside class="contact-aside" aria-label="Contact details">
+      <div class="aside-section">
+        <p class="eyebrow">Direct contact</p>
+        <h2>Prefer another way?</h2>
+        <div class="contact-list">
+          @for (detail of contactDetails; track detail.label) {
+          <div class="contact-item">
+            <mat-icon>{{ detail.icon }}</mat-icon>
+            <div>
+              <span>{{ detail.label }}</span>
+              @if (detail.href) {
+              <a [href]="detail.href" target="_blank" rel="noopener noreferrer">{{ detail.value }}</a>
+              } @else {
+              <strong>{{ detail.value }}</strong>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="aside-section">
+        <p class="eyebrow">What helps me reply faster</p>
+        <ul>
+          <li>What you want to build or improve</li>
+          <li>Any existing website, app, or reference</li>
+          <li>Your rough timeline or launch target</li>
+          <li>Whether this is a one-time task or ongoing work</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>

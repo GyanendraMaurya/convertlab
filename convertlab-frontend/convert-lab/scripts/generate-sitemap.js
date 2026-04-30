@@ -12,6 +12,8 @@ const routes = [
   { path: '/image-to-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-image', priority: '0.9', changefreq: 'weekly' },
+  { path: '/about', priority: '0.7', changefreq: 'monthly' },
+  { path: '/contact', priority: '0.7', changefreq: 'monthly' },
 ];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

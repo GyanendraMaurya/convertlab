@@ -58,6 +58,21 @@ export class SeoService {
         featureList: config.schema.featureList,
         screenshot: 'https://www.easyconvertlab.com/assets/images/screenshot.jpg'
       });
+    } else if (pageId === 'about' || pageId === 'contact') {
+      this.structuredDataService.insertSchema({
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: config.schema.name,
+        url: config.schema.url,
+        jobTitle: 'Full stack developer',
+        email: 'mailto:gmaurya973@gmail.com',
+        sameAs: [
+          'https://www.linkedin.com/in/gyanendramaurya/',
+          'https://github.com/GyanendraMaurya'
+        ],
+        description: config.schema.description,
+        knowsAbout: config.schema.featureList.split(', ')
+      });
     } else {
       // SoftwareApplication schema for tool pages
       const schema: any = {

@@ -22,7 +22,7 @@ export interface SEOConfig {
 
 export type PageIds =
   'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image' | 'pdf-password'
-  | 'crop-image' | 'docmind';
+  | 'crop-image' | 'docmind' | 'about' | 'contact';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
@@ -262,6 +262,46 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
     breadcrumbs: [
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'DocMind', url: 'https://www.easyconvertlab.com/docmind' }
+    ]
+  },
+  'about': {
+    meta: {
+      title: 'Gyanendra Maurya - Full Stack Developer | EasyConvertLab',
+      description: 'Meet Gyanendra Maurya, a full stack developer with 7 years of industry experience in web development, AI RAG workflows, payment interfaces, and product engineering.',
+      keywords: 'Gyanendra Maurya, full stack developer, freelance web developer, Angular developer, Spring Boot developer, AI RAG developer, payment interface developer',
+      url: 'https://www.easyconvertlab.com/about',
+      image: 'https://www.easyconvertlab.com/assets/images/easyconvertlab-og.jpg',
+      type: 'profile'
+    },
+    schema: {
+      name: 'Gyanendra Maurya',
+      description: 'Full stack developer with 7 years of industry experience in web development, AI RAG workflows, payment interfaces, and product engineering.',
+      url: 'https://www.easyconvertlab.com/about',
+      featureList: 'Web development, AI RAG, Payment interfaces, Product engineering'
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'About', url: 'https://www.easyconvertlab.com/about' }
+    ]
+  },
+  'contact': {
+    meta: {
+      title: 'Contact Gyanendra Maurya - Freelance Full Stack Developer | EasyConvertLab',
+      description: 'Contact Gyanendra Maurya for freelance web development, Angular, Spring Boot, AI document workflows, dashboards, MVP builds, and product engineering work.',
+      keywords: 'contact Gyanendra Maurya, freelance full stack developer, hire Angular developer, hire Spring Boot developer, freelance web developer India, AI workflow developer',
+      url: 'https://www.easyconvertlab.com/contact',
+      image: 'https://www.easyconvertlab.com/assets/images/easyconvertlab-og.jpg',
+      type: 'profile'
+    },
+    schema: {
+      name: 'Contact Gyanendra Maurya',
+      description: 'Project inquiry page for freelance web development, AI workflows, dashboards, MVP builds, and product engineering work.',
+      url: 'https://www.easyconvertlab.com/contact',
+      featureList: 'Freelance inquiries, Web development, Angular, Spring Boot, AI document workflows'
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'Contact', url: 'https://www.easyconvertlab.com/contact' }
     ]
   },
 

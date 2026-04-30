@@ -1,0 +1,97 @@
+<section class="about-page">
+  <div class="about-hero">
+    <div class="identity-panel">
+      <div class="avatar" aria-label="Gyanendra Maurya initials">GM</div>
+      <div class="identity-copy">
+        <h1>Gyanendra Maurya</h1>
+        <p class="title">Full stack developer</p>
+        <p class="intro">
+          I build reliable web products with a practical full-stack mindset, from polished Angular
+          interfaces to backend APIs, AI-powered document workflows, and payment-focused user
+          journeys. With 7 years of industry experience, I care about shipping work that is clear,
+          maintainable, and useful for the people who depend on it.
+        </p>
+        <div class="hero-actions">
+          <a mat-raised-button color="primary" href="/contact">
+            <mat-icon>mail</mat-icon>
+            Contact Me
+          </a>
+          <a
+            mat-stroked-button
+            href="https://www.linkedin.com/in/gyanendramaurya/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <mat-icon>business_center</mat-icon>
+            LinkedIn
+          </a>
+          <a
+            mat-stroked-button
+            href="https://github.com/GyanendraMaurya"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <mat-icon>code</mat-icon>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <aside class="contact-panel" aria-label="Contact information">
+      <div class="contact-row">
+        <mat-icon>mail</mat-icon>
+        <a href="mailto:gmaurya973@gmail.com">gmaurya973&#64;gmail.com</a>
+      </div>
+      <div class="contact-row">
+        <mat-icon>link</mat-icon>
+        <a href="https://www.linkedin.com/in/gyanendramaurya/" target="_blank" rel="noopener noreferrer">
+          linkedin.com/in/gyanendramaurya
+        </a>
+      </div>
+      <div class="contact-row">
+        <mat-icon>terminal</mat-icon>
+        <a href="https://github.com/GyanendraMaurya" target="_blank" rel="noopener noreferrer">
+          github.com/GyanendraMaurya
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <section class="proof-section">
+    <div class="proof-copy">
+      <p class="eyebrow">Proof of work</p>
+      <h2>ConvertLab is part of the story</h2>
+      <p>
+        ConvertLab shows the kind of product thinking I bring to freelance projects: practical file
+        tools, PDF and image workflows, authentication, backend services, and DocMind, an AI document
+        chat experience powered by RAG-style retrieval.
+      </p>
+    </div>
+    <div class="proof-stats" aria-label="Experience highlights">
+      @for (value of values; track value.label) {
+      <div class="stat-item">
+        <mat-icon>{{ value.icon }}</mat-icon>
+        <span>{{ value.label }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="services-section">
+    <div class="section-heading">
+      <p class="eyebrow">What I can help with</p>
+      <h2>Development support for real product work</h2>
+    </div>
+
+    <div class="services-grid">
+      @for (service of serviceFocus; track service.title) {
+      <article class="service-card">
+        <mat-icon>{{ service.icon }}</mat-icon>
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.description }}</p>
+      </article>
+      }
+    </div>
+  </section>
+</section>

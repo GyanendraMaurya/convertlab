@@ -24,6 +24,16 @@
     <span class="docmind-pulse-ring ring-2"></span>
   </a>
 
+  <a mat-button [routerLink]="['/about']" routerLinkActive="active-link" class="about-nav-link">
+    <mat-icon>person</mat-icon>
+    <span class="hide-mobile">About</span>
+  </a>
+
+  <a mat-button [routerLink]="['/contact']" routerLinkActive="active-link" class="about-nav-link">
+    <mat-icon>mail</mat-icon>
+    <span class="hide-mobile">Contact</span>
+  </a>
+
   @if (isAuthenticated()) {
   <!-- Profile Menu -->
   <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="profile-button">

@@ -6,6 +6,11 @@ mat-sidenav {
   width: 280px;
 }
 
+:host ::ng-deep mat-sidenav .mat-drawer-inner-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .sidenav-header {
   display: flex;
   align-items: center;
@@ -56,6 +61,15 @@ h3[mat-subheader] {
   color: var(--mat-sys-primary);
   font-weight: 500;
   margin-top: 8px;
+}
+
+.sidenav-tools {
+  flex: 1 1 auto;
+}
+
+.sidenav-footer {
+  flex: 0 0 auto;
+  padding-bottom: 8px;
 }
 
 .active-list-item {

@@ -202,6 +202,13 @@ nav {
   }
 }
 
+.about-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 .docmind-orb {
   font-size: 18px;
   display: flex;

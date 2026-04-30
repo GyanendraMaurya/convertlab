@@ -17,6 +17,19 @@ export const routes: Routes = [
     canActivate: [guestGuard]
   },
   {
+    path: 'about',
+    loadComponent: () => import('./components/about/about.component').then(m => m.AboutComponent)
+  },
+  {
+    path: 'contact',
+    loadComponent: () => import('./components/contact/contact.component').then(m => m.ContactComponent)
+  },
+  {
+    path: 'contact-me',
+    redirectTo: 'contact',
+    pathMatch: 'full'
+  },
+  {
     path: 'merge-pdf',
     loadComponent: () => import('./components/pdf/merge-pdf/merge-pdf.component').then(m => m.MergePdfComponent)
   },

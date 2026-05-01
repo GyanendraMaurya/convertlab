@@ -120,8 +120,9 @@ export class DocMindComponent implements OnInit {
       try {
         const ingestRes = await firstValueFrom(this.ragService.ingestDocument(pdfId!));
         chunkCount = ingestRes!.data.chunkCount || 0;
-      } catch {
-        this.snackbarService.show('Ingest failed, Please try again.', 'error');
+      } catch (err) {
+        this.patchState({ status: 'error' });
+        this.snackbarService.error(this.getErrorMessage(err, 'Ingest failed. Please try again.'));
         return;
       }
 
@@ -175,8 +176,8 @@ export class DocMindComponent implements OnInit {
         const res = await firstValueFrom(this.ragService
           .queryDocument(this.docState().pdfId!, text));
         answer = res!.data.answer;
-      } catch {
-        answer = 'Sorry, I encountered an error while processing your request.';
+      } catch (err) {
+        answer = this.getErrorMessage(err, 'Sorry, I encountered an error while processing your request.');
       }
 
       this.addAIMessage(answer, sources);
@@ -215,6 +216,17 @@ export class DocMindComponent implements OnInit {
         : [...s.ingestLog, { label, value }];
       return { ...s, ingestLog };
     });
+  }
+
+  private getErrorMessage(err: unknown, fallback: string): string {
+    if (err && typeof err === 'object') {
+      const error = err as { message?: unknown; error?: { error?: { message?: unknown }; message?: unknown } };
+      if (typeof error.message === 'string' && error.message.trim()) return error.message;
+      const apiError = error.error?.error?.message ?? error.error?.message;
+      if (typeof apiError === 'string' && apiError.trim()) return apiError;
+    }
+
+    return fallback;
   }
 
   // ── Helpers: messages ─────────────────────────────────────────────────────

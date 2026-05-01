@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { IngestResponse, QueryResponse, UploadResponse } from '../models/docmind.models';
+import { SUPPRESS_ERROR } from '../../interceptors/http-context';
 
 export interface ApiResponse<T> {
   data: T;
@@ -23,7 +24,7 @@ export class DocumentRagService {
     return this.http.post<ApiResponse<IngestResponse>>(
       `${this.apiUrl}/documents/ingest`,
       { fileId },
-      // { withCredentials: true }
+      { context: new HttpContext().set(SUPPRESS_ERROR, true) }
     );
   }
 
@@ -34,7 +35,7 @@ export class DocumentRagService {
     return this.http.post<ApiResponse<QueryResponse>>(
       `${this.apiUrl}/documents/query`,
       { fileId, query },
-      // { withCredentials: true }
+      { context: new HttpContext().set(SUPPRESS_ERROR, true) }
     );
   }
 }

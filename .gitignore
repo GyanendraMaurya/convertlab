@@ -1,0 +1,36 @@
+# macOS / system files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Editor / IDE state
+.vscode/
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment files
+.env
+.env.*
+env
+env.*
+
+# Frontend dependencies and build output
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Backend build output
+target/
+build/
+
+# Local deployment/helper scripts
+convertlab-backend/ec2-deploy-local-image.sh
+convertlab-frontend/convert-lab/deploy-s3.sh

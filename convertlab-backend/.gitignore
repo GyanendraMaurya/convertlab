@@ -40,10 +40,16 @@ logs/
 ### Environment Variables ###
 .env
 .env.dev
+env
+env.*
 
 ### Cloud Scripts ###
 /ec2-setup-1.sh
 /generate-github-key-2.sh
 /ec2-env-push-3.sh
 /ec2-deploy-4.sh
+/ec2-deploy-local-image.sh
 /deploy-s3.sh
+
+### System files ###
+.DS_Store

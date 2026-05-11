@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 @Log4j2
 @Component
-@Profile("local")
+@Profile({"local", "prod & !s3"})
 public class LocalFileCleaner implements FileCleanerStrategy {
 
     @Value("${temp.folder:temp-files}")

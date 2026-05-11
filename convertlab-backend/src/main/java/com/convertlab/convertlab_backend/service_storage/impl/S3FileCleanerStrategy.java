@@ -17,7 +17,7 @@ import java.util.List;
 
 @Log4j2
 @Component
-@Profile("prod")
+@Profile("s3")
 public class S3FileCleanerStrategy implements FileCleanerStrategy {
 
     // Only clean up temp working prefixes — never touch thumbnails (they are permanent)

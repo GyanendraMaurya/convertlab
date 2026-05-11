@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Log4j2
 @Service
-@Profile("local")
+@Profile({"local", "prod & !s3"})
 public class LocalStorageService implements StorageService {
 
     private final Path pdfDir = Paths.get("temp-files/pdf");

@@ -12,6 +12,9 @@ const routes = [
   { path: '/image-to-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-image', priority: '0.9', changefreq: 'weekly' },
+  { path: '/pdf-password', priority: '0.9', changefreq: 'weekly' },
+  { path: '/crop-image', priority: '0.9', changefreq: 'weekly' },
+  { path: '/docmind', priority: '0.8', changefreq: 'weekly' },
   { path: '/about', priority: '0.7', changefreq: 'monthly' },
   { path: '/contact', priority: '0.7', changefreq: 'monthly' },
 ];

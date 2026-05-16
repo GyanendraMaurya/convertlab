@@ -1,4 +1,5 @@
 export type UploadStatus = 'idle' | 'uploading' | 'ingesting' | 'ready' | 'error';
+export type IngestMode = 'DIRECT' | 'RAG';
 
 export type IngestStepStatus = 'pending' | 'active' | 'done';
 
@@ -14,6 +15,7 @@ export interface DocumentState {
   fileSize: number;
   pdfId: string | null;
   chunkCount: number | null;
+  ingestMode: IngestMode | null;
   ingestLog: IngestLogLine[];
   ingestSteps: IngestStep[];
 }
@@ -42,6 +44,8 @@ export interface UploadResponse {
 
 export interface IngestResponse {
   chunkCount: number;
+  mode: IngestMode;
+  characterCount: number;
 }
 
 export interface QueryResponse {

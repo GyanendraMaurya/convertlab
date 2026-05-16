@@ -37,6 +37,9 @@ export class ChatPanelComponent {
   subtitle = computed(() =>
     this.docState().status === 'ready' ? this.docState().fileName : 'No document loaded'
   );
+  modelTag = computed(() =>
+    this.docState().ingestMode === 'DIRECT' ? 'GPT-4o · Direct' : 'GPT-4o · RAG'
+  );
 
   private chatInput = viewChild(ChatInputComponent);
 

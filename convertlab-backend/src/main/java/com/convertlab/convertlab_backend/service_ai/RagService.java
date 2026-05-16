@@ -4,6 +4,8 @@ import com.convertlab.convertlab_backend.config.RequestContext;
 import com.convertlab.convertlab_backend.entity.DocumentChunk;
 import com.convertlab.convertlab_backend.entity.Embedding1536;
 import com.convertlab.convertlab_backend.repository.Embedding1536Repository;
+import com.convertlab.convertlab_backend.service_ai.DirectDocumentCacheService.DirectDocument;
+import com.convertlab.convertlab_backend.service_ai.dto.IngestResponse;
 import com.convertlab.convertlab_backend.service_ai.exception.DocumentIngestionException;
 import com.convertlab.convertlab_backend.service_ai.impl.OpenAiChatService;
 import com.convertlab.convertlab_backend.websocket.WebSocketEvent;
@@ -22,22 +24,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RagService {
 
+    private static final int DIRECT_MODE_CHARACTER_LIMIT = 20_000;
+    private static final String MODE_DIRECT = "DIRECT";
+    private static final String MODE_RAG = "RAG";
+
     private final DocumentChunker documentChunker;
     private final EmbeddingService embeddingService;
     private final PdfTextExtractionService pdfTextExtractionService;
     private final DocumentTextProcessor documentTextProcessor;
     private final Embedding1536Repository embeddingRepository;
     private final DocumentChunkService documentChunkService;
+    private final DirectDocumentCacheService directDocumentCacheService;
     private final OpenAiChatService openAiChatService;
     private final RequestContext requestContext;
     private final WebSocketService webSocketService;
 
-    public int ingest(String fileId) {
+    public IngestResponse ingest(String fileId) {
         if (fileId == null || fileId.isBlank()) {
             throw new DocumentIngestionException("File ID cannot be null or blank", "INVALID_FILE_ID", HttpStatus.BAD_REQUEST);
         }
 
         log.info("Starting document ingestion for fileId: {}", fileId);
+        directDocumentCacheService.evict(fileId);
 
         try {
             String rawText = pdfTextExtractionService.extractText(fileId);
@@ -61,6 +69,12 @@ public class RagService {
             webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_CLEANED, fileId ));
             log.debug("Cleaned text length: {} for fileId: {}", cleanedText.length(), fileId);
 
+            if (cleanedText.length() <= DIRECT_MODE_CHARACTER_LIMIT) {
+                directDocumentCacheService.save(fileId, cleanedText);
+                log.info("Document ingestion completed in direct mode for fileId: {}, chars: {}", fileId, cleanedText.length());
+                return new IngestResponse(0, MODE_DIRECT, cleanedText.length());
+            }
+
             List<String> chunks = documentChunker.chunk(cleanedText);
             if (chunks == null || chunks.isEmpty()) {
                 throw new DocumentIngestionException(
@@ -79,7 +93,7 @@ public class RagService {
             webSocketService.send(null, requestContext.getSessionId(), WebSocketEvent.of(WebSocketEventType.DOCUMENT_EMBEDDED, fileId ));
 
             log.info("Document ingestion completed successfully for fileId: {}", fileId);
-            return chunks.size();
+            return new IngestResponse(chunks.size(), MODE_RAG, cleanedText.length());
         } catch (DocumentIngestionException e) {
             throw e;
         } catch (Exception e) {
@@ -103,6 +117,43 @@ public class RagService {
         log.info("Processing query for fileId: {}, query length: {}", fileId, query.length());
 
         try {
+            return directDocumentCacheService.find(fileId)
+                    .map(directDocument -> answerDirectDocumentQuery(directDocument, query))
+                    .orElseGet(() -> answerRagQuery(fileId, query));
+        } catch (DocumentIngestionException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error during document query for fileId: {}", fileId, e);
+            throw new DocumentIngestionException(
+                    "Failed to process query for fileId: " + fileId,
+                    "QUERY_FAILED",
+                    e
+            );
+        }
+    }
+
+    private String answerDirectDocumentQuery(DirectDocument directDocument, String query) {
+        log.debug("Using direct document context for fileId: {}, chars: {}",
+                directDocument.fileId(), directDocument.characterCount());
+
+        String finalPrompt = """
+                Use the full document text below to answer the question.
+                If the answer is not in the document, say you don't know.
+
+                Document:
+                %s
+
+                Question:
+                %s
+                """.formatted(directDocument.cleanedText(), query);
+
+        String response = openAiChatService.askLLM("You are a helpful AI assistant.", finalPrompt);
+        log.info("Direct document query processed successfully for fileId: {}", directDocument.fileId());
+        return response;
+    }
+
+    private String answerRagQuery(String fileId, String query) {
+        try {
             float[] queryEmbedding = embeddingService.generateQueryEmbedding(query);
             log.debug("Generated query embedding of dimension: {}", queryEmbedding.length);
 
@@ -112,7 +163,7 @@ public class RagService {
 
             if (similarEmbeddings == null || similarEmbeddings.isEmpty()) {
                 log.warn("No similar embeddings found for query on fileId: {}", fileId);
-                return "No relevant content found in the document to answer your question.";
+                return "I couldn't find processed context for this document. Please upload and process the document again.";
             }
 
             log.debug("Found {} similar embeddings for fileId: {}", similarEmbeddings.size(), fileId);
@@ -148,16 +199,8 @@ public class RagService {
             String response = openAiChatService.askLLM("You are a helpful AI assistant.", finalPrompt);
             log.info("Query processed successfully for fileId: {}", fileId);
             return response;
-
-        } catch (DocumentIngestionException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Unexpected error during document query for fileId: {}", fileId, e);
-            throw new DocumentIngestionException(
-                    "Failed to process query for fileId: " + fileId,
-                    "QUERY_FAILED",
-                    e
-            );
+        } catch (DocumentIngestionException ex) {
+            throw ex;
         }
     }
 }

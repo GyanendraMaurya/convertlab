@@ -12,6 +12,7 @@ import {
 import {
   ChatMessage,
   DocumentState,
+  IngestMode,
   IngestStep,
   UploadStatus,
 } from './models/docmind.models';
@@ -53,6 +54,7 @@ export class DocMindComponent implements OnInit {
     fileSize: 0,
     pdfId: null,
     chunkCount: null,
+    ingestMode: null,
     ingestLog: [],
     ingestSteps: this.buildDefaultSteps(),
   });
@@ -117,9 +119,11 @@ export class DocMindComponent implements OnInit {
       this.appendLog('status', 'processing…');
 
       let chunkCount: number | null = null;
+      let ingestMode: IngestMode = 'RAG';
       try {
         const ingestRes = await firstValueFrom(this.ragService.ingestDocument(pdfId!));
         chunkCount = ingestRes!.data.chunkCount || 0;
+        ingestMode = ingestRes!.data.mode || 'RAG';
       } catch (err) {
         this.patchState({ status: 'error' });
         this.snackbarService.error(this.getErrorMessage(err, 'Ingest failed. Please try again.'));
@@ -127,11 +131,18 @@ export class DocMindComponent implements OnInit {
       }
 
       // Done
-      this.patchState({ status: 'ready', chunkCount });
-      this.addAIMessage(
-        `Document loaded! I've processed <strong>${file.name}</strong> into ${chunkCount ?? 'multiple'} semantic chunks and built a vector index. You can now ask me anything about it.`,
-        ['Full document indexed', 'Embeddings ready']
-      );
+      this.patchState({ status: 'ready', chunkCount, ingestMode });
+      if (ingestMode === 'DIRECT') {
+        this.addAIMessage(
+          `Document loaded! I can read the full text of <strong>${file.name}</strong> directly. You can now ask me anything about it.`,
+          ['Full document ready']
+        );
+      } else {
+        this.addAIMessage(
+          `Document loaded! I've processed <strong>${file.name}</strong> into ${chunkCount ?? 'multiple'} semantic chunks and built a vector index. You can now ask me anything about it.`,
+          ['Full document indexed', 'Embeddings ready']
+        );
+      }
 
       setTimeout(() => this.chatPanel()?.focusInput(), 100);
 
@@ -194,6 +205,7 @@ export class DocMindComponent implements OnInit {
       fileSize: file.size,
       pdfId: null,
       chunkCount: null,
+      ingestMode: null,
       ingestLog: [],
       ingestSteps: this.buildDefaultSteps(),
     });

@@ -50,13 +50,14 @@
       <div class="chat-header-name">Document Assistant</div>
       <div class="chat-header-sub">{{ subtitle() }}</div>
     </div>
-    <span class="model-tag">GPT-4o · RAG</span>
+    <span class="model-tag">{{ modelTag() }}</span>
   </div>
 
   <!-- ── Messages ──────────────────────────────────────────────────────── -->
   <app-chat-messages
     [messages]="messages()"
     [isThinking]="isThinking()"
+    [ingestMode]="docState().ingestMode"
   />
 
   <!-- ── Input ─────────────────────────────────────────────────────────── -->

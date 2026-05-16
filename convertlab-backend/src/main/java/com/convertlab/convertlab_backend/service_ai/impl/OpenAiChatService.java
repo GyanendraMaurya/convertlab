@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.service_ai.impl;
 
 import com.convertlab.convertlab_backend.service_ai.ChatService;
+import com.convertlab.convertlab_backend.service_ai.dto.ConversationMessage;
 import com.convertlab.convertlab_backend.service_ai.exception.AiException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import tools.jackson.databind.JsonNode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,11 @@ public class OpenAiChatService implements ChatService {
 
     @Override
     public String askLLM(String systemPrompt, String userPrompt) {
+        return askLLM(systemPrompt, List.of(), userPrompt);
+    }
+
+    @Override
+    public String askLLM(String systemPrompt, List<ConversationMessage> conversationHistory, String userPrompt) {
         if (systemPrompt == null || systemPrompt.isBlank()) {
             throw new AiException("System prompt cannot be null or blank", "INVALID_SYSTEM_PROMPT");
         }
@@ -34,16 +41,22 @@ public class OpenAiChatService implements ChatService {
             throw new AiException("User prompt cannot be null or blank", "INVALID_USER_PROMPT", HttpStatus.BAD_REQUEST);
         }
 
-        log.debug("Sending request to OpenAI chat - model: {}, userPrompt length: {}",
-                MODEL, userPrompt.length());
+        log.debug("Sending request to OpenAI chat - model: {}, history messages: {}, userPrompt length: {}",
+                MODEL, conversationHistory == null ? 0 : conversationHistory.size(), userPrompt.length());
 
         try {
+            List<Map<String, String>> messages = new ArrayList<>();
+            messages.add(Map.of("role", "system", "content", systemPrompt));
+            if (conversationHistory != null) {
+                conversationHistory.forEach(message ->
+                        messages.add(Map.of("role", message.role(), "content", message.content()))
+                );
+            }
+            messages.add(Map.of("role", "user", "content", userPrompt));
+
             Map<String, Object> request = Map.of(
                     "model", MODEL,
-                    "messages", List.of(
-                            Map.of("role", "system", "content", systemPrompt),
-                            Map.of("role", "user", "content", userPrompt)
-                    ),
+                    "messages", messages,
                     "temperature", 0.2
             );
 

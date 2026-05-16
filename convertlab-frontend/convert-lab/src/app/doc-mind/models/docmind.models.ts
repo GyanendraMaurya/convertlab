@@ -26,6 +26,7 @@ export interface IngestLogLine {
 }
 
 export type MessageRole = 'user' | 'ai';
+export type ConversationRole = 'user' | 'assistant';
 
 export interface ChatMessage {
   id: string;
@@ -34,6 +35,12 @@ export interface ChatMessage {
   timestamp: Date;
   sources?: string[];
   isHtml?: boolean;
+  isConversation?: boolean;
+}
+
+export interface ConversationMessage {
+  role: ConversationRole;
+  content: string;
 }
 
 export interface UploadResponse {

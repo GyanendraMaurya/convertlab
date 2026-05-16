@@ -61,7 +61,7 @@ public class DocumentController {
         // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
         userAiUsageService.checkAndIncrementQuery(principal);
 
-        String result = ragService.answerQuery(request.fileId(), request.query());
+        String result = ragService.answerQuery(request.fileId(), request.query(), request.conversationHistory());
         return ResponseEntity.ok(ApiResponse.success(new QueryResponse(result)));
     }
 }

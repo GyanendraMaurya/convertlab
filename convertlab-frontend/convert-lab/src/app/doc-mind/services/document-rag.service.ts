@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { IngestResponse, QueryResponse, UploadResponse } from '../models/docmind.models';
+import { ConversationMessage, IngestResponse, QueryResponse } from '../models/docmind.models';
 import { SUPPRESS_ERROR } from '../../interceptors/http-context';
 
 export interface ApiResponse<T> {
@@ -31,10 +31,14 @@ export class DocumentRagService {
   /**
    * Step 3 — query the indexed document
    */
-  queryDocument(fileId: string, query: string): Observable<ApiResponse<QueryResponse>> {
+  queryDocument(
+    fileId: string,
+    query: string,
+    conversationHistory: ConversationMessage[] = []
+  ): Observable<ApiResponse<QueryResponse>> {
     return this.http.post<ApiResponse<QueryResponse>>(
       `${this.apiUrl}/documents/query`,
-      { fileId, query },
+      { fileId, query, conversationHistory },
       { context: new HttpContext().set(SUPPRESS_ERROR, true) }
     );
   }

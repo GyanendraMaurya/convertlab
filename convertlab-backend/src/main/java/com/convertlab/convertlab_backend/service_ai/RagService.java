@@ -5,6 +5,7 @@ import com.convertlab.convertlab_backend.entity.DocumentChunk;
 import com.convertlab.convertlab_backend.entity.Embedding1536;
 import com.convertlab.convertlab_backend.repository.Embedding1536Repository;
 import com.convertlab.convertlab_backend.service_ai.DirectDocumentCacheService.DirectDocument;
+import com.convertlab.convertlab_backend.service_ai.dto.ConversationMessage;
 import com.convertlab.convertlab_backend.service_ai.dto.IngestResponse;
 import com.convertlab.convertlab_backend.service_ai.exception.DocumentIngestionException;
 import com.convertlab.convertlab_backend.service_ai.impl.OpenAiChatService;
@@ -16,8 +17,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Log4j2
 @Service
@@ -25,8 +28,10 @@ import java.util.List;
 public class RagService {
 
     private static final int DIRECT_MODE_CHARACTER_LIMIT = 20_000;
+    private static final int MAX_CONVERSATION_HISTORY_MESSAGES = 10;
     private static final String MODE_DIRECT = "DIRECT";
     private static final String MODE_RAG = "RAG";
+    private static final Set<String> ALLOWED_HISTORY_ROLES = Set.of("user", "assistant");
 
     private final DocumentChunker documentChunker;
     private final EmbeddingService embeddingService;
@@ -36,6 +41,7 @@ public class RagService {
     private final DocumentChunkService documentChunkService;
     private final DirectDocumentCacheService directDocumentCacheService;
     private final OpenAiChatService openAiChatService;
+    private final DocMindPromptService promptService;
     private final RequestContext requestContext;
     private final WebSocketService webSocketService;
 
@@ -106,7 +112,7 @@ public class RagService {
         }
     }
 
-    public String answerQuery(String fileId, String query) {
+    public String answerQuery(String fileId, String query, List<ConversationMessage> conversationHistory) {
         if (fileId == null || fileId.isBlank()) {
             throw new DocumentIngestionException("File ID cannot be null or blank", "INVALID_FILE_ID", HttpStatus.BAD_REQUEST);
         }
@@ -114,12 +120,15 @@ public class RagService {
             throw new DocumentIngestionException("Query cannot be null or blank", "INVALID_QUERY");
         }
 
-        log.info("Processing query for fileId: {}, query length: {}", fileId, query.length());
+        List<ConversationMessage> sanitizedHistory = sanitizeConversationHistory(conversationHistory);
+
+        log.info("Processing query for fileId: {}, query length: {}, history messages: {}",
+                fileId, query.length(), sanitizedHistory.size());
 
         try {
             return directDocumentCacheService.find(fileId)
-                    .map(directDocument -> answerDirectDocumentQuery(directDocument, query))
-                    .orElseGet(() -> answerRagQuery(fileId, query));
+                    .map(directDocument -> answerDirectDocumentQuery(directDocument, query, sanitizedHistory))
+                    .orElseGet(() -> answerRagQuery(fileId, query, sanitizedHistory));
         } catch (DocumentIngestionException e) {
             throw e;
         } catch (Exception e) {
@@ -132,27 +141,22 @@ public class RagService {
         }
     }
 
-    private String answerDirectDocumentQuery(DirectDocument directDocument, String query) {
+    private String answerDirectDocumentQuery(
+            DirectDocument directDocument,
+            String query,
+            List<ConversationMessage> conversationHistory
+    ) {
         log.debug("Using direct document context for fileId: {}, chars: {}",
                 directDocument.fileId(), directDocument.characterCount());
 
-        String finalPrompt = """
-                Use the full document text below to answer the question.
-                If the answer is not in the document, say you don't know.
+        String finalPrompt = promptService.directQueryPrompt(directDocument.cleanedText(), query);
 
-                Document:
-                %s
-
-                Question:
-                %s
-                """.formatted(directDocument.cleanedText(), query);
-
-        String response = openAiChatService.askLLM("You are a helpful AI assistant.", finalPrompt);
+        String response = openAiChatService.askLLM(promptService.systemPrompt(), conversationHistory, finalPrompt);
         log.info("Direct document query processed successfully for fileId: {}", directDocument.fileId());
         return response;
     }
 
-    private String answerRagQuery(String fileId, String query) {
+    private String answerRagQuery(String fileId, String query, List<ConversationMessage> conversationHistory) {
         try {
             float[] queryEmbedding = embeddingService.generateQueryEmbedding(query);
             log.debug("Generated query embedding of dimension: {}", queryEmbedding.length);
@@ -185,22 +189,31 @@ public class RagService {
                 return "Could not retrieve relevant context from the document.";
             }
 
-            String finalPrompt = """
-                    Use the provided context to answer the question.
-                    If the answer is not in the context, say you don't know.
+            String finalPrompt = promptService.ragQueryPrompt(context, query);
 
-                    Context:
-                    %s
-
-                    Question:
-                    %s
-                    """.formatted(context, query);
-
-            String response = openAiChatService.askLLM("You are a helpful AI assistant.", finalPrompt);
+            String response = openAiChatService.askLLM(promptService.systemPrompt(), conversationHistory, finalPrompt);
             log.info("Query processed successfully for fileId: {}", fileId);
             return response;
         } catch (DocumentIngestionException ex) {
             throw ex;
         }
+    }
+
+    private List<ConversationMessage> sanitizeConversationHistory(List<ConversationMessage> conversationHistory) {
+        if (conversationHistory == null || conversationHistory.isEmpty()) {
+            return List.of();
+        }
+
+        List<ConversationMessage> validMessages = conversationHistory.stream()
+                .filter(message -> message != null
+                        && message.role() != null
+                        && message.content() != null
+                        && ALLOWED_HISTORY_ROLES.contains(message.role().trim().toLowerCase())
+                        && !message.content().isBlank())
+                .map(message -> new ConversationMessage(message.role().trim().toLowerCase(), message.content().trim()))
+                .toList();
+
+        int fromIndex = Math.max(0, validMessages.size() - MAX_CONVERSATION_HISTORY_MESSAGES);
+        return new ArrayList<>(validMessages.subList(fromIndex, validMessages.size()));
     }
 }

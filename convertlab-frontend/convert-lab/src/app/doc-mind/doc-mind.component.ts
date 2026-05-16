@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   ChatMessage,
+  ConversationMessage,
   DocumentState,
   IngestMode,
   IngestStep,
@@ -135,12 +136,14 @@ export class DocMindComponent implements OnInit {
       if (ingestMode === 'DIRECT') {
         this.addAIMessage(
           `Document loaded! I can read the full text of <strong>${file.name}</strong> directly. You can now ask me anything about it.`,
-          ['Full document ready']
+          ['Full document ready'],
+          false
         );
       } else {
         this.addAIMessage(
           `Document loaded! I've processed <strong>${file.name}</strong> into ${chunkCount ?? 'multiple'} semantic chunks and built a vector index. You can now ask me anything about it.`,
-          ['Full document indexed', 'Embeddings ready']
+          ['Full document indexed', 'Embeddings ready'],
+          false
         );
       }
 
@@ -176,22 +179,25 @@ export class DocMindComponent implements OnInit {
     if (this.isThinking() || this.docState().status !== 'ready') return;
 
     this.hasMessageSent.set(true);
+    const conversationHistory = this.buildConversationHistory();
     this.addUserMessage(text);
     this.isThinking.set(true);
 
     try {
       let answer = '';
       let sources: string[] = [];
+      let isConversation = true;
 
       try {
         const res = await firstValueFrom(this.ragService
-          .queryDocument(this.docState().pdfId!, text));
+          .queryDocument(this.docState().pdfId!, text, conversationHistory));
         answer = res!.data.answer;
       } catch (err) {
         answer = this.getErrorMessage(err, 'Sorry, I encountered an error while processing your request.');
+        isConversation = false;
       }
 
-      this.addAIMessage(answer, sources);
+      this.addAIMessage(answer, sources, isConversation);
     } finally {
       this.isThinking.set(false);
     }
@@ -252,7 +258,7 @@ export class DocMindComponent implements OnInit {
     this.messages.update(m => [...m, msg]);
   }
 
-  private addAIMessage(text: string, sources: string[] = []) {
+  private addAIMessage(text: string, sources: string[] = [], isConversation = true) {
     const msg: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'ai',
@@ -260,8 +266,48 @@ export class DocMindComponent implements OnInit {
       timestamp: new Date(),
       sources,
       isHtml: true,
+      isConversation,
     };
     this.messages.update(m => [...m, msg]);
+  }
+
+  private buildConversationHistory(): ConversationMessage[] {
+    const maxPerRole = 5;
+    let userCount = 0;
+    let assistantCount = 0;
+
+    return this.messages()
+      .filter(msg => msg.isConversation !== false)
+      .slice()
+      .reverse()
+      .reduce<ConversationMessage[]>((history, msg) => {
+        if (msg.role === 'user') {
+          if (userCount >= maxPerRole) return history;
+          userCount++;
+          history.push({ role: 'user', content: this.toPlainText(msg.text) });
+          return history;
+        }
+
+        if (assistantCount >= maxPerRole) return history;
+        assistantCount++;
+        history.push({ role: 'assistant', content: this.toPlainText(msg.text) });
+        return history;
+      }, [])
+      .filter(msg => msg.content.length > 0)
+      .reverse();
+  }
+
+  private toPlainText(value: string): string {
+    return value
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   // ── Utilities ─────────────────────────────────────────────────────────────

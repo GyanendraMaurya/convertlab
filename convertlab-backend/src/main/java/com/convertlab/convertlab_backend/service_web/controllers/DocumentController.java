@@ -26,7 +26,7 @@ public class DocumentController {
     private final UserAiUsageService userAiUsageService;
 
     /**
-     * Ingest a PDF into the vector store.
+     * Ingest a PDF for direct or vector-backed document querying.
      * Requires authentication. Subject to per-user daily limit and per-IP rate limiting.
      *
      * @param principal the authenticated user's email (from JWT subject)
@@ -41,8 +41,8 @@ public class DocumentController {
         // Enforce per-user daily limit (throws AiRateLimitException if exceeded)
         userAiUsageService.checkAndIncrementIngestLimit(principal);
 
-        int chunkCount = ragService.ingest(request.fileId());
-        return ResponseEntity.ok(ApiResponse.success(new IngestResponse(chunkCount)));
+        IngestResponse response = ragService.ingest(request.fileId());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     /**

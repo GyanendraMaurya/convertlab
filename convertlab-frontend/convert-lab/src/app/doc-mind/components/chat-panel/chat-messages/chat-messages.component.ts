@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
-import { ChatMessage, IngestStep } from '../../../models/docmind.models';
+import { ChatMessage, IngestMode, IngestStep } from '../../../models/docmind.models';
 
 @Component({
   selector: 'app-chat-messages',
@@ -22,6 +22,7 @@ import { ChatMessage, IngestStep } from '../../../models/docmind.models';
 export class ChatMessagesComponent implements AfterViewChecked {
   messages = input.required<ChatMessage[]>();
   isThinking = input<boolean>(false);
+  ingestMode = input<IngestMode | null>(null);
   ingestSteps = input<IngestStep[]>([]);
   showIngestOverlay = input<boolean>(false);
 
@@ -42,5 +43,9 @@ export class ChatMessagesComponent implements AfterViewChecked {
 
   trackById(_: number, msg: ChatMessage) {
     return msg.id;
+  }
+
+  thinkingLabel(): string {
+    return this.ingestMode() === 'DIRECT' ? 'reading document_' : 'searching vectors_';
   }
 }

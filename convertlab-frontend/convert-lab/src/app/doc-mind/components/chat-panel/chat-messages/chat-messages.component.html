@@ -24,8 +24,13 @@
           class="bubble"
           [class.bubble-ai]="msg.role === 'ai'"
           [class.bubble-user]="msg.role === 'user'"
-          [innerHTML]="msg.text"
-        ></div>
+        >
+          @if (msg.role === 'ai') {
+            <markdown class="markdown-content" [data]="msg.text"></markdown>
+          } @else {
+            <span class="user-text">{{ msg.text }}</span>
+          }
+        </div>
 
         <!-- Source references -->
         <!-- @if (msg.sources && msg.sources.length > 0) {

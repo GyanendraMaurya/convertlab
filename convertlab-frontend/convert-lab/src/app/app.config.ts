@@ -9,6 +9,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { AuthInitService } from './services/auth-init.service';
 import { sessionInterceptor } from './interceptors/session.interceptor';
+import { provideMarkdown } from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
         errorInterceptor
       ]),
       withFetch()),
+    provideMarkdown(),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(() => {
       const authService = inject(AuthInitService);

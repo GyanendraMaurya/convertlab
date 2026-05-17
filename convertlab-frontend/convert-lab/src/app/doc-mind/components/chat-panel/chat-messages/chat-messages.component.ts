@@ -9,12 +9,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { MarkdownComponent } from 'ngx-markdown';
 import { ChatMessage, IngestMode, IngestStep } from '../../../models/docmind.models';
 
 @Component({
   selector: 'app-chat-messages',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, MarkdownComponent],
   templateUrl: './chat-messages.component.html',
   styleUrl: './chat-messages.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

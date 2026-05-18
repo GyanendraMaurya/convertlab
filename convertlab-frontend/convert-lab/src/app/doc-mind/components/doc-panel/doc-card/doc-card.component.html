@@ -39,7 +39,7 @@
       @if (state().chunkCount) {
         <span class="chip chip-teal">{{ state().chunkCount }} chunks</span>
       }
-      <span class="chip chip-gold">Embedded</span>
+      <span class="chip chip-gold">{{ ingestModeChipText() }}</span>
       <span class="chip chip-blue">Ready</span>
     </div>
   }

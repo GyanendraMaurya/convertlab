@@ -26,6 +26,9 @@ export class DocCardComponent {
   showIngestVisual = computed(
     () => this.isIngesting() && this.state().ingestLog.length > 0
   );
+  ingestModeChipText = computed(() =>
+    this.state().ingestMode === 'DIRECT' ? 'Direct read' : 'Embedded'
+  );
 
   statusClass = computed(() => {
     const s = this.state().status;

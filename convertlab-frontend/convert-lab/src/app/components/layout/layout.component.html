@@ -48,6 +48,13 @@
         <mat-icon matListItemIcon>compress</mat-icon>
         <span matListItemTitle>Compress PDF</span>
       </a>
+
+      <a mat-list-item [routerLink]="['/edit-pdf']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/edit-pdf')">
+        <mat-icon matListItemIcon>edit_note</mat-icon>
+        <span matListItemTitle>Edit PDF</span>
+      </a>
+
       <a mat-list-item [routerLink]="['/pdf-password']" (click)="closeSidenav()"
         [class.active-list-item]="isActive('/pdf-password')">
         <mat-icon matListItemIcon>lock</mat-icon>

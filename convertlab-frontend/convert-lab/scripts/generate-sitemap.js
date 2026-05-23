@@ -11,6 +11,7 @@ const routes = [
   { path: '/split-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/image-to-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-pdf', priority: '0.9', changefreq: 'weekly' },
+  { path: '/edit-pdf', priority: '0.9', changefreq: 'weekly' },
   { path: '/compress-image', priority: '0.9', changefreq: 'weekly' },
   { path: '/pdf-password', priority: '0.9', changefreq: 'weekly' },
   { path: '/crop-image', priority: '0.9', changefreq: 'weekly' },

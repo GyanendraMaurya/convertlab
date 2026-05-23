@@ -40,6 +40,7 @@ public class PdfController {
     private final ImageService imageService;
     private final PdfCompressionService pdfCompressionService;
     private final PdfPasswordService pdfPasswordService;
+    private final PdfEditorService pdfEditorService;
     private final WebSocketService webSocketService;
     private final RequestContext requestContext;
 
@@ -303,6 +304,31 @@ public class PdfController {
             throw new PdfPasswordException(e.getMessage(), "INCORRECT_PASSWORD");
         } catch (Exception e) {
             log.error("Error processing PDF password for fileId: {}", request.getFileId(), e);
+            throw e;
+        }
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<Resource> editPdf(@RequestBody PdfEditRequest request) throws Exception {
+        log.info("PDF edit request received for fileId: {}, operations: {}",
+                request == null ? null : request.getFileId(),
+                request == null || request.getOperations() == null ? 0 : request.getOperations().size());
+
+        try {
+            ExtractedFile editedFile = pdfEditorService.editPdf(request);
+            ByteArrayResource resource = new ByteArrayResource(editedFile.getFileBytes());
+
+            log.info("PDF edit completed successfully for fileId: {}, output size: {} bytes",
+                    request.getFileId(), editedFile.getFileBytes().length);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + editedFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .contentLength(editedFile.getFileBytes().length)
+                    .body(resource);
+        } catch (Exception e) {
+            log.error("Error editing PDF for fileId: {}", request == null ? null : request.getFileId(), e);
             throw e;
         }
     }

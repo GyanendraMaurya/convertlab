@@ -1,0 +1,210 @@
+<div class="editor-shell">
+  <section class="editor-topbar">
+    <div class="topbar-title">
+      <mat-icon>edit_document</mat-icon>
+      <div>
+        <h1>Edit PDF</h1>
+        <p>{{ fileName() || 'Upload a PDF to start editing with selectable overlays' }}</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <input
+        #quickFileInput
+        class="quick-file-input"
+        type="file"
+        accept=".pdf,application/pdf"
+        (change)="onQuickFileSelected($event)">
+      <button mat-stroked-button color="primary" type="button" (click)="quickFileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        {{ pageCount() ? 'Replace PDF' : 'Upload PDF' }}
+      </button>
+    </div>
+  </section>
+
+  @if (fileName()) {
+    <section class="editor-notice">
+      <mat-icon>info</mat-icon>
+      <span>{{ fileName() }} - Cover boxes are visual replacements, not secure redaction. Click the page to add an edit.</span>
+    </section>
+  }
+
+  <section class="editor-layout">
+    <main class="editor-workspace">
+      @if (!pageCount()) {
+        <div class="empty-state">
+          <mat-icon>edit_document</mat-icon>
+          <h2>Edit PDF</h2>
+          <p>Upload a PDF, click on the page, then cover and replace text with selectable overlays.</p>
+          <div class="empty-uploader">
+            <app-file-uploader
+              [allowedTypes]="['pdf']"
+              [fileType]="'pdf'"
+              [multiple]="false"
+              [isUploading]="uploadStatus() === 'uploading'"
+              (onFileSelected)="onFileSelected($event)">
+            </app-file-uploader>
+          </div>
+        </div>
+      }
+
+      <div
+        class="editor-page"
+        [class.hidden]="!pageCount()"
+        [style.width.px]="pageWidth() * displayScale()"
+        [style.height.px]="pageHeight() * displayScale()"
+        (mousedown)="createEditFromPointer($event)">
+        <canvas #pdfCanvas></canvas>
+
+        @for (operation of visibleOperations(); track operation.id) {
+          <div
+            class="edit-box"
+            [class.selected]="operation.id === selectedId()"
+            [style.left.px]="displayLeft(operation)"
+            [style.top.px]="displayTop(operation)"
+            [style.width.px]="displayWidth(operation)"
+            [style.height.px]="displayHeight(operation)"
+            [style.background]="operation.coverEnabled ? operation.coverColor : 'transparent'"
+            (mousedown)="selectOperation($event, operation.id); startDrag($event, operation, 'move')">
+            <div
+              class="edit-text"
+              [style.color]="operation.textColor"
+              [style.font-family]="operation.fontFamily"
+              [style.font-size.px]="operation.fontSize * displayScale()"
+              [style.font-weight]="operation.bold ? 700 : 400"
+              [style.font-style]="operation.italic ? 'italic' : 'normal'"
+              [style.text-align]="operation.alignment">
+              {{ operation.text }}
+            </div>
+            <button
+              class="resize-handle"
+              type="button"
+              matTooltip="Resize"
+              (mousedown)="startDrag($event, operation, 'resize')">
+            </button>
+          </div>
+        }
+      </div>
+    </main>
+
+    <aside class="tool-panel" aria-label="PDF editor tools">
+      <div class="panel-section page-tools">
+        <div class="panel-heading">
+          <mat-icon>description</mat-icon>
+          <span>Page</span>
+        </div>
+        <div class="toolbar-group nav-tools">
+          <button mat-icon-button matTooltip="Previous page" [disabled]="currentPage() <= 1" (click)="goToPage(currentPage() - 1)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-counter">{{ currentPage() }} / {{ pageCount() || 1 }}</span>
+          <button mat-icon-button matTooltip="Next page" [disabled]="currentPage() >= pageCount()" (click)="goToPage(currentPage() + 1)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        <div class="toolbar-group nav-tools">
+          <button mat-icon-button matTooltip="Zoom out" [disabled]="!pageCount()" (click)="zoomOut()">
+            <mat-icon>zoom_out</mat-icon>
+          </button>
+          <span class="zoom-label">{{ zoom() * 100 | number: '1.0-0' }}%</span>
+          <button mat-icon-button matTooltip="Zoom in" [disabled]="!pageCount()" (click)="zoomIn()">
+            <mat-icon>zoom_in</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-heading">
+          <mat-icon>text_fields</mat-icon>
+          <span>Text</span>
+        </div>
+        <textarea
+          class="text-input"
+          rows="4"
+          [ngModel]="currentText()"
+          (ngModelChange)="currentText.set($event); updateSelectedStyle()"
+          placeholder="Text"></textarea>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Font</span>
+            <select [ngModel]="fontFamily()" (ngModelChange)="setFontFamily($event)" aria-label="Font family">
+              <option value="Helvetica">Helvetica</option>
+              <option value="Times">Times</option>
+              <option value="Courier">Courier</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Size</span>
+            <input
+              type="number"
+              min="8"
+              max="72"
+              [ngModel]="fontSize()"
+              (ngModelChange)="fontSize.set(+$event); updateSelectedStyle()"
+              aria-label="Font size">
+          </label>
+        </div>
+
+        <div class="toolbar-group icon-strip">
+          <button mat-icon-button matTooltip="Bold" [class.active]="bold()" (click)="bold.set(!bold()); updateSelectedStyle()">
+            <mat-icon>format_bold</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Italic" [class.active]="italic()" (click)="italic.set(!italic()); updateSelectedStyle()">
+            <mat-icon>format_italic</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Align left" [class.active]="alignment() === 'left'" (click)="alignment.set('left'); updateSelectedStyle()">
+            <mat-icon>format_align_left</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Align center" [class.active]="alignment() === 'center'" (click)="alignment.set('center'); updateSelectedStyle()">
+            <mat-icon>format_align_center</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Align right" [class.active]="alignment() === 'right'" (click)="alignment.set('right'); updateSelectedStyle()">
+            <mat-icon>format_align_right</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-heading">
+          <mat-icon>format_color_fill</mat-icon>
+          <span>Cover</span>
+        </div>
+        <div class="toolbar-group">
+          <label class="color-field">
+            <span>Text</span>
+            <input type="color" [ngModel]="textColor()" (ngModelChange)="textColor.set($event); updateSelectedStyle()">
+          </label>
+          <label class="color-field">
+            <span>Cover</span>
+            <input type="color" [ngModel]="coverColor()" (ngModelChange)="coverColor.set($event); updateSelectedStyle()">
+          </label>
+        </div>
+        <mat-checkbox [ngModel]="coverEnabled()" (ngModelChange)="coverEnabled.set($event); updateSelectedStyle()">Draw cover box</mat-checkbox>
+      </div>
+
+      <div class="panel-section action-panel">
+        <div class="toolbar-group icon-strip">
+          <button mat-icon-button matTooltip="Undo" [disabled]="!operations().length" (click)="undo()">
+            <mat-icon>undo</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Redo" (click)="redo()">
+            <mat-icon>redo</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete selected" [disabled]="!selectedId()" (click)="deleteSelected()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        <app-action-button
+          [loading]="isExporting()"
+          [disabled]="!canExport()"
+          [label]="exportLabel()"
+          icon="download"
+          variant="filled"
+          [inputClass]="'w-100'"
+          (onClick)="exportPdf()">
+        </app-action-button>
+      </div>
+    </aside>
+  </section>
+</div>

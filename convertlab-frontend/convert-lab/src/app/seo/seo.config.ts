@@ -21,7 +21,7 @@ export interface SEOConfig {
 }
 
 export type PageIds =
-  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'compress-image' | 'pdf-password'
+  'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'edit-pdf' | 'compress-image' | 'pdf-password'
   | 'crop-image' | 'docmind' | 'about' | 'contact';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
@@ -166,6 +166,30 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
     breadcrumbs: [
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
       { name: 'Compress PDF', url: 'https://www.easyconvertlab.com/compress-pdf' }
+    ]
+  },
+  'edit-pdf': {
+    meta: {
+      title: 'Edit PDF Online - Add and Replace Text | EasyConvertLab',
+      description: 'Edit PDF files online by adding selectable text overlays, cover boxes, and visual text replacements. Fast PDF editing without rasterizing pages.',
+      keywords: 'edit pdf, pdf editor, add text to pdf, replace text in pdf, annotate pdf, online pdf editor',
+      url: 'https://www.easyconvertlab.com/edit-pdf',
+      image: 'https://www.easyconvertlab.com/assets/images/edit-pdf-og.jpg',
+      type: 'website'
+    },
+    schema: {
+      name: 'Edit PDF - EasyConvertLab',
+      description: 'Add text and visual replacements to PDF files while preserving vector PDF quality.',
+      url: 'https://www.easyconvertlab.com/edit-pdf',
+      featureList: 'Add text, Cover and replace text visually, Preserve PDF quality, Backend PDF export',
+      aggregateRating: {
+        ratingValue: '4.7',
+        ratingCount: '410'
+      }
+    },
+    breadcrumbs: [
+      { name: 'Home', url: 'https://www.easyconvertlab.com' },
+      { name: 'Edit PDF', url: 'https://www.easyconvertlab.com/edit-pdf' }
     ]
   },
   'compress-image': {

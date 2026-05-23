@@ -11,7 +11,7 @@ The goal of this file is to reduce repo-search tokens. Use it as the project map
 
 ConvertLab is a web app for document and image utilities:
 
-- PDF tools: merge, split, extract pages, image-to-PDF, compress PDF, add/remove PDF password.
+- PDF tools: merge, split, extract pages, image-to-PDF, compress PDF, edit PDF with overlays, add/remove PDF password.
 - Image tools: compress images and crop images.
 - Auth: email/password signup with OTP, login, refresh/logout, Google login.
 - Analytics/contact: page visit tracking and contact inquiry submission.
@@ -104,6 +104,7 @@ Routes currently defined:
 - `/split-pdf`
 - `/image-to-pdf`
 - `/compress-pdf`
+- `/edit-pdf`
 - `/compress-image`
 - `/pdf-password`
 - `/crop-image`
@@ -166,7 +167,7 @@ REST endpoints are under backend context path `/api`:
 
 - Auth: `/auth/signup`, `/auth/verify-otp`, `/auth/login`, `/auth/refresh`, `/auth/logout`, `/auth/google`
 - Upload: `/upload/pdf`, `/upload/image`
-- PDF: `/pdf/extract`, `/pdf/thumbnail/{assetId}`, `/pdf/merge`, `/pdf/split`, `/pdf/images-to-pdf`, `/pdf/compress`, `/pdf/password`
+- PDF: `/pdf/extract`, `/pdf/thumbnail/{assetId}`, `/pdf/merge`, `/pdf/split`, `/pdf/images-to-pdf`, `/pdf/compress`, `/pdf/edit`, `/pdf/password`
 - Image: `/image/compress`, `/image/crop`
 - Documents/RAG: `/documents/ingest`, `/documents/query`
 - Analytics: `/analytics/page-visit`

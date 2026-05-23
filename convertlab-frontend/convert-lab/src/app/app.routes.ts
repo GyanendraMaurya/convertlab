@@ -50,6 +50,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/pdf/compress-pdf/compress-pdf.component').then(m => m.CompressPdfComponent)
   },
   {
+    path: 'edit-pdf',
+    loadComponent: () => import('./components/pdf/edit-pdf/edit-pdf.component').then(m => m.EditPdfComponent)
+  },
+  {
     path: 'compress-image',
     loadComponent: () => import('./components/image/compress-image/compress-image.component').then(m => m.CompressImageComponent)
   },

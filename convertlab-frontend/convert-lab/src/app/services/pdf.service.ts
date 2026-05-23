@@ -10,6 +10,7 @@ import { SplitPdfRequest } from '../models/split-pdf.model';
 import { ImageToPdfRequest } from '../models/image-to-pdf.model';
 import { CompressPdfRequest } from '../models/compress-pdf.model';
 import { PdfPasswordRequest } from '../models/pdf-password.model';
+import { PdfEditRequest } from '../models/pdf-edit.model';
 
 @Injectable({
   providedIn: 'root',
@@ -75,6 +76,18 @@ export class PdfService {
   pdfSecurity(request: PdfPasswordRequest): Observable<HttpResponse<Blob>> {
     return this.httpService.post<HttpResponse<Blob>>(
       `${this.apiUrl}/pdf/password`,
+      request,
+      {
+        responseType: 'blob',
+        observe: 'response',
+        context: new HttpContext().set(IS_BLOB_REQUEST, true)
+      }
+    );
+  }
+
+  editPdf(request: PdfEditRequest): Observable<HttpResponse<Blob>> {
+    return this.httpService.post<HttpResponse<Blob>>(
+      `${this.apiUrl}/pdf/edit`,
       request,
       {
         responseType: 'blob',

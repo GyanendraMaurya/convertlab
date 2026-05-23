@@ -4,6 +4,7 @@
 /split-pdf
 /image-to-pdf
 /compress-pdf
+/edit-pdf
 /compress-image
 /crop-image
 /login

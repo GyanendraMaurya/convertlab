@@ -75,6 +75,13 @@ export class HomeComponent {
       available: true,
     },
     {
+      icon: 'edit_note',
+      title: 'Edit PDF',
+      description: 'Cover and replace text with selectable PDF overlays',
+      route: '/edit-pdf',
+      available: true,
+    },
+    {
       icon: 'compress',
       title: 'Compress Image',
       description: 'Reduce Image size without quality loss',

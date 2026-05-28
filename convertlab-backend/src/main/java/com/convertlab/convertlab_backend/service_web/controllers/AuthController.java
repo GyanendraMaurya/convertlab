@@ -55,7 +55,7 @@ public class AuthController {
 
     /**
      * Returns:
-     *  - JSON body: { accessToken, accessTokenExpiresInSeconds, email }
+     *  - JSON body: { accessToken, accessTokenExpiresInSeconds, email, role }
      *  - Cookie: refresh_token (HttpOnly, Secure, SameSite=Strict)
      */
     @PostMapping("/login")
@@ -97,14 +97,7 @@ public class AuthController {
                 sameSite
         );
 
-        // Issue new access token
-        String accessToken = jwtUtil.generateAccessToken(result.email());
-
-        AuthTokenResponse tokens = AuthTokenResponse.builder()
-                .accessToken(accessToken)
-                .accessTokenExpiresInSeconds(jwtUtil.getAccessTokenExpirySeconds())
-                .email(result.email())
-                .build();
+        AuthTokenResponse tokens = loginService.issueAccessTokenResponse(result.email());
 
         return ResponseEntity.ok(ApiResponse.success(tokens));
     }

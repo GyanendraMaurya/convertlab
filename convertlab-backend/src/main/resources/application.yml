@@ -61,6 +61,8 @@ app:
     same-site: ${SAME_SITE:strict}
   jwt:
     cleanup-cron: ${JWT_CLEANUP_CRON:0 0 3 * * *}   # 3 AM every day
+  security:
+    super-admin-emails: ${SUPER_ADMIN_EMAILS:}
   contact:
     to-email: ${CONTACT_TO_EMAIL:gmaurya973@gmail.com}
   proxy:

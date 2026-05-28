@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.authentication;
 
 import com.convertlab.convertlab_backend.api.enums.AuthProviders;
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.LoginException;
@@ -30,6 +31,7 @@ public class LoginService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
     private final CookieUtil cookieUtil;
+    private final UserRoleService userRoleService;
 
     @Value("${app.cookie.secure:true}")
     private boolean secureCookie;
@@ -83,11 +85,7 @@ public class LoginService {
 
     // Called by LoginService AND the token-refresh flow
     public AuthTokenResponse issueTokens(String email, HttpServletResponse response) {
-
-        // 1. Access token — short-lived, goes in the JSON body
-        String accessToken = jwtUtil.generateAccessToken(email);
-
-        // 2. Refresh token — long-lived, goes in HttpOnly cookie
+        // Refresh token — long-lived, goes in HttpOnly cookie
         String refreshToken = refreshTokenService.createAndSave(email);
         cookieUtil.setRefreshTokenCookie(
                 response,
@@ -97,10 +95,19 @@ public class LoginService {
                 sameSite
         );
 
+        return issueAccessTokenResponse(email);
+    }
+
+    public AuthTokenResponse issueAccessTokenResponse(String email) {
+        User user = userRoleService.applyConfiguredRole(email);
+        UserRole role = user.getRole() == null ? UserRole.USER : user.getRole();
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), role);
+
         return AuthTokenResponse.builder()
                 .accessToken(accessToken)
                 .accessTokenExpiresInSeconds(jwtUtil.getAccessTokenExpirySeconds())
-                .email(email)
+                .email(user.getEmail())
+                .role(role.name())
                 .build();
     }
 }

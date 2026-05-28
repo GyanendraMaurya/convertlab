@@ -13,4 +13,5 @@ public class AuthTokenResponse {
     private String accessToken;
     private long   accessTokenExpiresInSeconds;
     private String email;
+    private String role;
 }

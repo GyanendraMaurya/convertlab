@@ -1,5 +1,6 @@
 package com.convertlab.convertlab_backend.security_util;
 
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
@@ -36,10 +37,15 @@ public class JwtUtil {
     // ─── Access Token ────────────────────────────────────────────────────────────
 
     public String generateAccessToken(String email) {
+        return generateAccessToken(email, UserRole.USER);
+    }
+
+    public String generateAccessToken(String email, UserRole role) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(email)
                 .claim("type", "access")
+                .claim("role", role.name())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(ACCESS_TOKEN_EXPIRY_SECONDS)))
                 .signWith(accessKey)
@@ -51,12 +57,24 @@ public class JwtUtil {
      * Throws JwtException subtypes on failure.
      */
     public String validateAccessTokenAndGetEmail(String token) {
+        return validateAccessTokenAndGetClaims(token).getSubject();
+    }
+
+    public Claims validateAccessTokenAndGetClaims(String token) {
         return Jwts.parser()
                 .verifyWith(accessKey)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
+    }
+
+    public UserRole getRoleFromAccessClaims(Claims claims) {
+        String role = claims.get("role", String.class);
+        if (role == null || role.isBlank()) {
+            return UserRole.USER;
+        }
+
+        return UserRole.valueOf(role);
     }
 
     public boolean isAccessTokenValid(String token) {

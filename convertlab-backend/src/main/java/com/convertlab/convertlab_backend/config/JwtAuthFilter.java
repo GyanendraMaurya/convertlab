@@ -1,6 +1,8 @@
 package com.convertlab.convertlab_backend.config;
 
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import com.convertlab.convertlab_backend.security_util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,14 +47,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             try {
-                String email = jwtUtil.validateAccessTokenAndGetEmail(token);
+                Claims claims = jwtUtil.validateAccessTokenAndGetClaims(token);
+                String email = claims.getSubject();
+                UserRole role = jwtUtil.getRoleFromAccessClaims(claims);
 
-                // Set a minimal Authentication in the SecurityContext
-                // Add roles/authorities here if you add them to the JWT later
                 var auth = new UsernamePasswordAuthenticationToken(
                         email,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
 

@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.authentication;
 
 import com.convertlab.convertlab_backend.api.enums.AuthProviders;
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.User;
 import com.convertlab.convertlab_backend.exception.LoginException;
@@ -33,6 +34,7 @@ public class GoogleOAuthService {
     private final UserRepository userRepository;
     private final AuthProviderRepository authProviderRepository;
     private final LoginService loginService;
+    private final UserRoleService userRoleService;
 
     @Value("${google.oauth.client-id}")
     private String googleClientId;
@@ -80,6 +82,7 @@ public class GoogleOAuthService {
                     User newUser = new User(
                             UUID.randomUUID(),
                             email,
+                            UserRole.USER,
                             true,          // Google emails are already verified
                             Instant.now(),
                             Instant.now()
@@ -93,6 +96,8 @@ public class GoogleOAuthService {
             user.setUpdatedAt(Instant.now());
             userRepository.save(user);
         }
+
+        user = userRoleService.applyConfiguredRole(user);
 
         // Case B — link Google provider to existing account
         // (also runs for Case C — attaches provider to the new user)

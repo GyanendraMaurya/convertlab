@@ -5,6 +5,7 @@ export interface AuthTokens {
   accessToken: string;
   accessTokenExpiresInSeconds: number;
   email: string;
+  role?: 'USER' | 'SUPER_ADMIN';
 }
 
 @Injectable({

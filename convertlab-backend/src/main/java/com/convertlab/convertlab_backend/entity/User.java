@@ -1,7 +1,10 @@
 package com.convertlab.convertlab_backend.entity;
 
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -23,6 +26,10 @@ public class User {
 
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
+
 //    @Column(name = "password_hash")
 //    private String passwordHash;
 
@@ -38,4 +45,3 @@ public class User {
     public User() {
     }
 }
-

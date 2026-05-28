@@ -1,6 +1,8 @@
 package com.convertlab.convertlab_backend.config;
 
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import com.convertlab.convertlab_backend.security_util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.Message;
@@ -87,11 +89,13 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     private void trySetPrincipal(StompHeaderAccessor accessor, String token) {
         try {
-            String email = jwtUtil.validateAccessTokenAndGetEmail(token);
+            Claims claims = jwtUtil.validateAccessTokenAndGetClaims(token);
+            String email = claims.getSubject();
+            UserRole role = jwtUtil.getRoleFromAccessClaims(claims);
             var auth = new UsernamePasswordAuthenticationToken(
                     email,
                     null,
-                    List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                    List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
             );
             accessor.setUser(auth);
             log.debug("WebSocket principal set for: {}", email);

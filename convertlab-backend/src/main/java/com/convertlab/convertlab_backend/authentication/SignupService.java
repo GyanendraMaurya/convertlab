@@ -1,6 +1,7 @@
 package com.convertlab.convertlab_backend.authentication;
 
 import com.convertlab.convertlab_backend.api.enums.AuthProviders;
+import com.convertlab.convertlab_backend.api.enums.UserRole;
 import com.convertlab.convertlab_backend.entity.AuthProvider;
 import com.convertlab.convertlab_backend.entity.EmailOtp;
 import com.convertlab.convertlab_backend.entity.User;
@@ -32,6 +33,7 @@ public class SignupService {
     private final EmailOtpRepository emailOtpRepository;
     private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
+    private final UserRoleService userRoleService;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -53,13 +55,14 @@ public class SignupService {
             user = new User(
                     UUID.randomUUID(),
                     request.email(),
+                    UserRole.USER,
                     false,
                     Instant.now(),
                     Instant.now()
             );
         }
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userRoleService.applyConfiguredRole(userRepository.save(user));
 
         // Create AuthProvider entry for local provider with password
         AuthProvider authProvider = new AuthProvider();
@@ -103,4 +106,3 @@ public class SignupService {
     }
 
 }
-

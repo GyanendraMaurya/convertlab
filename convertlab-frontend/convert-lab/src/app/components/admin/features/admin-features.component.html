@@ -1,6 +1,79 @@
 <section class="admin-page">
-  <header>
-    <p class="eyebrow">Admin</p>
-    <h1>Features</h1>
+  <header class="admin-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Features</h1>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="saveFeatures()"
+      [disabled]="loading() || saving() || !dirty()"
+    >
+      @if (saving()) {
+      <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+      <mat-icon>save</mat-icon>
+      }
+      <span>Save</span>
+    </button>
   </header>
+
+  @if (loading()) {
+  <div class="state-panel">
+    <mat-spinner diameter="32"></mat-spinner>
+    <p>Loading features...</p>
+  </div>
+  } @else if (loadError()) {
+  <div class="state-panel error-panel">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ loadError() }}</p>
+    <button mat-button type="button" (click)="loadFeatures()">Retry</button>
+  </div>
+  } @else if (features().length === 0) {
+  <div class="state-panel">
+    <mat-icon>toggle_off</mat-icon>
+    <p>No feature flags have been added yet.</p>
+  </div>
+  } @else {
+  <div class="features-table-wrap">
+    <table class="features-table">
+      <thead>
+        <tr>
+          <th scope="col">Code</th>
+          <th scope="col">Title</th>
+          <th scope="col">Frontend</th>
+          <th scope="col">Enabled</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (feature of features(); track feature.code) {
+        <tr>
+          <td>
+            <code>{{ feature.code }}</code>
+          </td>
+          <td>{{ feature.title }}</td>
+          <td>
+            <span class="status-pill" [class.status-muted]="!feature.exposeToFrontend">
+              {{ feature.exposeToFrontend ? 'Yes' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <mat-slide-toggle
+              [checked]="feature.enabled"
+              [disabled]="saving()"
+              (change)="setFeatureEnabled(feature.code, $event.checked)"
+              [aria-label]="'Toggle ' + feature.title"
+            >
+              {{ feature.enabled ? 'On' : 'Off' }}
+            </mat-slide-toggle>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
 </section>

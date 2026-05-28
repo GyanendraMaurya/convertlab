@@ -42,6 +42,8 @@ public class SecurityConfig {
                                 "/auth/google"
                         ).permitAll()
 
+                        .requestMatchers("/admin/features").hasRole("SUPER_ADMIN")
+
                         // AI document endpoints require authentication
 //                        .requestMatchers("/documents/**").authenticated() // temporarily allow all for initial period
 

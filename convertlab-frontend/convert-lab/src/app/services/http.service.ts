@@ -31,6 +31,7 @@ export class HttpService {
       // signal: ctrl?.signal,    // OPTIONAL
       params: new HttpParams({ fromObject: options?.params }),
       headers: new HttpHeaders(options?.headers),
+      context: options?.context,
       withCredentials: true
     });
   }

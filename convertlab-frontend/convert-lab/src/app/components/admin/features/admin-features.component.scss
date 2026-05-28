@@ -3,6 +3,14 @@
   padding: 24px;
 }
 
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--mat-sys-primary);
@@ -16,4 +24,105 @@ h1 {
   color: var(--mat-sys-on-surface);
   font-size: 32px;
   font-weight: 700;
+}
+
+button[mat-raised-button] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 104px;
+}
+
+.state-panel {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  gap: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.state-panel p {
+  margin: 0;
+}
+
+.error-panel {
+  color: var(--mat-sys-error);
+}
+
+.features-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+}
+
+.features-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--mat-sys-on-surface);
+}
+
+.features-table th,
+.features-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.features-table th {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.features-table tr:last-child td {
+  border-bottom: 0;
+}
+
+code {
+  color: var(--mat-sys-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  color: var(--mat-sys-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-muted {
+  background: color-mix(in srgb, var(--mat-sys-outline) 14%, transparent);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    padding: 16px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  button[mat-raised-button] {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .features-table th,
+  .features-table td {
+    padding: 12px;
+  }
 }

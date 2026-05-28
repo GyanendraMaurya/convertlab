@@ -30,6 +30,7 @@ public class ContactInquiryService {
 
     private final ContactInquiryRepository contactInquiryRepository;
     private final EmailSender emailSender;
+    private final FeatureFlagService featureFlagService;
 
     @Value("${app.contact.to-email:gmaurya973@gmail.com}")
     private String contactToEmail;
@@ -40,6 +41,11 @@ public class ContactInquiryService {
             String ipAddress,
             String userAgent
     ) {
+        featureFlagService.requireEnabled(
+                FeatureFlagService.SHOW_CONTACT_PAGE,
+                "Contact page is currently unavailable"
+        );
+
         ContactInquiryRequest sanitized = sanitizeAndValidate(request);
         Instant now = Instant.now();
 

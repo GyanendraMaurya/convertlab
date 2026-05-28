@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SeoService } from '../../seo/seo.service';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 
 interface ServiceFocus {
   icon: string;
@@ -23,6 +24,8 @@ interface WorkValue {
 })
 export class AboutComponent {
   private seoService = inject(SeoService);
+  private featureFlags = inject(FeatureFlagService);
+  showContactPage = this.featureFlags.showContactPage;
 
   readonly serviceFocus: ServiceFocus[] = [
     {

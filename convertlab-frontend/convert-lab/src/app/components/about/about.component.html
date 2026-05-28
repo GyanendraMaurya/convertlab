@@ -14,10 +14,12 @@
           maintainable, and useful for the people who depend on it.
         </p>
         <div class="hero-actions">
+          @if (showContactPage()) {
           <a mat-raised-button color="primary" href="/contact">
             <mat-icon>mail</mat-icon>
             Contact Me
           </a>
+          }
           <a
             mat-stroked-button
             href="https://www.linkedin.com/in/gyanendramaurya/"

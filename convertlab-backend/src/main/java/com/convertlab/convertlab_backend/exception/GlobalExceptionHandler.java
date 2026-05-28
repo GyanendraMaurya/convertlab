@@ -54,6 +54,22 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Invalid request: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure(ex.getMessage(), "INVALID_REQUEST"));
+    }
+
+    @ExceptionHandler(FeatureDisabledException.class)
+    public ResponseEntity<ApiResponse<?>> handleFeatureDisabled(FeatureDisabledException ex) {
+        log.warn("Feature disabled: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.failure(ex.getMessage(), ex.getCode()));
+    }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse<?>> handleSignup(Exception ex) {
         log.warn(ex.getMessage());

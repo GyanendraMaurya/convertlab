@@ -10,6 +10,7 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 import { AuthInitService } from './services/auth-init.service';
 import { sessionInterceptor } from './interceptors/session.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
+import { FeatureFlagService } from './services/feature-flag.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,6 +30,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const authService = inject(AuthInitService);
       return authService.init();
+    }),
+    provideAppInitializer(() => {
+      const featureFlagService = inject(FeatureFlagService);
+      return featureFlagService.loadPublicFeatures();
     }),
   ]
 };

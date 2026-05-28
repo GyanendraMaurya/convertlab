@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthStateService } from '../../services/auth-state.service';
+import { FeatureFlagService } from '../../services/feature-flag.service';
 
 @Component({
   selector: 'app-layout',
@@ -24,10 +25,12 @@ import { AuthStateService } from '../../services/auth-state.service';
 })
 export class LayoutComponent {
   private authState = inject(AuthStateService);
+  private featureFlags = inject(FeatureFlagService);
 
   sidenavOpened = signal(false);
   adminMenuOpened = signal(false);
   isSuperAdmin = this.authState.isSuperAdmin;
+  showContactPage = this.featureFlags.showContactPage;
 
   constructor(private router: Router) { }
 

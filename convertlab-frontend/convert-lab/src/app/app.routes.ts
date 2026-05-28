@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { guestGuard, superAdminGuard } from './guards/auth.guard';
+import { contactFeatureGuard } from './guards/feature.guard';
 
 export const routes: Routes = [
   {
@@ -22,7 +23,8 @@ export const routes: Routes = [
   },
   {
     path: 'contact',
-    loadComponent: () => import('./components/contact/contact.component').then(m => m.ContactComponent)
+    loadComponent: () => import('./components/contact/contact.component').then(m => m.ContactComponent),
+    canActivate: [contactFeatureGuard]
   },
   {
     path: 'contact-me',

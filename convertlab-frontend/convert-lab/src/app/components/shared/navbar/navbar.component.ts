@@ -10,6 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { MatDivider } from '@angular/material/divider';
 import { UserService } from '../../../services/user.service';
+import { FeatureFlagService } from '../../../services/feature-flag.service';
 
 @Component({
   selector: 'app-navbar',
@@ -31,9 +32,11 @@ export class NavbarComponent {
   private userService = inject(UserService);
   private snackbar = inject(SnackbarService);
   private router = inject(Router);
+  private featureFlags = inject(FeatureFlagService);
 
   menuToggle = output<void>();
   isAuthenticated = this.authState.isAuthenticated;
+  showContactPage = this.featureFlags.showContactPage;
   userEmail = computed(() => this.authState.getEmail());
 
   userInitial = computed(() => {

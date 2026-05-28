@@ -108,10 +108,12 @@
         <mat-icon matListItemIcon>person</mat-icon>
         <span matListItemTitle>About</span>
       </a>
+      @if (showContactPage()) {
       <a mat-list-item [routerLink]="['/contact']" (click)="closeSidenav()" [class.active-list-item]="isActive('/contact')">
         <mat-icon matListItemIcon>mail</mat-icon>
         <span matListItemTitle>Contact</span>
       </a>
+      }
     </div>
   </mat-sidenav>
 

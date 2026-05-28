@@ -80,6 +80,16 @@
         <mat-icon matListItemIcon>crop</mat-icon>
         <span matListItemTitle>Crop Image</span>
       </a>
+
+      @if (isSuperAdmin()) {
+      <mat-divider></mat-divider>
+      <button type="button" class="admin-parent-link" (click)="toggleAdminMenu()"
+        [class.active-list-item]="isAdminActive() || adminMenuOpened()">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Admin</span>
+        <mat-icon class="admin-chevron">chevron_right</mat-icon>
+      </button>
+      }
       <mat-divider></mat-divider>
 
       <!-- Future options section -->
@@ -117,3 +127,28 @@
     <app-version-display></app-version-display>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+@if (isSuperAdmin() && sidenavOpened() && adminMenuOpened()) {
+<aside class="admin-submenu-panel">
+  <div class="sidenav-header">
+    <h2>Admin</h2>
+    <button mat-icon-button (click)="closeAdminMenu()" aria-label="Close admin menu" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-nav-list class="sidenav-tools">
+    <a mat-list-item [routerLink]="['/admin/broadcast']" (click)="closeSidenav()"
+      [class.active-list-item]="isActive('/admin/broadcast')">
+      <mat-icon matListItemIcon>campaign</mat-icon>
+      <span matListItemTitle>Broadcast</span>
+    </a>
+
+    <a mat-list-item [routerLink]="['/admin/features']" (click)="closeSidenav()"
+      [class.active-list-item]="isActive('/admin/features')">
+      <mat-icon matListItemIcon>toggle_on</mat-icon>
+      <span matListItemTitle>Features</span>
+    </a>
+  </mat-nav-list>
+</aside>
+}

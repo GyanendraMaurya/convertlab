@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { guestGuard } from './guards/auth.guard';
+import { guestGuard, superAdminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -73,5 +73,15 @@ export const routes: Routes = [
   {
     path: 'docmind',
     loadComponent: () => import('./doc-mind/doc-mind.component').then(m => m.DocMindComponent),
+  },
+  {
+    path: 'admin/broadcast',
+    loadComponent: () => import('./components/admin/broadcast/admin-broadcast.component').then(m => m.AdminBroadcastComponent),
+    canActivate: [superAdminGuard]
+  },
+  {
+    path: 'admin/features',
+    loadComponent: () => import('./components/admin/features/admin-features.component').then(m => m.AdminFeaturesComponent),
+    canActivate: [superAdminGuard]
   },
 ];

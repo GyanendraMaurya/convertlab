@@ -1,11 +1,13 @@
 // convertlab-frontend/convert-lab/src/app/services/auth-state.service.ts
 import { Injectable, signal, computed } from '@angular/core';
 
+export type AuthRole = 'USER' | 'SUPER_ADMIN';
+
 export interface AuthTokens {
   accessToken: string;
   accessTokenExpiresInSeconds: number;
   email: string;
-  role?: 'USER' | 'SUPER_ADMIN';
+  role?: AuthRole;
 }
 
 @Injectable({
@@ -16,6 +18,7 @@ export class AuthStateService {
   private accessToken = signal<string | null>(null);
   private tokenExpiry = signal<number | null>(null);
   private email = signal<string | null>(null);
+  private role = signal<AuthRole | null>(null);
 
   isAuthenticated = computed(() => {
     const token = this.accessToken();
@@ -27,6 +30,10 @@ export class AuthStateService {
     return Date.now() < expiry;
   });
 
+  isSuperAdmin = computed(() => {
+    return this.isAuthenticated() && this.role() === 'SUPER_ADMIN';
+  });
+
   setTokens(tokens: AuthTokens) {
     const expiryTime = Date.now() + (tokens.accessTokenExpiresInSeconds * 1000);
 
@@ -34,6 +41,7 @@ export class AuthStateService {
     this.accessToken.set(tokens.accessToken);
     this.tokenExpiry.set(expiryTime);
     this.email.set(tokens.email);
+    this.role.set(tokens.role ?? null);
   }
 
   getAccessToken(): string | null {
@@ -44,10 +52,15 @@ export class AuthStateService {
     return this.email();
   }
 
+  getRole(): AuthRole | null {
+    return this.role();
+  }
+
   clearTokens() {
     this.accessToken.set(null);
     this.tokenExpiry.set(null);
     this.email.set(null);
+    this.role.set(null);
   }
 
   isTokenExpiringSoon(): boolean {

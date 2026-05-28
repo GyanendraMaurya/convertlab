@@ -25,3 +25,20 @@ export const guestGuard: CanActivateFn = () => {
   router.navigate(['/']);
   return false;
 };
+
+export const superAdminGuard: CanActivateFn = () => {
+  const authState = inject(AuthStateService);
+  const router = inject(Router);
+
+  if (!authState.isAuthenticated()) {
+    router.navigate(['/login']);
+    return false;
+  }
+
+  if (authState.isSuperAdmin()) {
+    return true;
+  }
+
+  router.navigate(['/']);
+  return false;
+};

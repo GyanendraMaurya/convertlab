@@ -20,7 +20,7 @@ export interface FeatureFlagUpdate {
 }
 
 const DEFAULT_PUBLIC_FEATURES: Record<FeatureCode, boolean> = {
-  SHOW_CONTACT_PAGE: true,
+  SHOW_CONTACT_PAGE: false,
 };
 
 @Injectable({

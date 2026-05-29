@@ -2,6 +2,6 @@ export const environment = {
   production: true,
   apiUrl: '/api',
   version: '1.1.4',
-  buildTime: '2026-05-23T07:35:05.646Z',  // Will be replaced during build
+  buildTime: '2026-05-29T07:50:00.863Z',  // Will be replaced during build
   googleClientId: '267522460988-gl0qihftspipbumibnc5k5upmn7brs0b.apps.googleusercontent.com'
 };

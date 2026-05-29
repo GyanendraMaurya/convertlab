@@ -1,6 +1,141 @@
 <section class="admin-page">
-  <header>
-    <p class="eyebrow">Admin</p>
-    <h1>Broadcast</h1>
+  <header class="admin-header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Broadcast</h1>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="loadBroadcasts()"
+      [disabled]="loading()"
+    >
+      <mat-icon>refresh</mat-icon>
+      <span>Refresh</span>
+    </button>
   </header>
+
+  <form class="broadcast-form" [formGroup]="broadcastForm" (ngSubmit)="sendBroadcast()">
+    <mat-form-field appearance="outline">
+      <mat-label>Message</mat-label>
+      <textarea
+        matInput
+        rows="4"
+        maxlength="500"
+        formControlName="message"
+        placeholder="We are deploying in 15 minutes. Please save your work."
+      ></textarea>
+      <mat-hint align="end">{{ broadcastForm.controls.message.value.length }}/500</mat-hint>
+      @if (broadcastForm.controls.message.hasError('required')) {
+      <mat-error>Message is required.</mat-error>
+      } @else if (broadcastForm.controls.message.hasError('maxlength')) {
+      <mat-error>Message must be 500 characters or fewer.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Expires after</mat-label>
+        <mat-select formControlName="expiryPreset">
+          @for (option of expiryOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (isCustomExpiry()) {
+      <mat-form-field appearance="outline">
+        <mat-label>Custom expiry</mat-label>
+        <input matInput type="datetime-local" formControlName="customExpiresAt" />
+        @if (broadcastForm.controls.customExpiresAt.hasError('required')) {
+        <mat-error>Custom expiry is required.</mat-error>
+        } @else if (broadcastForm.controls.customExpiresAt.hasError('future')) {
+        <mat-error>Expiry must be in the future.</mat-error>
+        }
+      </mat-form-field>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="sending()"
+      >
+        @if (sending()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>campaign</mat-icon>
+        }
+        <span>Send Broadcast</span>
+      </button>
+    </div>
+  </form>
+
+  <section class="history-section">
+    <h2>Recent broadcasts</h2>
+
+    @if (loading()) {
+    <div class="state-panel">
+      <mat-spinner diameter="32"></mat-spinner>
+      <p>Loading broadcasts...</p>
+    </div>
+    } @else if (loadError()) {
+    <div class="state-panel error-panel">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ loadError() }}</p>
+      <button mat-button type="button" (click)="loadBroadcasts()">Retry</button>
+    </div>
+    } @else if (broadcasts().length === 0) {
+    <div class="state-panel">
+      <mat-icon>campaign</mat-icon>
+      <p>No broadcasts have been sent yet.</p>
+    </div>
+    } @else {
+    <div class="broadcast-table-wrap">
+      <table class="broadcast-table">
+        <thead>
+          <tr>
+            <th scope="col">Message</th>
+            <th scope="col">Created</th>
+            <th scope="col">Expires</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (broadcast of broadcasts(); track broadcast.id) {
+          <tr>
+            <td class="message-cell" data-label="Message">{{ broadcast.message }}</td>
+            <td data-label="Created">{{ broadcast.createdAt | date:'short' }}</td>
+            <td data-label="Expires">{{ broadcast.expiresAt | date:'short' }}</td>
+            <td data-label="Status">
+              <span class="status-pill" [class.status-muted]="!broadcast.active || isExpired(broadcast)">
+                {{ statusLabel(broadcast) }}
+              </span>
+            </td>
+            <td data-label="Action">
+              <button
+                mat-button
+                type="button"
+                (click)="deactivateBroadcast(broadcast.id)"
+                [disabled]="!broadcast.active || isExpired(broadcast) || deactivatingId() !== null"
+              >
+                @if (deactivatingId() === broadcast.id) {
+                <mat-spinner diameter="16"></mat-spinner>
+                } @else {
+                <mat-icon>block</mat-icon>
+                }
+                <span>Deactivate</span>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </section>
 </section>

@@ -1,0 +1,20 @@
+@if (broadcastService.visibleBroadcasts().length > 0) {
+<section class="broadcast-stack" aria-label="Site announcements">
+  @for (broadcast of broadcastService.visibleBroadcasts(); track broadcast.id) {
+  <article class="broadcast-toast" role="status">
+    <mat-icon aria-hidden="true">campaign</mat-icon>
+    <div class="broadcast-content">
+      <p>{{ broadcast.message }}</p>
+    </div>
+    <button
+      mat-icon-button
+      type="button"
+      (click)="broadcastService.dismissBroadcast(broadcast.id)"
+      aria-label="Dismiss announcement"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </article>
+  }
+</section>
+}

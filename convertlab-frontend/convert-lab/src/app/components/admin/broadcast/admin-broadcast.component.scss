@@ -1,6 +1,15 @@
 .admin-page {
   width: min(100%, 960px);
+  box-sizing: border-box;
   padding: 24px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .eyebrow {
@@ -16,4 +25,217 @@ h1 {
   color: var(--mat-sys-on-surface);
   font-size: 32px;
   font-weight: 700;
+}
+
+h2 {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+button[mat-raised-button],
+button[mat-stroked-button],
+button[mat-button] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.broadcast-form {
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  gap: 16px;
+  margin-bottom: 32px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.history-section {
+  margin-top: 8px;
+}
+
+.state-panel {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  gap: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.state-panel p {
+  margin: 0;
+}
+
+.error-panel {
+  color: var(--mat-sys-error);
+}
+
+.broadcast-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+}
+
+.broadcast-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--mat-sys-on-surface);
+}
+
+.broadcast-table th,
+.broadcast-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.broadcast-table th {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.broadcast-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.message-cell {
+  min-width: 220px;
+  max-width: 360px;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  color: var(--mat-sys-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-muted {
+  background: color-mix(in srgb, var(--mat-sys-outline) 14%, transparent);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 720px) {
+  .admin-page {
+    padding: 8px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions,
+  button[mat-raised-button],
+  button[mat-stroked-button] {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .broadcast-table th,
+  .broadcast-table td {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .broadcast-form {
+    padding: 12px;
+  }
+
+  .broadcast-form mat-form-field {
+    width: 100%;
+  }
+
+  .broadcast-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .broadcast-table,
+  .broadcast-table tbody,
+  .broadcast-table tr,
+  .broadcast-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .broadcast-table thead {
+    display: none;
+  }
+
+  .broadcast-table tr {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .broadcast-table td {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    padding: 10px 0;
+  }
+
+  .broadcast-table td::before {
+    content: attr(data-label);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .broadcast-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .message-cell {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .broadcast-table td[data-label='Action'] button {
+    width: 100%;
+    justify-content: center;
+  }
 }

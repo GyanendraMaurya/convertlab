@@ -51,16 +51,16 @@
       <tbody>
         @for (feature of features(); track feature.code) {
         <tr>
-          <td>
+          <td data-label="Code">
             <code>{{ feature.code }}</code>
           </td>
-          <td>{{ feature.title }}</td>
-          <td>
+          <td data-label="Title">{{ feature.title }}</td>
+          <td data-label="Frontend">
             <span class="status-pill" [class.status-muted]="!feature.exposeToFrontend">
               {{ feature.exposeToFrontend ? 'Yes' : 'No' }}
             </span>
           </td>
-          <td>
+          <td data-label="Enabled">
             <mat-slide-toggle
               [checked]="feature.enabled"
               [disabled]="saving()"

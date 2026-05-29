@@ -43,6 +43,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         .requestMatchers("/admin/features").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/broadcasts/**").hasRole("SUPER_ADMIN")
 
                         // AI document endpoints require authentication
 //                        .requestMatchers("/documents/**").authenticated() // temporarily allow all for initial period

@@ -1,5 +1,6 @@
 .admin-page {
   width: min(100%, 960px);
+  box-sizing: border-box;
   padding: 24px;
 }
 
@@ -54,6 +55,7 @@ button[mat-raised-button] {
 }
 
 .features-table-wrap {
+  width: 100%;
   overflow-x: auto;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
@@ -124,5 +126,67 @@ code {
   .features-table th,
   .features-table td {
     padding: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    padding: 8px;
+  }
+
+  .admin-header {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .features-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .features-table,
+  .features-table tbody,
+  .features-table tr,
+  .features-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .features-table thead {
+    display: none;
+  }
+
+  .features-table tr {
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .features-table td {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    padding: 10px 0;
+  }
+
+  .features-table td::before {
+    content: attr(data-label);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .features-table td:last-child {
+    border-bottom: 0;
+  }
+
+  code {
+    overflow-wrap: anywhere;
   }
 }

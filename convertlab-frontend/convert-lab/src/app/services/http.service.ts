@@ -59,6 +59,16 @@ export class HttpService {
     });
   }
 
+  /** PATCH */
+  patch<T>(url: string, body?: any, options?: RequestOptions, ctrl?: AbortController) {
+    return this.http.patch<T>(url, body, {
+      // signal: ctrl?.signal,
+      params: new HttpParams({ fromObject: options?.params }),
+      headers: new HttpHeaders(options?.headers),
+      withCredentials: true
+    });
+  }
+
   /** DELETE */
   delete<T>(url: string, options?: RequestOptions, ctrl?: AbortController) {
     return this.http.delete<T>(url, {

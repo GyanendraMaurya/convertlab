@@ -1,0 +1,54 @@
+.broadcast-stack {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: grid;
+  width: min(420px, calc(100vw - 32px));
+  gap: 10px;
+  pointer-events: none;
+}
+
+.broadcast-toast {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  border-radius: 8px;
+  padding: 12px 8px 12px 14px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  box-shadow: var(--mat-sys-level3);
+  pointer-events: auto;
+}
+
+.broadcast-toast > mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.broadcast-content {
+  min-width: 0;
+}
+
+.broadcast-content p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+button[mat-icon-button] {
+  width: 40px;
+  height: 40px;
+  color: var(--mat-sys-on-primary-container);
+}
+
+@media (max-width: 640px) {
+  .broadcast-stack {
+    top: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+  }
+}

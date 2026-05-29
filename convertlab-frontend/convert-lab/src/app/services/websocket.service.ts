@@ -12,6 +12,7 @@ export type WebSocketEventType =
     | 'DOCUMENT_CHUNKED'
     | 'DOCUMENT_EMBEDDED'
     | 'NOTIFICATION'
+    | 'BROADCAST_MESSAGE'
     | 'PING';
 
 
@@ -160,6 +161,12 @@ export class WebSocketService implements OnDestroy {
             (msg: IMessage) => this.dispatch(msg)
         );
         this.subscriptions.push(sessionSub);
+
+        const broadcastSub = this.client.subscribe(
+            '/topic/events',
+            (msg: IMessage) => this.dispatch(msg)
+        );
+        this.subscriptions.push(broadcastSub);
 
         // Also subscribe by user principal if authenticated
         if (isAuthenticated) {

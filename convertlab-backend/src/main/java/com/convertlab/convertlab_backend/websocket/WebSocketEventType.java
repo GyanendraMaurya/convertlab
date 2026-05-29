@@ -18,5 +18,8 @@ public enum WebSocketEventType {
     PING,
 
     /** Server-side notification to the user (e.g. "Your plan renews tomorrow"). */
-    NOTIFICATION
+    NOTIFICATION,
+
+    /** Site-wide admin broadcast with an expiry window. */
+    BROADCAST_MESSAGE
 }

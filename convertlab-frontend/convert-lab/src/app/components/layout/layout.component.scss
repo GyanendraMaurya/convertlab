@@ -26,13 +26,51 @@ mat-sidenav {
   }
 
   .close-button {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
     color: var(--mat-sys-on-surface-variant);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+
+    mat-icon {
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
+      line-height: 22px;
+    }
 
     &:hover {
-      background-color: var(--mat-sys-surface-variant);
-      color: var(--mat-sys-on-surface);
+      background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+      color: var(--mat-sys-primary);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 18%, transparent);
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--mat-sys-primary) 60%, transparent);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: translateY(0);
     }
   }
+}
+
+:host ::ng-deep .sidenav-header .close-button {
+  --mdc-icon-button-state-layer-size: 40px;
+  --mdc-icon-button-icon-size: 22px;
+  --mat-icon-button-state-layer-color: var(--mat-sys-primary);
+  --mat-icon-button-hover-state-layer-opacity: 0;
+  --mat-icon-button-focus-state-layer-opacity: 0;
+  --mat-icon-button-pressed-state-layer-opacity: 0.12;
 }
 
 mat-sidenav-content {

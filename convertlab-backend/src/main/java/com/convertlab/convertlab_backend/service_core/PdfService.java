@@ -27,10 +27,15 @@ public class PdfService {
         this.storageService = storageService;
         this.fileValidationService = fileValidationService;
     }
+
     public UploadResponse uploadPdf(MultipartFile file) throws Exception {
+        return uploadPdf(file, false);
+    }
+
+    public UploadResponse uploadPdf(MultipartFile file, boolean authenticated) throws Exception {
         log.debug("Starting PDF upload process for file: {}", file.getOriginalFilename());
 
-        fileValidationService.validatePdfFile(file);
+        fileValidationService.validatePdfFile(file, authenticated);
 
         String assetId = storageService.saveTempPdf(file);
         log.debug("File saved with assetId: {}", assetId);

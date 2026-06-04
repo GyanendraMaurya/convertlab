@@ -3,11 +3,11 @@
   <input
     #fileInput
     type="file"
-    accept=".pdf,.docx,.txt"
+    accept=".pdf"
     (change)="onFileInputChange($event)"
   />
 
-  <div class="upload-icon-wrap">📄</div>
+  <div class="upload-icon-wrap">PDF</div>
   <div class="upload-title">Drop your document</div>
-  <div class="upload-hint">PDF · max 25 MB</div>
+  <div class="upload-hint">{{ validationInfo() }}</div>
 </div>

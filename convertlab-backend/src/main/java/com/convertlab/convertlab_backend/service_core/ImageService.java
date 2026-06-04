@@ -24,9 +24,13 @@ public class ImageService {
     }
 
     public UploadResponse uploadImage(MultipartFile file) throws Exception {
+        return uploadImage(file, false);
+    }
+
+    public UploadResponse uploadImage(MultipartFile file, boolean authenticated) throws Exception {
         log.debug("Starting image upload process for file: {}", file.getOriginalFilename());
 
-        fileValidationService.validateImageFile(file);
+        fileValidationService.validateImageFile(file, authenticated);
         fileValidationService.validateImageDimensions(file);
 
         String assetId = storageService.saveTempImage(file);

@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { AuthStateService } from './auth-state.service';
+import { UploadLimitsService } from './upload-limits.service';
 
 export type FileType = 'pdf' | 'image';
 
@@ -20,10 +22,13 @@ export interface ValidationResult {
   providedIn: 'root',
 })
 export class FileValidationService {
+  private readonly authState = inject(AuthStateService);
+  private readonly uploadLimitsService = inject(UploadLimitsService);
+
   // Default constraints for different file types
-  private readonly constraints: Record<FileType, FileTypeConstraints> = {
+  private constraints: Record<FileType, FileTypeConstraints> = {
     pdf: {
-      maxSizeBytes: 25 * 1024 * 1024, // 15MB
+      maxSizeBytes: 25 * 1024 * 1024, // 25MB guest fallback
       minSizeBytes: 1024, // 1KB
       allowedMimeTypes: ['application/pdf'],
       allowedExtensions: ['pdf'],
@@ -53,7 +58,7 @@ export class FileValidationService {
    */
   async validateFile(file: File, fileType: FileType): Promise<ValidationResult> {
     const errors: string[] = [];
-    const config = this.constraints[fileType];
+    const config = this.getConstraints(fileType);
 
     // 1. Check if file exists
     if (!file) {
@@ -125,7 +130,7 @@ export class FileValidationService {
    * Validate image dimensions (requires loading the image)
    */
   async validateImageDimensions(file: File): Promise<ValidationResult> {
-    const config = this.constraints.image;
+    const config = this.getConstraints('image');
     const errors: string[] = [];
 
     try {
@@ -204,7 +209,7 @@ export class FileValidationService {
    * Get human-readable file types
    */
   private getReadableFileTypes(fileType: FileType): string {
-    const config = this.constraints[fileType];
+    const config = this.getConstraints(fileType);
     return config.allowedExtensions.map((ext) => ext.toUpperCase()).join(', ');
   }
 
@@ -212,28 +217,56 @@ export class FileValidationService {
    * Get constraints for a file type
    */
   getConstraints(fileType: FileType): FileTypeConstraints {
-    return { ...this.constraints[fileType] };
+    const baseConstraints = this.constraints[fileType];
+    const uploadLimits = this.uploadLimitsService.getLimits();
+
+    if (fileType === 'pdf') {
+      const pdfLimits = uploadLimits.pdf;
+      return {
+        ...baseConstraints,
+        maxSizeBytes: this.authState.isAuthenticated()
+          ? pdfLimits.authenticatedMaxSizeBytes
+          : pdfLimits.guestMaxSizeBytes,
+        allowedExtensions: [...pdfLimits.allowedExtensions],
+        maxPages: pdfLimits.maxPages,
+      };
+    }
+
+    const imageLimits = uploadLimits.image;
+    return {
+      ...baseConstraints,
+      maxSizeBytes: this.authState.isAuthenticated()
+        ? imageLimits.authenticatedMaxSizeBytes
+        : imageLimits.guestMaxSizeBytes,
+      allowedExtensions: [...imageLimits.allowedExtensions],
+      maxDimension: imageLimits.maxDimension,
+    };
   }
 
   /**
    * Get human-readable constraints description
    */
   getConstraintsDescription(fileType: FileType): string {
-    const config = this.constraints[fileType];
-    const parts: string[] = [];
+    const uploadLimits = this.uploadLimitsService.getLimits();
+    const isAuthenticated = this.authState.isAuthenticated();
+    const typeLabel = fileType === 'pdf' ? 'PDF' : 'Images';
+    const guestMaxSize = fileType === 'pdf'
+      ? uploadLimits.pdf.guestMaxSizeBytes
+      : uploadLimits.image.guestMaxSizeBytes;
+    const authenticatedMaxSize = fileType === 'pdf'
+      ? uploadLimits.pdf.authenticatedMaxSizeBytes
+      : uploadLimits.image.authenticatedMaxSizeBytes;
+    const activeMaxSize = isAuthenticated ? authenticatedMaxSize : guestMaxSize;
+    const parts = [`Max ${this.formatFileSize(activeMaxSize)}`];
 
-    parts.push(`Max size: ${this.formatFileSize(config.maxSizeBytes)}`);
-    parts.push(`Allowed: ${config.allowedExtensions.join(', ')}`);
-
-    if (config.maxPages) {
-      parts.push(`Max pages: ${config.maxPages}`);
+    if (isAuthenticated) {
+      parts.push('Signed-in limit');
+    } else if (authenticatedMaxSize > guestMaxSize) {
+      parts.push(`Sign in for ${this.formatFileSize(authenticatedMaxSize)}`);
     }
 
-    if (config.maxDimension) {
-      parts.push(`Max dimension: ${config.maxDimension}px`);
-    }
-
-    return parts.join(' | ');
+    parts.push(typeLabel);
+    return parts.join(' · ');
   }
 
   /**

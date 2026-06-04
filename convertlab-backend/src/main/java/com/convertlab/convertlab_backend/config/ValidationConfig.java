@@ -16,7 +16,8 @@ public class ValidationConfig {
 
     @Data
     public static class PdfValidation {
-        private int maxSizeMb = 15;
+        private int maxSizeMb = 25;
+        private int authenticatedMaxSizeMb = 75;
         private int minSizeKb = 1;
         private int maxPages = 1000;
         private List<String> allowedExtensions = List.of("pdf");
@@ -26,6 +27,7 @@ public class ValidationConfig {
     @Data
     public static class ImageValidation {
         private int maxSizeMb = 10;
+        private int authenticatedMaxSizeMb = 50;
         private int minSizeKb = 1;
         private int maxDimensionPx = 10000;
         private List<String> allowedExtensions = List.of("png", "jpg", "jpeg", "gif", "bmp", "webp");
@@ -39,12 +41,20 @@ public class ValidationConfig {
         return (long) pdf.getMaxSizeMb() * 1024 * 1024;
     }
 
+    public long getPdfAuthenticatedMaxSizeBytes() {
+        return (long) pdf.getAuthenticatedMaxSizeMb() * 1024 * 1024;
+    }
+
     public long getPdfMinSizeBytes() {
         return (long) pdf.getMinSizeKb() * 1024;
     }
 
     public long getImageMaxSizeBytes() {
         return (long) image.getMaxSizeMb() * 1024 * 1024;
+    }
+
+    public long getImageAuthenticatedMaxSizeBytes() {
+        return (long) image.getAuthenticatedMaxSizeMb() * 1024 * 1024;
     }
 
     public long getImageMinSizeBytes() {

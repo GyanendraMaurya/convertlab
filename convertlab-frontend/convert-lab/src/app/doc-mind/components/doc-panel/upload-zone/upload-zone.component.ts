@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   HostListener,
   inject,
@@ -31,6 +32,9 @@ export class UploadZoneComponent {
   private fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   private fileType: FileType = 'pdf';
+  readonly validationInfo = computed(() =>
+    this.validationService.getConstraintsDescription(this.fileType)
+  );
 
   onZoneClick() {
     this.fileInputRef()?.nativeElement.click();
@@ -41,14 +45,18 @@ export class UploadZoneComponent {
     const file = input.files?.[0];
     if (!file) return;
 
+    await this.emitValidFile(file);
+    input.value = ''; // reset so same file can be re-uploaded
+  }
+
+  private async emitValidFile(file: File): Promise<void> {
     const validationResult: ValidationResult = await this.validationService.validateFiles([file], this.fileType);
     if (!validationResult.valid) {
       this.snackBarService.error(validationResult.errors.join('\n'));
+      return;
     }
-    if (file) {
-      this.fileSelected.emit(file);
-      input.value = ''; // reset so same file can be re-uploaded
-    }
+
+    this.fileSelected.emit(file);
   }
 
   @HostListener('dragover', ['$event'])
@@ -63,10 +71,10 @@ export class UploadZoneComponent {
   }
 
   @HostListener('drop', ['$event'])
-  onDrop(e: DragEvent) {
+  async onDrop(e: DragEvent) {
     e.preventDefault();
     this.isDragging.set(false);
     const file = e.dataTransfer?.files[0];
-    if (file) this.fileSelected.emit(file);
+    if (file) await this.emitValidFile(file);
   }
 }

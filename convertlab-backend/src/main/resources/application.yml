@@ -5,8 +5,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: ${MAX_FILE_SIZE:15MB}
-      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+      max-file-size: ${MAX_FILE_SIZE:75MB}
+      max-request-size: ${MAX_REQUEST_SIZE:90MB}
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -70,11 +70,13 @@ app:
 
 validation:
   pdf:
-    max-size-mb: 15
+    max-size-mb: ${VALIDATION_PDF_MAX_SIZE_MB:25}
+    authenticated-max-size-mb: ${VALIDATION_PDF_AUTHENTICATED_MAX_SIZE_MB:75}
     min-size-kb: 1
     max-pages: 1000
   image:
-    max-size-mb: 10
+    max-size-mb: ${VALIDATION_IMAGE_MAX_SIZE_MB:10}
+    authenticated-max-size-mb: ${VALIDATION_IMAGE_AUTHENTICATED_MAX_SIZE_MB:50}
     min-size-kb: 1
     max-dimension-px: 10000
     allowed-extensions: png,jpg,jpeg,gif,bmp,webp

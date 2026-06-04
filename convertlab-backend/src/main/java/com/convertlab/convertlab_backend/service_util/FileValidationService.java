@@ -29,13 +29,22 @@ public class FileValidationService {
      * Validate PDF file
      */
     public void validatePdfFile(MultipartFile file) {
+        validatePdfFile(file, false);
+    }
+
+    /**
+     * Validate PDF file using guest or authenticated size limits.
+     */
+    public void validatePdfFile(MultipartFile file, boolean authenticated) {
         log.debug("Validating PDF file: {}", file.getOriginalFilename());
 
         // Common validations
         validateCommonRules(file);
 
         // File size validation
-        long maxSize = validationConfig.getPdfMaxSizeBytes();
+        long maxSize = authenticated
+                ? validationConfig.getPdfAuthenticatedMaxSizeBytes()
+                : validationConfig.getPdfMaxSizeBytes();
         long minSize = validationConfig.getPdfMinSizeBytes();
         validateFileSize(file, minSize, maxSize);
 
@@ -65,13 +74,22 @@ public class FileValidationService {
      * Validate image file
      */
     public void validateImageFile(MultipartFile file) {
+        validateImageFile(file, false);
+    }
+
+    /**
+     * Validate image file using guest or authenticated size limits.
+     */
+    public void validateImageFile(MultipartFile file, boolean authenticated) {
         log.debug("Validating image file: {}", file.getOriginalFilename());
 
         // Common validations
         validateCommonRules(file);
 
         // File size validation
-        long maxSize = validationConfig.getImageMaxSizeBytes();
+        long maxSize = authenticated
+                ? validationConfig.getImageAuthenticatedMaxSizeBytes()
+                : validationConfig.getImageMaxSizeBytes();
         long minSize = validationConfig.getImageMinSizeBytes();
         validateFileSize(file, minSize, maxSize);
 

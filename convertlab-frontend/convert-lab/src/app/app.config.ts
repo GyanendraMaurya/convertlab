@@ -11,6 +11,7 @@ import { AuthInitService } from './services/auth-init.service';
 import { sessionInterceptor } from './interceptors/session.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
 import { FeatureFlagService } from './services/feature-flag.service';
+import { UploadLimitsService } from './services/upload-limits.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,6 +35,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const featureFlagService = inject(FeatureFlagService);
       return featureFlagService.loadPublicFeatures();
+    }),
+    provideAppInitializer(() => {
+      const uploadLimitsService = inject(UploadLimitsService);
+      return uploadLimitsService.loadUploadLimits();
     }),
   ]
 };

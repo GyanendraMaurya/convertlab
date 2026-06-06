@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ResumeBuilderService } from '../../services/resume-builder.service';
 import {
+  ResumeCustomSection,
+  ResumeCustomSectionItem,
+  ResumeCustomSectionPlacement,
   ResumeEducation,
   ResumeExperience,
   ResumeProject,
@@ -14,6 +17,7 @@ import { SeoService } from '../../../seo/seo.service';
 
 type ResumeRequestKey = keyof ResumeRequest;
 type ResumeNotice = { type: 'success' | 'error' | 'info'; message: string };
+type CustomSectionPreset = { title: string; placement: ResumeCustomSectionPlacement; subtitle: string };
 
 @Component({
   selector: 'app-resume-builder',
@@ -34,6 +38,15 @@ export class ResumeBuilderComponent {
   isPreviewing = signal(false);
   isDownloading = signal(false);
   hasPreview = computed(() => this.previewHtml() !== null);
+  customSectionPresets: CustomSectionPreset[] = [
+    { title: 'Certifications', placement: 'sidebar', subtitle: 'Issuer or credential details' },
+    { title: 'Awards', placement: 'main', subtitle: 'Awarding body or year' },
+    { title: 'Languages', placement: 'sidebar', subtitle: 'Proficiency or context' },
+    { title: 'Volunteering', placement: 'main', subtitle: 'Organization or dates' },
+    { title: 'Publications', placement: 'main', subtitle: 'Publisher, venue, or link' },
+    { title: 'Others', placement: 'main', subtitle: 'Any subtitle' }
+
+  ];
 
   resume: ResumeRequest = {
     fullName: 'John Doe',
@@ -78,7 +91,8 @@ export class ResumeBuilderComponent {
     links: [
       { label: 'Portfolio', url: 'https://example.com' },
       { label: 'LinkedIn', url: 'https://linkedin.com/in/johndoe' }
-    ]
+    ],
+    customSections: []
   };
 
   ngOnInit() {
@@ -199,6 +213,30 @@ export class ResumeBuilderComponent {
     this.resume.links.splice(index, 1);
   }
 
+  addCustomSection(preset?: CustomSectionPreset) {
+    this.resume.customSections.push(this.createCustomSection(preset));
+  }
+
+  removeCustomSection(index: number) {
+    this.resume.customSections.splice(index, 1);
+  }
+
+  addCustomSectionItem(section: ResumeCustomSection) {
+    section.items.push(this.createCustomSectionItem());
+  }
+
+  removeCustomSectionItem(section: ResumeCustomSection, index: number) {
+    section.items.splice(index, 1);
+  }
+
+  addCustomSectionPoint(item: ResumeCustomSectionItem) {
+    item.points.push('');
+  }
+
+  removeCustomSectionPoint(item: ResumeCustomSectionItem, index: number) {
+    item.points.splice(index, 1);
+  }
+
   onCurrentRoleChange(experience: ResumeExperience) {
     if (experience.current) {
       experience.endDate = '';
@@ -275,7 +313,16 @@ export class ResumeBuilderComponent {
       links: this.resume.links.map(item => ({
         label: this.trim(item.label),
         url: this.trim(item.url)
-      })).filter(item => !!item.url)
+      })).filter(item => !!item.url),
+      customSections: this.resume.customSections.map(section => ({
+        title: this.trim(section.title),
+        placement: this.resolveCustomSectionPlacement(section.placement),
+        items: section.items.map(item => ({
+          title: this.trim(item.title),
+          subtitle: this.trim(item.subtitle),
+          points: this.cleanStrings(item.points)
+        })).filter(item => this.hasValues(item, ['title', 'subtitle']) || item.points.length > 0)
+      })).filter(section => !!section.title || section.items.length > 0)
     };
   }
 
@@ -289,7 +336,8 @@ export class ResumeBuilderComponent {
       || request.skills.length > 0
       || request.experience.length > 0
       || request.education.length > 0
-      || request.projects.length > 0;
+      || request.projects.length > 0
+      || request.customSections.length > 0;
 
     if (!hasResumeSection) {
       this.showNotice('error', 'Add at least one resume section before previewing.');
@@ -365,6 +413,32 @@ export class ResumeBuilderComponent {
       url: '',
       points: ['']
     };
+  }
+
+  private createCustomSection(preset?: CustomSectionPreset): ResumeCustomSection {
+    return {
+      title: preset?.title ?? '',
+      placement: this.resolveCustomSectionPlacement(preset?.placement),
+      items: [
+        {
+          title: '',
+          subtitle: preset?.subtitle ?? '',
+          points: ['']
+        }
+      ]
+    };
+  }
+
+  private createCustomSectionItem(): ResumeCustomSectionItem {
+    return {
+      title: '',
+      subtitle: '',
+      points: ['']
+    };
+  }
+
+  private resolveCustomSectionPlacement(placement: string | null | undefined): ResumeCustomSectionPlacement {
+    return placement === 'main' ? 'main' : 'sidebar';
   }
 
   ngOnDestroy() {

@@ -34,6 +34,20 @@ export interface ResumeLink {
   url: string;
 }
 
+export type ResumeCustomSectionPlacement = 'sidebar' | 'main';
+
+export interface ResumeCustomSectionItem {
+  title: string;
+  subtitle: string;
+  points: string[];
+}
+
+export interface ResumeCustomSection {
+  title: string;
+  placement: ResumeCustomSectionPlacement;
+  items: ResumeCustomSectionItem[];
+}
+
 export interface ResumeRequest {
   fullName: string;
   title: string;
@@ -47,4 +61,5 @@ export interface ResumeRequest {
   education: ResumeEducation[];
   projects: ResumeProject[];
   links: ResumeLink[];
+  customSections: ResumeCustomSection[];
 }

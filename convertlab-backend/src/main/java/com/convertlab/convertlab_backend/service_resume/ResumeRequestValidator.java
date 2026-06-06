@@ -1,5 +1,7 @@
 package com.convertlab.convertlab_backend.service_resume;
 
+import com.convertlab.convertlab_backend.service_resume.dto.ResumeCustomSectionItemRequest;
+import com.convertlab.convertlab_backend.service_resume.dto.ResumeCustomSectionRequest;
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeEducationRequest;
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeExperienceRequest;
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeProjectRequest;
@@ -40,10 +42,11 @@ public class ResumeRequestValidator {
         validateExperience(resume.experience());
         validateEducation(resume.education());
         validateProjects(resume.projects());
+        validateCustomSections(resume.customSections());
         validatePhoto(resume.photoDataUri());
 
         if (!hasMeaningfulSection(resume)) {
-            throw new IllegalArgumentException("Add at least one resume section such as summary, skills, experience, education, or projects.");
+            throw new IllegalArgumentException("Add at least one resume section such as summary, skills, experience, education, projects, or custom sections.");
         }
     }
 
@@ -101,6 +104,48 @@ public class ResumeRequestValidator {
         }
     }
 
+    private void validateCustomSections(List<ResumeCustomSectionRequest> customSections) {
+        if (customSections == null) {
+            return;
+        }
+
+        for (ResumeCustomSectionRequest section : customSections) {
+            if (section == null) {
+                continue;
+            }
+
+            validateText(section.title(), "Custom section title");
+            validateCustomSectionPlacement(section.placement());
+            validateCustomSectionItems(section.items());
+        }
+    }
+
+    private void validateCustomSectionItems(List<ResumeCustomSectionItemRequest> items) {
+        if (items == null) {
+            return;
+        }
+
+        for (ResumeCustomSectionItemRequest item : items) {
+            if (item == null) {
+                continue;
+            }
+
+            validateText(item.title(), "Custom section item title");
+            validateText(item.subtitle(), "Custom section item subtitle");
+            validateStrings(item.points(), "Custom section bullet");
+        }
+    }
+
+    private void validateCustomSectionPlacement(String placement) {
+        if (isBlank(placement)) {
+            return;
+        }
+
+        if (!"sidebar".equals(placement) && !"main".equals(placement)) {
+            throw new IllegalArgumentException("Custom section placement must be sidebar or main.");
+        }
+    }
+
     private void validateStrings(List<String> values, String label) {
         if (values == null) {
             return;
@@ -130,7 +175,8 @@ public class ResumeRequestValidator {
                 || hasText(resume.skills())
                 || hasExperience(resume.experience())
                 || hasEducation(resume.education())
-                || hasProjects(resume.projects());
+                || hasProjects(resume.projects())
+                || hasCustomSections(resume.customSections());
     }
 
     private boolean hasExperience(List<ResumeExperienceRequest> experience) {
@@ -160,6 +206,26 @@ public class ResumeRequestValidator {
 
         return projects.stream().anyMatch(item ->
                 item != null && (!isBlank(item.name()) || !isBlank(item.description()) || hasText(item.points()))
+        );
+    }
+
+    private boolean hasCustomSections(List<ResumeCustomSectionRequest> customSections) {
+        if (customSections == null) {
+            return false;
+        }
+
+        return customSections.stream().anyMatch(section ->
+                section != null && (!isBlank(section.title()) || hasCustomSectionItems(section.items()))
+        );
+    }
+
+    private boolean hasCustomSectionItems(List<ResumeCustomSectionItemRequest> items) {
+        if (items == null) {
+            return false;
+        }
+
+        return items.stream().anyMatch(item ->
+                item != null && (!isBlank(item.title()) || !isBlank(item.subtitle()) || hasText(item.points()))
         );
     }
 

@@ -320,6 +320,105 @@
           }
         </div>
       </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Custom sections</h2>
+            <p>Add optional sections and choose where they appear in the resume.</p>
+          </div>
+          <button class="button small" type="button" (click)="addCustomSection()">Add custom section</button>
+        </div>
+
+        <div class="preset-actions" aria-label="Custom section presets">
+          @for (preset of customSectionPresets; track preset.title) {
+            <button class="button small ghost" type="button" (click)="addCustomSection(preset)">
+              {{ preset.title }}
+            </button>
+          }
+        </div>
+
+        <div class="stack">
+          @for (section of resume.customSections; track $index; let sectionIndex = $index) {
+            <article class="repeat-block">
+              <div class="repeat-heading">
+                <h3>Custom section {{ sectionIndex + 1 }}</h3>
+                <button class="icon-button" type="button" (click)="removeCustomSection(sectionIndex)" aria-label="Remove custom section">Remove</button>
+              </div>
+
+              <div class="field-grid two">
+                <label class="field">
+                  <span>Section title</span>
+                  <input type="text" [(ngModel)]="section.title" />
+                </label>
+
+                <fieldset class="side-selector">
+                  <legend>Placement</legend>
+                  <label>
+                    <input type="radio" [name]="'custom-section-placement-' + sectionIndex" value="sidebar" [(ngModel)]="section.placement" />
+                    <span>Sidebar</span>
+                  </label>
+                  <label>
+                    <input type="radio" [name]="'custom-section-placement-' + sectionIndex" value="main" [(ngModel)]="section.placement" />
+                    <span>Main</span>
+                  </label>
+                  <p>Sidebar is best for compact details. Main is best for longer sections.</p>
+                </fieldset>
+              </div>
+
+              <div class="subsection-heading">
+                <span>Items</span>
+                <button class="button small quiet" type="button" (click)="addCustomSectionItem(section)">Add item</button>
+              </div>
+
+              <div class="stack compact">
+                @for (item of section.items; track $index; let itemIndex = $index) {
+                  <article class="nested-block">
+                    <div class="repeat-heading nested">
+                      <h3>Item {{ itemIndex + 1 }}</h3>
+                      <button class="icon-button" type="button" (click)="removeCustomSectionItem(section, itemIndex)" aria-label="Remove custom section item">Remove</button>
+                    </div>
+
+                    <div class="field-grid two">
+                      <label class="field">
+                        <span>Title</span>
+                        <input type="text" [(ngModel)]="item.title" />
+                      </label>
+                      <label class="field">
+                        <span>Subtitle or meta</span>
+                        <input type="text" [(ngModel)]="item.subtitle" />
+                      </label>
+                    </div>
+
+                    <div class="subsection-heading">
+                      <span>Bullets</span>
+                      <button class="button small quiet" type="button" (click)="addCustomSectionPoint(item)">Add bullet</button>
+                    </div>
+
+                    <div class="stack compact">
+                      @for (point of item.points; track $index; let pointIndex = $index) {
+                        <div class="inline-row">
+                          <div class="inline-field grow">
+                            <span class="inline-label" [id]="'custom-section-point-label-' + sectionIndex + '-' + itemIndex + '-' + pointIndex">Bullet {{ pointIndex + 1 }}</span>
+                            <div class="inline-control-row">
+                              <input
+                                type="text"
+                                [(ngModel)]="item.points[pointIndex]"
+                                [attr.aria-labelledby]="'custom-section-point-label-' + sectionIndex + '-' + itemIndex + '-' + pointIndex"
+                              />
+                              <button class="icon-button" type="button" (click)="removeCustomSectionPoint(item, pointIndex)" aria-label="Remove custom section bullet">Remove</button>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
     </section>
 
     <aside class="preview-pane" aria-label="Resume preview">

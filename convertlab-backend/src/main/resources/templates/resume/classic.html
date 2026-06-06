@@ -231,6 +231,21 @@
               <span th:text="${link.url}">https://example.com</span>
             </div>
           </div>
+
+          <div
+            class="section"
+            th:each="section : ${resume.customSections}"
+            th:if="${resume.customSections != null and section != null and (section.placement == null or #strings.isEmpty(section.placement) or section.placement == 'sidebar')}"
+          >
+            <h2 class="section-title" th:if="${section.title != null and !#strings.isEmpty(section.title)}" th:text="${section.title}">Certifications</h2>
+            <div class="item" th:each="item : ${section.items}" th:if="${item != null}">
+              <p class="item-title" th:if="${item.title != null and !#strings.isEmpty(item.title)}" th:text="${item.title}">AWS Certified Developer</p>
+              <p class="item-meta" th:if="${item.subtitle != null and !#strings.isEmpty(item.subtitle)}" th:text="${item.subtitle}">Amazon Web Services</p>
+              <ul class="list" th:if="${item.points != null and !item.points.isEmpty()}">
+                <li th:each="point : ${item.points}" th:if="${point != null and !#strings.isEmpty(point)}" th:text="${point}">Credential detail.</li>
+              </ul>
+            </div>
+          </div>
         </td>
 
         <td class="content">
@@ -267,6 +282,21 @@
               <p class="item-description" th:if="${project.description != null and !#strings.isEmpty(project.description)}" th:text="${project.description}">Project description.</p>
               <ul class="list" th:if="${project.points != null and !project.points.isEmpty()}">
                 <li th:each="point : ${project.points}" th:if="${point != null and !#strings.isEmpty(point)}" th:text="${point}">Delivered a useful feature.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="section"
+            th:each="section : ${resume.customSections}"
+            th:if="${resume.customSections != null and section != null and section.placement == 'main'}"
+          >
+            <h2 class="section-title" th:if="${section.title != null and !#strings.isEmpty(section.title)}" th:text="${section.title}">Awards</h2>
+            <div class="item" th:each="item : ${section.items}" th:if="${item != null}">
+              <p class="item-title" th:if="${item.title != null and !#strings.isEmpty(item.title)}" th:text="${item.title}">Award name</p>
+              <p class="item-meta" th:if="${item.subtitle != null and !#strings.isEmpty(item.subtitle)}" th:text="${item.subtitle}">Awarding body</p>
+              <ul class="list" th:if="${item.points != null and !item.points.isEmpty()}">
+                <li th:each="point : ${item.points}" th:if="${point != null and !#strings.isEmpty(point)}" th:text="${point}">Award detail.</li>
               </ul>
             </div>
           </div>

@@ -14,6 +14,7 @@ public record ResumeRequest(
         List<ResumeExperienceRequest> experience,
         List<ResumeEducationRequest> education,
         List<ResumeProjectRequest> projects,
-        List<ResumeLinkRequest> links
+        List<ResumeLinkRequest> links,
+        List<ResumeCustomSectionRequest> customSections
 ) {
 }

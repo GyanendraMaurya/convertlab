@@ -1,0 +1,338 @@
+<main class="resume-builder">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Resume Builder</p>
+      <h1>Create a clean, printable resume</h1>
+      <p class="subtitle">Fill the structured sections, preview the official template, and download an A4 PDF.</p>
+    </div>
+    <div class="header-actions" aria-label="Resume actions">
+      <button class="button secondary" type="button" (click)="preview()" [disabled]="isPreviewing()">
+        {{ isPreviewing() ? 'Previewing...' : 'Update preview' }}
+      </button>
+      <button class="button primary" type="button" (click)="download()" [disabled]="isDownloading()">
+        {{ isDownloading() ? 'Downloading...' : 'Download PDF' }}
+      </button>
+    </div>
+  </header>
+
+  @if (notice(); as currentNotice) {
+    <div class="notice" [class.success]="currentNotice.type === 'success'" [class.error]="currentNotice.type === 'error'" [class.info]="currentNotice.type === 'info'">
+      {{ currentNotice.message }}
+    </div>
+  }
+
+  <div class="workspace">
+    <section class="editor" aria-label="Resume editor">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Template</h2>
+            <p>Phase 1 starts with one scalable template.</p>
+          </div>
+        </div>
+        <div class="template-list" role="list">
+          @for (template of templates(); track template.id) {
+            <button
+              type="button"
+              class="template-option"
+              [class.active]="selectedTemplate() === template.id"
+              (click)="selectTemplate(template.id)"
+            >
+              <span class="template-name">{{ template.name }}</span>
+              <span class="template-description">{{ template.description }}</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Profile</h2>
+            <p>Your headline and contact details.</p>
+          </div>
+        </div>
+
+        <div class="field-grid two">
+          <label class="field">
+            <span>Full name</span>
+            <input type="text" [(ngModel)]="resume.fullName" autocomplete="name" />
+          </label>
+          <label class="field">
+            <span>Professional title</span>
+            <input type="text" [(ngModel)]="resume.title" autocomplete="organization-title" />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" [(ngModel)]="resume.email" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input type="tel" [(ngModel)]="resume.phone" autocomplete="tel" />
+          </label>
+          <label class="field wide">
+            <span>Location</span>
+            <input type="text" [(ngModel)]="resume.location" autocomplete="address-level2" />
+          </label>
+        </div>
+
+        <div class="photo-row">
+          <label class="file-field">
+            <span>Photo</span>
+            <input type="file" accept="image/png,image/jpeg" (change)="onPhotoSelected($event)" />
+          </label>
+          @if (resume.photoDataUri) {
+            <button class="button ghost" type="button" (click)="removePhoto()">Remove photo</button>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Summary</h2>
+            <p>A short paragraph for the top of the resume.</p>
+          </div>
+        </div>
+        <label class="field">
+          <span>Professional summary</span>
+          <textarea rows="5" [(ngModel)]="resume.summary"></textarea>
+        </label>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Skills</h2>
+            <p>Add concise skills that should appear in the sidebar.</p>
+          </div>
+          <button class="button small" type="button" (click)="addSkill()">Add skill</button>
+        </div>
+
+        <div class="stack">
+          @for (skill of resume.skills; track $index; let i = $index) {
+            <div class="inline-row">
+              <label class="field grow">
+                <span>Skill {{ i + 1 }}</span>
+                <input type="text" [(ngModel)]="resume.skills[i]" />
+              </label>
+              <button class="icon-button" type="button" (click)="removeSkill(i)" aria-label="Remove skill">Remove</button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Experience</h2>
+            <p>Use bullets for measurable work and outcomes.</p>
+          </div>
+          <button class="button small" type="button" (click)="addExperience()">Add role</button>
+        </div>
+
+        <div class="stack">
+          @for (experience of resume.experience; track $index; let i = $index) {
+            <article class="repeat-block">
+              <div class="repeat-heading">
+                <h3>Role {{ i + 1 }}</h3>
+                <button class="icon-button" type="button" (click)="removeExperience(i)" aria-label="Remove role">Remove</button>
+              </div>
+              <div class="field-grid two">
+                <label class="field">
+                  <span>Role</span>
+                  <input type="text" [(ngModel)]="experience.role" />
+                </label>
+                <label class="field">
+                  <span>Company</span>
+                  <input type="text" [(ngModel)]="experience.company" />
+                </label>
+                <label class="field">
+                  <span>Location</span>
+                  <input type="text" [(ngModel)]="experience.location" />
+                </label>
+                <label class="field">
+                  <span>Start date</span>
+                  <input type="text" [(ngModel)]="experience.startDate" />
+                </label>
+                <label class="field">
+                  <span>End date</span>
+                  <input type="text" [(ngModel)]="experience.endDate" [disabled]="experience.current" />
+                </label>
+                <label class="check-field">
+                  <input type="checkbox" [(ngModel)]="experience.current" (change)="onCurrentRoleChange(experience)" />
+                  <span>Current role</span>
+                </label>
+              </div>
+
+              <div class="subsection-heading">
+                <span>Bullets</span>
+                <button class="button small quiet" type="button" (click)="addExperiencePoint(experience)">Add bullet</button>
+              </div>
+              <div class="stack compact">
+                @for (point of experience.points; track $index; let pointIndex = $index) {
+                  <div class="inline-row">
+                    <label class="field grow">
+                      <span>Bullet {{ pointIndex + 1 }}</span>
+                      <input type="text" [(ngModel)]="experience.points[pointIndex]" />
+                    </label>
+                    <button class="icon-button" type="button" (click)="removeExperiencePoint(experience, pointIndex)" aria-label="Remove bullet">Remove</button>
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Education</h2>
+            <p>Add degrees, certifications, or training.</p>
+          </div>
+          <button class="button small" type="button" (click)="addEducation()">Add education</button>
+        </div>
+
+        <div class="stack">
+          @for (education of resume.education; track $index; let i = $index) {
+            <article class="repeat-block">
+              <div class="repeat-heading">
+                <h3>Education {{ i + 1 }}</h3>
+                <button class="icon-button" type="button" (click)="removeEducation(i)" aria-label="Remove education">Remove</button>
+              </div>
+              <div class="field-grid two">
+                <label class="field">
+                  <span>Degree</span>
+                  <input type="text" [(ngModel)]="education.degree" />
+                </label>
+                <label class="field">
+                  <span>Institution</span>
+                  <input type="text" [(ngModel)]="education.institution" />
+                </label>
+                <label class="field">
+                  <span>Location</span>
+                  <input type="text" [(ngModel)]="education.location" />
+                </label>
+                <label class="field">
+                  <span>Duration</span>
+                  <input type="text" [(ngModel)]="education.duration" />
+                </label>
+                <label class="field wide">
+                  <span>Details</span>
+                  <textarea rows="3" [(ngModel)]="education.details"></textarea>
+                </label>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Projects</h2>
+            <p>Highlight portfolio work or important personal projects.</p>
+          </div>
+          <button class="button small" type="button" (click)="addProject()">Add project</button>
+        </div>
+
+        <div class="stack">
+          @for (project of resume.projects; track $index; let i = $index) {
+            <article class="repeat-block">
+              <div class="repeat-heading">
+                <h3>Project {{ i + 1 }}</h3>
+                <button class="icon-button" type="button" (click)="removeProject(i)" aria-label="Remove project">Remove</button>
+              </div>
+              <div class="field-grid two">
+                <label class="field">
+                  <span>Name</span>
+                  <input type="text" [(ngModel)]="project.name" />
+                </label>
+                <label class="field">
+                  <span>URL</span>
+                  <input type="url" [(ngModel)]="project.url" />
+                </label>
+                <label class="field wide">
+                  <span>Description</span>
+                  <textarea rows="3" [(ngModel)]="project.description"></textarea>
+                </label>
+              </div>
+
+              <div class="subsection-heading">
+                <span>Bullets</span>
+                <button class="button small quiet" type="button" (click)="addProjectPoint(project)">Add bullet</button>
+              </div>
+              <div class="stack compact">
+                @for (point of project.points; track $index; let pointIndex = $index) {
+                  <div class="inline-row">
+                    <label class="field grow">
+                      <span>Bullet {{ pointIndex + 1 }}</span>
+                      <input type="text" [(ngModel)]="project.points[pointIndex]" />
+                    </label>
+                    <button class="icon-button" type="button" (click)="removeProjectPoint(project, pointIndex)" aria-label="Remove bullet">Remove</button>
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Links</h2>
+            <p>Portfolio, LinkedIn, GitHub, or other public links.</p>
+          </div>
+          <button class="button small" type="button" (click)="addLink()">Add link</button>
+        </div>
+
+        <div class="stack">
+          @for (link of resume.links; track $index; let i = $index) {
+            <div class="inline-row link-row">
+              <label class="field">
+                <span>Label</span>
+                <input type="text" [(ngModel)]="link.label" />
+              </label>
+              <label class="field grow">
+                <span>URL</span>
+                <input type="url" [(ngModel)]="link.url" />
+              </label>
+              <button class="icon-button" type="button" (click)="removeLink(i)" aria-label="Remove link">Remove</button>
+            </div>
+          }
+        </div>
+      </section>
+    </section>
+
+    <aside class="preview-pane" aria-label="Resume preview">
+      <div class="preview-toolbar">
+        <div>
+          <h2>Preview</h2>
+          <p>A4 output from the backend template.</p>
+        </div>
+        <button class="button secondary small" type="button" (click)="preview()" [disabled]="isPreviewing()">Refresh</button>
+      </div>
+
+      <div class="preview-frame">
+        @if (hasPreview()) {
+          <iframe title="Resume preview" sandbox [srcdoc]="previewHtml()"></iframe>
+        } @else {
+          <div class="preview-empty">
+            <p>Preview will appear here.</p>
+          </div>
+        }
+      </div>
+    </aside>
+  </div>
+
+  <div class="mobile-actions" aria-label="Resume actions">
+    <button class="button secondary" type="button" (click)="preview()" [disabled]="isPreviewing()">
+      {{ isPreviewing() ? 'Previewing...' : 'Preview' }}
+    </button>
+    <button class="button primary" type="button" (click)="download()" [disabled]="isDownloading()">
+      {{ isDownloading() ? 'Downloading...' : 'Download' }}
+    </button>
+  </div>
+</main>

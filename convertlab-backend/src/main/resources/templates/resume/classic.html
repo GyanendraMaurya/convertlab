@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #1f2933;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      line-height: 1.35;
+      overflow-x: hidden;
+    }
+
+    .resume {
+      max-width: 190mm;
+      width: 100%;
+    }
+
+    .header {
+      border-bottom: 2px solid #1f4e5f;
+      margin-bottom: 5mm;
+      padding-bottom: 3.5mm;
+    }
+
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .photo-cell {
+      width: 25mm;
+      padding-right: 5mm;
+      vertical-align: top;
+    }
+
+    .photo {
+      width: 22mm;
+      height: 22mm;
+      object-fit: cover;
+      border: 1px solid #c8d3d8;
+    }
+
+    .identity {
+      vertical-align: top;
+      width: 100%;
+    }
+
+    .name {
+      color: #173f4d;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 1mm;
+      overflow-wrap: anywhere;
+    }
+
+    .title {
+      color: #405866;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin: 0 0 2mm;
+      overflow-wrap: anywhere;
+    }
+
+    .contact {
+      color: #3d4f5c;
+      font-size: 10.5px;
+      overflow-wrap: anywhere;
+    }
+
+    .contact span + span::before {
+      color: #8998a3;
+      content: " | ";
+      padding: 0 1mm;
+    }
+
+    .main-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .sidebar {
+      width: 50mm;
+      border-right: 1px solid #d9e1e5;
+      padding-right: 5.5mm;
+      vertical-align: top;
+    }
+
+    .content {
+      padding-left: 6.5mm;
+      vertical-align: top;
+      width: auto;
+    }
+
+    .section {
+      margin-bottom: 4.2mm;
+    }
+
+    .section-title {
+      color: #173f4d;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 0 1.8mm;
+      padding-bottom: 1.1mm;
+      text-transform: uppercase;
+      border-bottom: 1px solid #bccbd2;
+    }
+
+    .summary {
+      margin: 0;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 4mm;
+    }
+
+    .list li {
+      margin-bottom: 0.8mm;
+    }
+
+    .item {
+      margin-bottom: 3.5mm;
+      page-break-inside: avoid;
+    }
+
+    .item-title {
+      color: #1f2933;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .item-meta {
+      color: #596b77;
+      font-size: 10.5px;
+      margin: 0.3mm 0 1.1mm;
+      overflow-wrap: anywhere;
+    }
+
+    .item-description {
+      margin: 0 0 1mm;
+      overflow-wrap: anywhere;
+    }
+
+    .link-row {
+      margin-bottom: 1.3mm;
+      overflow-wrap: anywhere;
+    }
+
+    .link-label {
+      color: #173f4d;
+      font-weight: 700;
+    }
+
+    @media screen {
+      html {
+        background: #ffffff;
+      }
+
+      body {
+        min-width: 0;
+        padding: 10mm;
+      }
+
+      .resume {
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <div class="header">
+      <table class="header-table">
+        <tr>
+          <td class="photo-cell" th:if="${resume.photoDataUri != null and !#strings.isEmpty(resume.photoDataUri)}">
+            <img class="photo" th:src="${resume.photoDataUri}" alt="Candidate photo" />
+          </td>
+          <td class="identity">
+            <h1 class="name" th:text="${resume.fullName}">John Doe</h1>
+            <p class="title" th:if="${resume.title != null and !#strings.isEmpty(resume.title)}" th:text="${resume.title}">Software Developer</p>
+            <div class="contact">
+              <span th:if="${resume.email != null and !#strings.isEmpty(resume.email)}" th:text="${resume.email}">john@example.com</span>
+              <span th:if="${resume.phone != null and !#strings.isEmpty(resume.phone)}" th:text="${resume.phone}">9876543210</span>
+              <span th:if="${resume.location != null and !#strings.isEmpty(resume.location)}" th:text="${resume.location}">Bangalore</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <table class="main-table">
+      <tr>
+        <td class="sidebar">
+          <div class="section" th:if="${resume.skills != null and !resume.skills.isEmpty()}">
+            <h2 class="section-title">Skills</h2>
+            <ul class="list">
+              <li th:each="skill : ${resume.skills}" th:if="${skill != null and !#strings.isEmpty(skill)}" th:text="${skill}">Angular</li>
+            </ul>
+          </div>
+
+          <div class="section" th:if="${resume.education != null and !resume.education.isEmpty()}">
+            <h2 class="section-title">Education</h2>
+            <div class="item" th:each="edu : ${resume.education}">
+              <p class="item-title" th:if="${edu.degree != null and !#strings.isEmpty(edu.degree)}" th:text="${edu.degree}">B.Tech Computer Science</p>
+              <p class="item-meta">
+                <span th:if="${edu.institution != null and !#strings.isEmpty(edu.institution)}" th:text="${edu.institution}">ABC University</span>
+                <span th:if="${edu.location != null and !#strings.isEmpty(edu.location)}">, <span th:text="${edu.location}">Bangalore</span></span>
+              </p>
+              <p class="item-meta" th:if="${edu.duration != null and !#strings.isEmpty(edu.duration)}" th:text="${edu.duration}">2020 - 2024</p>
+              <p class="item-description" th:if="${edu.details != null and !#strings.isEmpty(edu.details)}" th:text="${edu.details}">Graduated with honors.</p>
+            </div>
+          </div>
+
+          <div class="section" th:if="${resume.links != null and !resume.links.isEmpty()}">
+            <h2 class="section-title">Links</h2>
+            <div class="link-row" th:each="link : ${resume.links}" th:if="${link != null and link.url != null and !#strings.isEmpty(link.url)}">
+              <span class="link-label" th:if="${link.label != null and !#strings.isEmpty(link.label)}" th:text="${link.label}">Portfolio</span>
+              <span th:if="${link.label != null and !#strings.isEmpty(link.label)}">: </span>
+              <span th:text="${link.url}">https://example.com</span>
+            </div>
+          </div>
+        </td>
+
+        <td class="content">
+          <div class="section" th:if="${resume.summary != null and !#strings.isEmpty(resume.summary)}">
+            <h2 class="section-title">Summary</h2>
+            <p class="summary" th:text="${resume.summary}">Angular and Spring Boot developer.</p>
+          </div>
+
+          <div class="section" th:if="${resume.experience != null and !resume.experience.isEmpty()}">
+            <h2 class="section-title">Experience</h2>
+            <div class="item" th:each="exp : ${resume.experience}">
+              <p class="item-title">
+                <span th:if="${exp.role != null and !#strings.isEmpty(exp.role)}" th:text="${exp.role}">Software Developer</span>
+                <span th:if="${exp.company != null and !#strings.isEmpty(exp.company)}"> at <span th:text="${exp.company}">ABC Company</span></span>
+              </p>
+              <p class="item-meta">
+                <span th:if="${exp.startDate != null and !#strings.isEmpty(exp.startDate)}" th:text="${exp.startDate}">Jan 2023</span>
+                <span th:if="${exp.startDate != null and !#strings.isEmpty(exp.startDate)}"> - </span>
+                <span th:if="${exp.current}">Present</span>
+                <span th:if="${!exp.current and exp.endDate != null and !#strings.isEmpty(exp.endDate)}" th:text="${exp.endDate}">Dec 2024</span>
+                <span th:if="${exp.location != null and !#strings.isEmpty(exp.location)}"> | <span th:text="${exp.location}">Remote</span></span>
+              </p>
+              <ul class="list" th:if="${exp.points != null and !exp.points.isEmpty()}">
+                <li th:each="point : ${exp.points}" th:if="${point != null and !#strings.isEmpty(point)}" th:text="${point}">Built REST APIs using Spring Boot.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section" th:if="${resume.projects != null and !resume.projects.isEmpty()}">
+            <h2 class="section-title">Projects</h2>
+            <div class="item" th:each="project : ${resume.projects}">
+              <p class="item-title" th:if="${project.name != null and !#strings.isEmpty(project.name)}" th:text="${project.name}">Project Name</p>
+              <p class="item-meta" th:if="${project.url != null and !#strings.isEmpty(project.url)}" th:text="${project.url}">https://example.com</p>
+              <p class="item-description" th:if="${project.description != null and !#strings.isEmpty(project.description)}" th:text="${project.description}">Project description.</p>
+              <ul class="list" th:if="${project.points != null and !project.points.isEmpty()}">
+                <li th:each="point : ${project.points}" th:if="${point != null and !#strings.isEmpty(point)}" th:text="${point}">Delivered a useful feature.</li>
+              </ul>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

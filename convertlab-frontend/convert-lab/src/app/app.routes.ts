@@ -68,6 +68,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/image/crop-image/crop-image.component').then(m => m.CropImageComponent)
   },
   {
+    path: 'resume-builder',
+    loadComponent: () => import('./resume/components/resume-builder/resume-builder.component').then(m => m.ResumeBuilderComponent)
+  },
+  {
     path: 'doc-mind',
     redirectTo: 'docmind',
     pathMatch: 'full'

@@ -4,7 +4,7 @@ import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/commo
 export interface RequestOptions {
   params?: Record<string, any>;
   headers?: Record<string, any>;
-  responseType?: 'json' | 'blob';
+  responseType?: 'json' | 'blob' | 'text';
   observe?: 'response' | 'body';
   context?: HttpContext
 }

@@ -1,0 +1,373 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ResumeBuilderService } from '../../services/resume-builder.service';
+import {
+  ResumeEducation,
+  ResumeExperience,
+  ResumeProject,
+  ResumeRequest,
+  ResumeTemplate
+} from '../../models/buildermodel';
+import { SeoService } from '../../../seo/seo.service';
+
+type ResumeRequestKey = keyof ResumeRequest;
+type ResumeNotice = { type: 'success' | 'error' | 'info'; message: string };
+
+@Component({
+  selector: 'app-resume-builder',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './resume-builder.component.html',
+  styleUrl: './resume-builder.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ResumeBuilderComponent {
+  private readonly resumeBuilderService = inject(ResumeBuilderService);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly seoService = inject(SeoService);
+
+  templates = signal<ResumeTemplate[]>([]);
+  selectedTemplate = signal('classic');
+  previewHtml = signal<SafeHtml | null>(null);
+  notice = signal<ResumeNotice | null>(null);
+  isPreviewing = signal(false);
+  isDownloading = signal(false);
+  hasPreview = computed(() => this.previewHtml() !== null);
+
+  resume: ResumeRequest = {
+    fullName: 'John Doe',
+    title: 'Angular and Spring Boot Developer',
+    email: 'john@example.com',
+    phone: '9876543210',
+    location: 'Bangalore, India',
+    summary: 'Full-stack developer experienced in building reliable Angular applications and Spring Boot APIs.',
+    photoDataUri: '',
+    skills: ['Angular', 'Spring Boot', 'PostgreSQL', 'REST APIs'],
+    experience: [
+      {
+        role: 'Software Developer',
+        company: 'ABC Company',
+        location: 'Bangalore',
+        startDate: 'Jan 2023',
+        endDate: '',
+        current: true,
+        points: [
+          'Built REST APIs using Spring Boot and PostgreSQL.',
+          'Created responsive Angular screens for document workflows.'
+        ]
+      }
+    ],
+    education: [
+      {
+        degree: 'B.Tech Computer Science',
+        institution: 'ABC University',
+        location: 'Bangalore',
+        duration: '2019 - 2023',
+        details: 'Focused on web applications, databases, and software engineering.'
+      }
+    ],
+    projects: [
+      {
+        name: 'Document Utility Platform',
+        description: 'A web application for converting, editing, and managing PDF workflows.',
+        url: '',
+        points: ['Implemented upload, preview, and download flows for document tools.']
+      }
+    ],
+    links: [
+      { label: 'Portfolio', url: 'https://example.com' },
+      { label: 'LinkedIn', url: 'https://linkedin.com/in/johndoe' }
+    ]
+  };
+
+  ngOnInit() {
+    this.seoService.applySEO('resume-builder');
+    this.loadTemplates();
+    this.preview();
+  }
+
+  loadTemplates() {
+    this.resumeBuilderService.getTemplates().subscribe({
+      next: response => {
+        this.templates.set(response.data ?? []);
+        if (!this.templates().some(template => template.id === this.selectedTemplate())) {
+          this.selectedTemplate.set(this.templates()[0]?.id ?? 'classic');
+        }
+      }
+    });
+  }
+
+  selectTemplate(templateId: string) {
+    this.selectedTemplate.set(templateId);
+    this.preview();
+  }
+
+  preview() {
+    const request = this.buildRequest();
+
+    if (!this.validateRequiredFields(request)) {
+      return;
+    }
+
+    this.isPreviewing.set(true);
+    this.resumeBuilderService.previewResume(request, this.selectedTemplate()).subscribe({
+      next: html => {
+        this.previewHtml.set(this.sanitizer.bypassSecurityTrustHtml(html));
+        this.showNotice('success', 'Preview updated.');
+        this.isPreviewing.set(false);
+      },
+      error: () => {
+        this.isPreviewing.set(false);
+      }
+    });
+  }
+
+  download() {
+    const request = this.buildRequest();
+
+    if (!this.validateRequiredFields(request)) {
+      return;
+    }
+
+    this.isDownloading.set(true);
+    this.resumeBuilderService.downloadResume(request, this.selectedTemplate()).subscribe({
+      next: response => {
+        this.isDownloading.set(false);
+        this.downloadBlob(response);
+        this.showNotice('success', 'Resume downloaded.');
+      },
+      error: () => {
+        this.isDownloading.set(false);
+      }
+    });
+  }
+
+  addSkill() {
+    this.resume.skills.push('');
+  }
+
+  removeSkill(index: number) {
+    this.resume.skills.splice(index, 1);
+  }
+
+  addExperience() {
+    this.resume.experience.push(this.createExperience());
+  }
+
+  removeExperience(index: number) {
+    this.resume.experience.splice(index, 1);
+  }
+
+  addExperiencePoint(experience: ResumeExperience) {
+    experience.points.push('');
+  }
+
+  removeExperiencePoint(experience: ResumeExperience, index: number) {
+    experience.points.splice(index, 1);
+  }
+
+  addEducation() {
+    this.resume.education.push(this.createEducation());
+  }
+
+  removeEducation(index: number) {
+    this.resume.education.splice(index, 1);
+  }
+
+  addProject() {
+    this.resume.projects.push(this.createProject());
+  }
+
+  removeProject(index: number) {
+    this.resume.projects.splice(index, 1);
+  }
+
+  addProjectPoint(project: ResumeProject) {
+    project.points.push('');
+  }
+
+  removeProjectPoint(project: ResumeProject, index: number) {
+    project.points.splice(index, 1);
+  }
+
+  addLink() {
+    this.resume.links.push({ label: '', url: '' });
+  }
+
+  removeLink(index: number) {
+    this.resume.links.splice(index, 1);
+  }
+
+  onCurrentRoleChange(experience: ResumeExperience) {
+    if (experience.current) {
+      experience.endDate = '';
+    }
+  }
+
+  onPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      this.showNotice('error', 'Use a PNG or JPEG photo.');
+      input.value = '';
+      return;
+    }
+
+    if (file.size > 1_500_000) {
+      this.showNotice('error', 'Use a photo under 1.5 MB.');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.resume.photoDataUri = reader.result as string;
+      this.preview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removePhoto() {
+    this.resume.photoDataUri = '';
+    this.preview();
+  }
+
+  private buildRequest(): ResumeRequest {
+    return {
+      ...this.resume,
+      fullName: this.trim(this.resume.fullName),
+      title: this.trim(this.resume.title),
+      email: this.trim(this.resume.email),
+      phone: this.trim(this.resume.phone),
+      location: this.trim(this.resume.location),
+      summary: this.trim(this.resume.summary),
+      skills: this.cleanStrings(this.resume.skills),
+      experience: this.resume.experience.map(item => ({
+        ...item,
+        role: this.trim(item.role),
+        company: this.trim(item.company),
+        location: this.trim(item.location),
+        startDate: this.trim(item.startDate),
+        endDate: this.trim(item.endDate),
+        points: this.cleanStrings(item.points)
+      })).filter(item => this.hasValues(item, ['role', 'company', 'location', 'startDate', 'endDate']) || item.points.length > 0),
+      education: this.resume.education.map(item => ({
+        ...item,
+        degree: this.trim(item.degree),
+        institution: this.trim(item.institution),
+        location: this.trim(item.location),
+        duration: this.trim(item.duration),
+        details: this.trim(item.details)
+      })).filter(item => this.hasValues(item, ['degree', 'institution', 'location', 'duration', 'details'])),
+      projects: this.resume.projects.map(item => ({
+        ...item,
+        name: this.trim(item.name),
+        description: this.trim(item.description),
+        url: this.trim(item.url),
+        points: this.cleanStrings(item.points)
+      })).filter(item => this.hasValues(item, ['name', 'description', 'url']) || item.points.length > 0),
+      links: this.resume.links.map(item => ({
+        label: this.trim(item.label),
+        url: this.trim(item.url)
+      })).filter(item => !!item.url)
+    };
+  }
+
+  private validateRequiredFields(request: ResumeRequest): boolean {
+    if (!request.fullName || !request.email) {
+      this.showNotice('error', 'Full name and email are required.');
+      return false;
+    }
+
+    const hasResumeSection = !!request.summary
+      || request.skills.length > 0
+      || request.experience.length > 0
+      || request.education.length > 0
+      || request.projects.length > 0;
+
+    if (!hasResumeSection) {
+      this.showNotice('error', 'Add at least one resume section before previewing.');
+      return false;
+    }
+
+    return true;
+  }
+
+  private showNotice(type: ResumeNotice['type'], message: string) {
+    this.notice.set({ type, message });
+  }
+
+  private downloadBlob(response: { body: Blob | null; headers: { get(name: string): string | null } }) {
+    const blob = response.body;
+    if (!blob) {
+      return;
+    }
+
+    const contentDisposition = response.headers.get('content-disposition');
+    const match = contentDisposition?.match(/filename="([^"]+)"/);
+    const fileName = match?.[1] ?? 'resume.pdf';
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private cleanStrings(values: string[]): string[] {
+    return values.map(value => this.trim(value)).filter(Boolean);
+  }
+
+  private trim(value: string | null | undefined): string {
+    return value?.trim() ?? '';
+  }
+
+  private hasValues<T extends Record<string, unknown>>(item: T, keys: ResumeRequestKey[] | string[]): boolean {
+    return keys.some(key => {
+      const value = item[key];
+      return typeof value === 'string' && value.trim().length > 0;
+    });
+  }
+
+  private createExperience(): ResumeExperience {
+    return {
+      role: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      current: false,
+      points: ['']
+    };
+  }
+
+  private createEducation(): ResumeEducation {
+    return {
+      degree: '',
+      institution: '',
+      location: '',
+      duration: '',
+      details: ''
+    };
+  }
+
+  private createProject(): ResumeProject {
+    return {
+      name: '',
+      description: '',
+      url: '',
+      points: ['']
+    };
+  }
+
+  ngOnDestroy() {
+    this.seoService.cleanup();
+  }
+}

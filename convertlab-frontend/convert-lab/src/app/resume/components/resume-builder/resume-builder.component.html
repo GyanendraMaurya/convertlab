@@ -112,11 +112,13 @@
         <div class="stack">
           @for (skill of resume.skills; track $index; let i = $index) {
             <div class="inline-row">
-              <label class="field grow">
-                <span>Skill {{ i + 1 }}</span>
-                <input type="text" [(ngModel)]="resume.skills[i]" />
-              </label>
-              <button class="icon-button" type="button" (click)="removeSkill(i)" aria-label="Remove skill">Remove</button>
+              <div class="inline-field grow">
+                <span class="inline-label" [id]="'skill-label-' + i">Skill {{ i + 1 }}</span>
+                <div class="inline-control-row">
+                  <input type="text" [(ngModel)]="resume.skills[i]" [attr.aria-labelledby]="'skill-label-' + i" />
+                  <button class="icon-button" type="button" (click)="removeSkill(i)" aria-label="Remove skill">Remove</button>
+                </div>
+              </div>
             </div>
           }
         </div>
@@ -172,11 +174,17 @@
               <div class="stack compact">
                 @for (point of experience.points; track $index; let pointIndex = $index) {
                   <div class="inline-row">
-                    <label class="field grow">
-                      <span>Bullet {{ pointIndex + 1 }}</span>
-                      <input type="text" [(ngModel)]="experience.points[pointIndex]" />
-                    </label>
-                    <button class="icon-button" type="button" (click)="removeExperiencePoint(experience, pointIndex)" aria-label="Remove bullet">Remove</button>
+                    <div class="inline-field grow">
+                      <span class="inline-label" [id]="'experience-point-label-' + i + '-' + pointIndex">Bullet {{ pointIndex + 1 }}</span>
+                      <div class="inline-control-row">
+                        <input
+                          type="text"
+                          [(ngModel)]="experience.points[pointIndex]"
+                          [attr.aria-labelledby]="'experience-point-label-' + i + '-' + pointIndex"
+                        />
+                        <button class="icon-button" type="button" (click)="removeExperiencePoint(experience, pointIndex)" aria-label="Remove bullet">Remove</button>
+                      </div>
+                    </div>
                   </div>
                 }
               </div>
@@ -266,11 +274,17 @@
               <div class="stack compact">
                 @for (point of project.points; track $index; let pointIndex = $index) {
                   <div class="inline-row">
-                    <label class="field grow">
-                      <span>Bullet {{ pointIndex + 1 }}</span>
-                      <input type="text" [(ngModel)]="project.points[pointIndex]" />
-                    </label>
-                    <button class="icon-button" type="button" (click)="removeProjectPoint(project, pointIndex)" aria-label="Remove bullet">Remove</button>
+                    <div class="inline-field grow">
+                      <span class="inline-label" [id]="'project-point-label-' + i + '-' + pointIndex">Bullet {{ pointIndex + 1 }}</span>
+                      <div class="inline-control-row">
+                        <input
+                          type="text"
+                          [(ngModel)]="project.points[pointIndex]"
+                          [attr.aria-labelledby]="'project-point-label-' + i + '-' + pointIndex"
+                        />
+                        <button class="icon-button" type="button" (click)="removeProjectPoint(project, pointIndex)" aria-label="Remove bullet">Remove</button>
+                      </div>
+                    </div>
                   </div>
                 }
               </div>
@@ -291,15 +305,17 @@
         <div class="stack">
           @for (link of resume.links; track $index; let i = $index) {
             <div class="inline-row link-row">
-              <label class="field">
-                <span>Label</span>
-                <input type="text" [(ngModel)]="link.label" />
-              </label>
-              <label class="field grow">
-                <span>URL</span>
-                <input type="url" [(ngModel)]="link.url" />
-              </label>
-              <button class="icon-button" type="button" (click)="removeLink(i)" aria-label="Remove link">Remove</button>
+              <div class="inline-field grow">
+                <div class="inline-label-grid link-label-grid">
+                  <span [id]="'link-label-label-' + i">Label</span>
+                  <span [id]="'link-url-label-' + i">URL</span>
+                </div>
+                <div class="inline-control-row link-controls">
+                  <input type="text" [(ngModel)]="link.label" [attr.aria-labelledby]="'link-label-label-' + i" />
+                  <input type="url" [(ngModel)]="link.url" [attr.aria-labelledby]="'link-url-label-' + i" />
+                  <button class="icon-button" type="button" (click)="removeLink(i)" aria-label="Remove link">Remove</button>
+                </div>
+              </div>
             </div>
           }
         </div>

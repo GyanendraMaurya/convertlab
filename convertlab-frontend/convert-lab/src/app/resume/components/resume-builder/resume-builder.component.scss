@@ -265,7 +265,9 @@ h3 {
 
 .field span,
 .file-field span,
-.check-field span {
+.check-field span,
+.inline-label,
+.inline-label-grid span {
   color: var(--resume-primary-dark);
   font-size: 13px;
   font-weight: 800;
@@ -340,6 +342,34 @@ input:disabled {
   min-width: 0;
 }
 
+.inline-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.inline-control-row {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+}
+
+.inline-control-row input {
+  flex: 1 1 auto;
+}
+
+.inline-control-row .icon-button {
+  flex: 0 0 auto;
+}
+
+.inline-label-grid,
+.link-controls {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(120px, 0.38fr) minmax(0, 1fr) auto;
+}
+
 .repeat-block {
   border: 1px solid var(--resume-soft-border);
   border-radius: 8px;
@@ -397,7 +427,7 @@ input:disabled {
 .preview-pane {
   overflow: hidden;
   position: sticky;
-  top: 84px;
+  top: 5px;
 }
 
 .preview-toolbar {
@@ -491,6 +521,13 @@ iframe {
   .link-row {
     align-items: stretch;
     display: grid;
+  }
+
+  .inline-control-row,
+  .link-controls,
+  .inline-label-grid {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .field-grid.two {

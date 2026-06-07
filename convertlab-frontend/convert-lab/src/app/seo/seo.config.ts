@@ -22,7 +22,7 @@ export interface SEOConfig {
 
 export type PageIds =
   'home' | 'merge-pdf' | 'split-pdf' | 'extract-pdf' | 'image-to-pdf' | 'compress-pdf' | 'edit-pdf' | 'compress-image' | 'pdf-password'
-  | 'crop-image' | 'resume-builder' | 'docmind' | 'about' | 'contact';
+  | 'crop-image' | 'resume' | 'docmind' | 'about' | 'contact';
 
 export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
   home: {
@@ -264,24 +264,24 @@ export const SEO_CONFIGS: Record<PageIds, SEOConfig> = {
       { name: 'Crop Image', url: 'https://www.easyconvertlab.com/crop-image' }
     ]
   },
-  'resume-builder': {
+  'resume': {
     meta: {
       title: 'Resume Builder Online - Create and Download a PDF Resume | EasyConvertLab',
       description: 'Create a structured resume online, preview a clean A4 template, and download a professional PDF resume.',
       keywords: 'resume builder, cv maker, pdf resume, create resume online, free resume builder, professional resume template',
-      url: 'https://www.easyconvertlab.com/resume-builder',
+      url: 'https://www.easyconvertlab.com/resume',
       image: 'https://www.easyconvertlab.com/assets/images/easyconvertlab-og.jpg',
       type: 'website'
     },
     schema: {
       name: 'Resume Builder - EasyConvertLab',
       description: 'Create a structured resume, preview a clean template, and download a professional PDF.',
-      url: 'https://www.easyconvertlab.com/resume-builder',
+      url: 'https://www.easyconvertlab.com/resume',
       featureList: 'Structured resume form, A4 preview, PDF download, Print-safe resume template'
     },
     breadcrumbs: [
       { name: 'Home', url: 'https://www.easyconvertlab.com' },
-      { name: 'Resume Builder', url: 'https://www.easyconvertlab.com/resume-builder' }
+      { name: 'Resume Builder', url: 'https://www.easyconvertlab.com/resume' }
     ]
   },
   'docmind': {

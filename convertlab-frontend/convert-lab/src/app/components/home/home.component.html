@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="docmind-cta">
-          <button mat-raised-button class="docmind-btn" (click)="$event.stopPropagation(); navigateToFeature('/doc-mind')">
+          <button mat-raised-button class="docmind-btn" (click)="$event.stopPropagation(); navigateToFeature('/docmind')">
             Try DocMind
             <mat-icon>arrow_forward</mat-icon>
           </button>
@@ -57,6 +57,42 @@
       <div class="particle p1">✦</div>
       <div class="particle p2">◆</div>
       <div class="particle p3">✦</div>
+    </div>
+  </section>
+
+  <!-- Resume Builder Section -->
+  <section class="resume-section">
+    <div class="resume-card" (click)="navigateToFeature('/resume')">
+      <div class="resume-content">
+        <div class="resume-left">
+          <div class="resume-icon-wrap" aria-hidden="true">
+            <mat-icon>article</mat-icon>
+            <span class="resume-line line-a"></span>
+            <span class="resume-line line-b"></span>
+            <span class="resume-line line-c"></span>
+          </div>
+          <div class="resume-text">
+            <div class="resume-heading">
+              Resume Builder
+              <span class="resume-badge">PDF</span>
+            </div>
+            <p class="resume-description">
+              Create a structured resume, preview a clean template, and download a polished PDF when it is ready.
+            </p>
+            <div class="resume-chips">
+              <span class="resume-chip">Templates</span>
+              <span class="resume-chip">Live Preview</span>
+              <span class="resume-chip">PDF Download</span>
+            </div>
+          </div>
+        </div>
+        <div class="resume-cta">
+          <button mat-raised-button class="resume-btn" (click)="$event.stopPropagation(); navigateToFeature('/resume')">
+            Build Resume
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 

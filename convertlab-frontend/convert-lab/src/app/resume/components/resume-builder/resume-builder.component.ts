@@ -174,7 +174,7 @@ export class ResumeBuilderComponent {
   };
 
   ngOnInit() {
-    this.seoService.applySEO('resume-builder');
+    this.seoService.applySEO('resume');
     this.loadTemplates();
     this.preview();
   }

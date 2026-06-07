@@ -8,8 +8,8 @@
     </div>
     <!-- DocMind AI featured entry -->
     <div class="docmind-sidenav-item">
-      <a mat-list-item [routerLink]="['/doc-mind']" (click)="closeSidenav()"
-        [class.active-list-item]="isActive('/doc-mind')" class="docmind-sidenav-link">
+      <a mat-list-item [routerLink]="['/docmind']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/docmind')" class="docmind-sidenav-link">
         <span class="docmind-sidenav-icon">🧠</span>
         <span matListItemTitle class="docmind-sidenav-title">
           DocMind
@@ -17,6 +17,19 @@
         </span>
         <span class="docmind-sidenav-pulse"></span>
         <span class="docmind-sidenav-pulse pulse-2"></span>
+      </a>
+    </div>
+
+    <div class="resume-sidenav-item">
+      <a mat-list-item [routerLink]="['/resume']" (click)="closeSidenav()"
+        [class.active-list-item]="isActive('/resume')" class="resume-sidenav-link">
+        <span class="resume-sidenav-icon">
+          <mat-icon>article</mat-icon>
+        </span>
+        <span matListItemTitle class="resume-sidenav-title">
+          Resume Builder
+          <span class="resume-sidenav-badge">PDF</span>
+        </span>
       </a>
     </div>
 

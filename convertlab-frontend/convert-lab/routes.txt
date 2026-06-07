@@ -7,7 +7,7 @@
 /edit-pdf
 /compress-image
 /crop-image
-/resume-builder
+/resume
 /login
 /signup
 /about

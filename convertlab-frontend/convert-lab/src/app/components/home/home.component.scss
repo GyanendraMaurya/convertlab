@@ -370,6 +370,206 @@
   50% { box-shadow: 0 0 8px rgba(0, 137, 123, 0.4); }
 }
 
+// Resume Builder Section
+.resume-section {
+  padding: 0 16px 40px;
+}
+
+.resume-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(31, 78, 95, 0.16);
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #f7fbfc 88%, var(--mat-sys-surface-container)),
+    color-mix(in srgb, #eef7f3 88%, var(--mat-sys-surface-container))
+  );
+  box-shadow: 0 10px 28px rgba(31, 78, 95, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(31, 78, 95, 0.08) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(31, 78, 95, 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(47, 125, 101, 0.35);
+    box-shadow: 0 14px 34px rgba(31, 78, 95, 0.13);
+
+    .resume-icon-wrap {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.resume-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 22px;
+}
+
+.resume-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.resume-icon-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 78px;
+  flex: 0 0 62px;
+  border-radius: 10px;
+  color: #1f4e5f;
+  background: #ffffff;
+  box-shadow:
+    inset 0 0 0 1px rgba(31, 78, 95, 0.12),
+    0 10px 22px rgba(31, 78, 95, 0.12);
+  transition: transform 0.25s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #d8e8e3 0 50%, #ffffff 50%);
+    border-bottom-left-radius: 5px;
+    box-shadow: -1px 1px 0 rgba(31, 78, 95, 0.1);
+  }
+
+  mat-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+    margin-bottom: 18px;
+  }
+}
+
+.resume-line {
+  position: absolute;
+  left: 14px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(47, 125, 101, 0.22);
+}
+
+.line-a {
+  right: 17px;
+  bottom: 25px;
+}
+
+.line-b {
+  right: 24px;
+  bottom: 17px;
+}
+
+.line-c {
+  right: 31px;
+  bottom: 9px;
+}
+
+.resume-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.resume-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #173f4d;
+  font-size: 22px;
+  font-weight: 750;
+}
+
+.resume-badge {
+  padding: 3px 7px;
+  border: 1px solid rgba(47, 125, 101, 0.28);
+  border-radius: 5px;
+  background: rgba(47, 125, 101, 0.12);
+  color: #1f4e5f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.resume-description {
+  margin: 0 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.resume-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.resume-chip {
+  padding: 4px 10px;
+  border: 1px solid rgba(31, 78, 95, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #365b64;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.resume-cta {
+  display: flex;
+  align-items: flex-start;
+}
+
+.resume-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #1f4e5f, #2f7d65) !important;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 650;
+  box-shadow: 0 4px 16px rgba(31, 78, 95, 0.22) !important;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover mat-icon {
+    transform: translateX(4px);
+  }
+}
+
 // Features Section
 .features-section {
   padding: 0 16px 48px 16px;
@@ -718,6 +918,34 @@
 
   .docmind-description {
     font-size: 15px;
+  }
+
+  .resume-section {
+    padding: 0 32px 48px;
+  }
+
+  .resume-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 32px;
+  }
+
+  .resume-left {
+    flex: 1;
+  }
+
+  .resume-heading {
+    font-size: 26px;
+  }
+
+  .resume-description {
+    font-size: 15px;
+  }
+
+  .resume-cta {
+    flex-shrink: 0;
+    justify-content: flex-end;
   }
 
   .features-section,

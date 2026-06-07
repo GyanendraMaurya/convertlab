@@ -54,20 +54,46 @@ export class ResumeBuilderComponent {
     email: 'john@example.com',
     phone: '9876543210',
     location: 'Bangalore, India',
-    summary: 'Full-stack developer experienced in building reliable Angular applications and Spring Boot APIs.',
+    summary: 'Full-stack developer with 4+ years of experience building reliable Angular applications, Spring Boot APIs, and document automation workflows. Strong focus on performance, clean UI implementation, and shipping production-ready features across the full product lifecycle.',
     photoDataUri: '',
-    skills: ['Angular', 'Spring Boot', 'PostgreSQL', 'REST APIs'],
+    skills: ['Angular', 'TypeScript', 'Spring Boot', 'Java', 'PostgreSQL', 'REST APIs', 'AWS S3', 'Docker', 'RxJS', 'Material UI'],
     experience: [
+      {
+        role: 'Senior Software Developer',
+        company: 'NexaCloud Labs',
+        location: 'Bangalore',
+        startDate: 'Jan 2024',
+        endDate: '',
+        current: true,
+        points: [
+          'Led delivery of Angular dashboards and Spring Boot APIs used by 20,000+ monthly active users.',
+          'Reduced average document processing time by 32% through optimized upload flows, async job handling, and API response tuning.',
+          'Mentored 3 junior engineers and introduced reusable UI patterns that improved feature delivery consistency.'
+        ]
+      },
       {
         role: 'Software Developer',
         company: 'ABC Company',
         location: 'Bangalore',
-        startDate: 'Jan 2023',
-        endDate: '',
-        current: true,
+        startDate: 'Jul 2021',
+        endDate: 'Dec 2023',
+        current: false,
         points: [
-          'Built REST APIs using Spring Boot and PostgreSQL.',
-          'Created responsive Angular screens for document workflows.'
+          'Built REST APIs using Spring Boot, PostgreSQL, and JWT-based authentication for customer-facing products.',
+          'Created responsive Angular screens for document workflows, account management, and reporting modules.',
+          'Improved frontend build quality by adding validation utilities, shared services, and cleaner error handling.'
+        ]
+      },
+      {
+        role: 'Frontend Engineer Intern',
+        company: 'BrightStack Digital',
+        location: 'Remote',
+        startDate: 'Jan 2021',
+        endDate: 'Jun 2021',
+        current: false,
+        points: [
+          'Converted product requirements into accessible Angular components with responsive layouts.',
+          'Collaborated with designers to polish forms, empty states, and loading interactions for a SaaS onboarding flow.'
         ]
       }
     ],
@@ -85,14 +111,66 @@ export class ResumeBuilderComponent {
         name: 'Document Utility Platform',
         description: 'A web application for converting, editing, and managing PDF workflows.',
         url: '',
-        points: ['Implemented upload, preview, and download flows for document tools.']
+        points: [
+          'Implemented upload, preview, and download flows for document tools.',
+          'Added reusable validation and thumbnail components to support PDF and image workflows.'
+        ]
+      },
+      {
+        name: 'AI Knowledge Assistant',
+        description: 'A RAG-based PDF chat experience with document ingestion, embeddings, and WebSocket progress updates.',
+        url: '',
+        points: [
+          'Built the chat interface, document status panel, and real-time ingestion event handling.',
+          'Integrated Spring Boot endpoints for querying document chunks and returning source-aware answers.'
+        ]
+      },
+      {
+        name: 'Expense Insights Dashboard',
+        description: 'Analytics dashboard for tracking team budgets, invoice status, and monthly spend trends.',
+        url: '',
+        points: [
+          'Designed filterable charts, summary cards, and export-ready tables in Angular.',
+          'Created backend reporting APIs with pagination, sorting, and date-range filtering.'
+        ]
       }
     ],
     links: [
       { label: 'Portfolio', url: 'https://example.com' },
-      { label: 'LinkedIn', url: 'https://linkedin.com/in/johndoe' }
+      { label: 'LinkedIn', url: 'https://linkedin.com/in/johndoe' },
+      { label: 'GitHub', url: 'https://github.com/johndoe' }
     ],
-    customSections: []
+    customSections: [
+      {
+        title: 'Certifications',
+        placement: 'sidebar',
+        items: [
+          {
+            title: 'AWS Certified Cloud Practitioner',
+            subtitle: 'Amazon Web Services',
+            points: []
+          },
+          {
+            title: 'Angular Developer Certification',
+            subtitle: 'Professional frontend track',
+            points: []
+          }
+        ]
+      },
+      {
+        title: 'Achievements',
+        placement: 'main',
+        items: [
+          {
+            title: 'Quarterly Engineering Excellence Award',
+            subtitle: 'NexaCloud Labs, 2025',
+            points: [
+              'Recognized for improving release quality and reducing production support tickets across document workflows.'
+            ]
+          }
+        ]
+      }
+    ]
   };
 
   ngOnInit() {

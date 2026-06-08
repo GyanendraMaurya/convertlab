@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ResumeBuilderService } from '../../services/resume-builder.service';
@@ -30,8 +30,15 @@ export class ResumeBuilderComponent {
   private readonly resumeBuilderService = inject(ResumeBuilderService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoService = inject(SeoService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  templates = signal<ResumeTemplate[]>([]);
+  templates = signal<ResumeTemplate[]>([
+    {
+      id: 'classic',
+      name: 'Classic',
+      description: 'Clean A4 layout with a structured sidebar and content sections.'
+    }
+  ]);
   selectedTemplate = signal('classic');
   previewHtml = signal<SafeHtml | null>(null);
   notice = signal<ResumeNotice | null>(null);
@@ -175,6 +182,11 @@ export class ResumeBuilderComponent {
 
   ngOnInit() {
     this.seoService.applySEO('resume');
+
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.loadTemplates();
     this.preview();
   }

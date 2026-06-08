@@ -43,11 +43,48 @@
       vertical-align: top;
     }
 
-    .photo {
+    .photo-frame {
       width: 22mm;
       height: 22mm;
-      object-fit: cover;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .photo {
       border: 1px solid #c8d3d8;
+      height: auto;
+      max-height: 22mm;
+      max-width: 22mm;
+      width: auto;
+    }
+
+    .photo-placeholder {
+      width: 22mm;
+      height: 22mm;
+      border: 1px solid #c8d3d8;
+      background: #f3f7f8;
+      position: relative;
+    }
+
+    .photo-placeholder-head {
+      width: 7mm;
+      height: 7mm;
+      background: #9fb0b8;
+      border-radius: 50%;
+      left: 7.5mm;
+      position: absolute;
+      top: 4.5mm;
+    }
+
+    .photo-placeholder-shoulders {
+      width: 13mm;
+      height: 6mm;
+      background: #9fb0b8;
+      border-radius: 7mm 7mm 2mm 2mm;
+      left: 4.5mm;
+      position: absolute;
+      top: 13mm;
     }
 
     .identity {
@@ -184,8 +221,19 @@
     <div class="header">
       <table class="header-table">
         <tr>
-          <td class="photo-cell" th:if="${resume.photoDataUri != null and !#strings.isEmpty(resume.photoDataUri)}">
-            <img class="photo" th:src="${resume.photoDataUri}" alt="Candidate photo" />
+          <td class="photo-cell" th:if="${(resume.photoDataUri != null and !#strings.isEmpty(resume.photoDataUri)) or showPhotoPlaceholder}">
+            <div class="photo-frame">
+              <img
+                class="photo"
+                th:if="${resume.photoDataUri != null and !#strings.isEmpty(resume.photoDataUri)}"
+                th:src="${resume.photoDataUri}"
+                alt="Candidate photo"
+              />
+              <div class="photo-placeholder" th:if="${(resume.photoDataUri == null or #strings.isEmpty(resume.photoDataUri)) and showPhotoPlaceholder}" aria-label="Photo placeholder">
+                <div class="photo-placeholder-head"></div>
+                <div class="photo-placeholder-shoulders"></div>
+              </div>
+            </div>
           </td>
           <td class="identity">
             <h1 class="name" th:text="${resume.fullName}">John Doe</h1>

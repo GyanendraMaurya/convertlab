@@ -45,7 +45,7 @@ public class ResumeController {
         log.info("Resume preview requested for template: {}", templateId);
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
-                .body(resumeHtmlRenderer.render(resume, templateId));
+                .body(resumeHtmlRenderer.render(resume, templateId, true));
     }
 
     @PostMapping("/download/{templateId}")

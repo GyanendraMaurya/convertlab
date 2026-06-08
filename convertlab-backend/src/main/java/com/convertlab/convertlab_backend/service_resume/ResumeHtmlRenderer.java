@@ -15,11 +15,16 @@ public class ResumeHtmlRenderer {
     private final ResumeRequestValidator resumeRequestValidator;
 
     public String render(ResumeRequest resume, String templateId) {
+        return render(resume, templateId, false);
+    }
+
+    public String render(ResumeRequest resume, String templateId, boolean showPhotoPlaceholder) {
         ResumeTemplate template = resumeTemplateService.requireTemplate(templateId);
         resumeRequestValidator.validate(resume);
 
         Context context = new Context();
         context.setVariable("resume", resume);
+        context.setVariable("showPhotoPlaceholder", showPhotoPlaceholder);
 
         return templateEngine.process("resume/" + template.templatePath(), context);
     }

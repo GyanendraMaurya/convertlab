@@ -251,14 +251,24 @@
     <table class="main-table">
       <tr>
         <td class="sidebar">
-          <div class="section" th:if="${resume.skills != null and !resume.skills.isEmpty()}">
+          <div
+            class="section"
+            th:if="${resume.skills != null and !resume.skills.isEmpty()}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.skills == null ? 0 : resume.sectionSpacing.skills}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Skills</h2>
             <ul class="list">
               <li th:each="skill : ${resume.skills}" th:if="${skill != null and !#strings.isEmpty(skill)}" th:text="${skill}">Angular</li>
             </ul>
           </div>
 
-          <div class="section" th:if="${resume.education != null and !resume.education.isEmpty()}">
+          <div
+            class="section"
+            th:if="${resume.education != null and !resume.education.isEmpty()}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.education == null ? 0 : resume.sectionSpacing.education}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Education</h2>
             <div class="item" th:each="edu : ${resume.education}">
               <p class="item-title" th:if="${edu.degree != null and !#strings.isEmpty(edu.degree)}" th:text="${edu.degree}">B.Tech Computer Science</p>
@@ -271,7 +281,12 @@
             </div>
           </div>
 
-          <div class="section" th:if="${resume.links != null and !resume.links.isEmpty()}">
+          <div
+            class="section"
+            th:if="${resume.links != null and !resume.links.isEmpty()}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.links == null ? 0 : resume.sectionSpacing.links}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Links</h2>
             <div class="link-row" th:each="link : ${resume.links}" th:if="${link != null and link.url != null and !#strings.isEmpty(link.url)}">
               <span class="link-label" th:if="${link.label != null and !#strings.isEmpty(link.label)}" th:text="${link.label}">Portfolio</span>
@@ -284,6 +299,8 @@
             class="section"
             th:each="section : ${resume.customSections}"
             th:if="${resume.customSections != null and section != null and (section.placement == null or #strings.isEmpty(section.placement) or section.placement == 'sidebar')}"
+            th:with="spacing=${section.spacingBefore == null ? 0 : section.spacingBefore}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
           >
             <h2 class="section-title" th:if="${section.title != null and !#strings.isEmpty(section.title)}" th:text="${section.title}">Certifications</h2>
             <div class="item" th:each="item : ${section.items}" th:if="${item != null}">
@@ -297,12 +314,22 @@
         </td>
 
         <td class="content">
-          <div class="section" th:if="${resume.summary != null and !#strings.isEmpty(resume.summary)}">
+          <div
+            class="section"
+            th:if="${resume.summary != null and !#strings.isEmpty(resume.summary)}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.summary == null ? 0 : resume.sectionSpacing.summary}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Summary</h2>
             <p class="summary" th:text="${resume.summary}">Angular and Spring Boot developer.</p>
           </div>
 
-          <div class="section" th:if="${resume.experience != null and !resume.experience.isEmpty()}">
+          <div
+            class="section"
+            th:if="${resume.experience != null and !resume.experience.isEmpty()}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.experience == null ? 0 : resume.sectionSpacing.experience}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Experience</h2>
             <div class="item" th:each="exp : ${resume.experience}">
               <p class="item-title">
@@ -322,7 +349,12 @@
             </div>
           </div>
 
-          <div class="section" th:if="${resume.projects != null and !resume.projects.isEmpty()}">
+          <div
+            class="section"
+            th:if="${resume.projects != null and !resume.projects.isEmpty()}"
+            th:with="spacing=${resume.sectionSpacing == null or resume.sectionSpacing.projects == null ? 0 : resume.sectionSpacing.projects}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
+          >
             <h2 class="section-title">Projects</h2>
             <div class="item" th:each="project : ${resume.projects}">
               <p class="item-title" th:if="${project.name != null and !#strings.isEmpty(project.name)}" th:text="${project.name}">Project Name</p>
@@ -338,6 +370,8 @@
             class="section"
             th:each="section : ${resume.customSections}"
             th:if="${resume.customSections != null and section != null and section.placement == 'main'}"
+            th:with="spacing=${section.spacingBefore == null ? 0 : section.spacingBefore}"
+            th:style="${spacing > 0} ? |margin-top: ${spacing * 4}mm| : null"
           >
             <h2 class="section-title" th:if="${section.title != null and !#strings.isEmpty(section.title)}" th:text="${section.title}">Awards</h2>
             <div class="item" th:each="item : ${section.items}" th:if="${item != null}">

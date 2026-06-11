@@ -45,8 +45,13 @@ export interface ResumeCustomSectionItem {
 export interface ResumeCustomSection {
   title: string;
   placement: ResumeCustomSectionPlacement;
+  spacingBefore: number;
   items: ResumeCustomSectionItem[];
 }
+
+export type ResumeSectionSpacingKey = 'skills' | 'education' | 'links' | 'summary' | 'experience' | 'projects';
+
+export type ResumeSectionSpacing = Record<ResumeSectionSpacingKey, number>;
 
 export interface ResumeRequest {
   fullName: string;
@@ -56,6 +61,7 @@ export interface ResumeRequest {
   location: string;
   summary: string;
   photoDataUri: string;
+  sectionSpacing: ResumeSectionSpacing;
   skills: string[];
   experience: ResumeExperience[];
   education: ResumeEducation[];

@@ -6,6 +6,7 @@ import com.convertlab.convertlab_backend.service_resume.dto.ResumeEducationReque
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeExperienceRequest;
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeProjectRequest;
 import com.convertlab.convertlab_backend.service_resume.dto.ResumeRequest;
+import com.convertlab.convertlab_backend.service_resume.dto.ResumeSectionSpacingRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class ResumeRequestValidator {
 
     private static final int MAX_TEXT_LENGTH = 4000;
     private static final int MAX_PHOTO_DATA_URI_LENGTH = 2_800_000;
+    private static final int MAX_SECTION_SPACING = 8;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
     private static final Pattern IMAGE_DATA_URI_PATTERN = Pattern.compile("^data:image/(png|jpeg|jpg);base64,[A-Za-z0-9+/=\\r\\n]+$");
 
@@ -38,6 +40,7 @@ public class ResumeRequestValidator {
         validateText(resume.location(), "Location");
         validateText(resume.summary(), "Summary");
 
+        validateSectionSpacing(resume.sectionSpacing());
         validateStrings(resume.skills(), "Skill");
         validateExperience(resume.experience());
         validateEducation(resume.education());
@@ -116,7 +119,31 @@ public class ResumeRequestValidator {
 
             validateText(section.title(), "Custom section title");
             validateCustomSectionPlacement(section.placement());
+            validateSpacing(section.spacingBefore(), "Custom section page spacing");
             validateCustomSectionItems(section.items());
+        }
+    }
+
+    private void validateSectionSpacing(ResumeSectionSpacingRequest spacing) {
+        if (spacing == null) {
+            return;
+        }
+
+        validateSpacing(spacing.skills(), "Skills page spacing");
+        validateSpacing(spacing.education(), "Education page spacing");
+        validateSpacing(spacing.links(), "Links page spacing");
+        validateSpacing(spacing.summary(), "Summary page spacing");
+        validateSpacing(spacing.experience(), "Experience page spacing");
+        validateSpacing(spacing.projects(), "Projects page spacing");
+    }
+
+    private void validateSpacing(Integer value, String label) {
+        if (value == null) {
+            return;
+        }
+
+        if (value < 0 || value > MAX_SECTION_SPACING) {
+            throw new IllegalArgumentException(label + " must be between 0 and " + MAX_SECTION_SPACING + ".");
         }
     }
 

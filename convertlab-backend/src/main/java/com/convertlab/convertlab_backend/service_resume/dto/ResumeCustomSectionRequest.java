@@ -5,6 +5,7 @@ import java.util.List;
 public record ResumeCustomSectionRequest(
         String title,
         String placement,
+        Integer spacingBefore,
         List<ResumeCustomSectionItemRequest> items
 ) {
 }

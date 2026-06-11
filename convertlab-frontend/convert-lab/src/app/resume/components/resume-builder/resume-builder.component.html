@@ -93,6 +93,14 @@
             <h2>Summary</h2>
             <p>A short paragraph for the top of the resume.</p>
           </div>
+          <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Summary">
+            <span class="spacing-label" aria-hidden="true">Page spacing</span>
+            <button type="button" (click)="adjustSectionSpacing('summary', -1)" [disabled]="resume.sectionSpacing.summary === 0" aria-label="Decrease page spacing for Summary">-</button>
+            @if (resume.sectionSpacing.summary > 0) {
+              <span class="spacing-count" aria-label="Current page spacing for Summary">{{ resume.sectionSpacing.summary }}</span>
+            }
+            <button type="button" (click)="adjustSectionSpacing('summary', 1)" [disabled]="resume.sectionSpacing.summary === maxSectionSpacing" aria-label="Increase page spacing for Summary">+</button>
+          </div>
         </div>
         <label class="field">
           <span>Professional summary</span>
@@ -106,7 +114,17 @@
             <h2>Skills</h2>
             <p>Add concise skills that should appear in the sidebar.</p>
           </div>
-          <button class="button small" type="button" (click)="addSkill()">Add skill</button>
+          <div class="panel-actions">
+            <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Skills">
+              <span class="spacing-label" aria-hidden="true">Page spacing</span>
+              <button type="button" (click)="adjustSectionSpacing('skills', -1)" [disabled]="resume.sectionSpacing.skills === 0" aria-label="Decrease page spacing for Skills">-</button>
+              @if (resume.sectionSpacing.skills > 0) {
+                <span class="spacing-count" aria-label="Current page spacing for Skills">{{ resume.sectionSpacing.skills }}</span>
+              }
+              <button type="button" (click)="adjustSectionSpacing('skills', 1)" [disabled]="resume.sectionSpacing.skills === maxSectionSpacing" aria-label="Increase page spacing for Skills">+</button>
+            </div>
+            <button class="button small" type="button" (click)="addSkill()">Add skill</button>
+          </div>
         </div>
 
         <div class="stack">
@@ -130,7 +148,17 @@
             <h2>Experience</h2>
             <p>Use bullets for measurable work and outcomes.</p>
           </div>
-          <button class="button small" type="button" (click)="addExperience()">Add role</button>
+          <div class="panel-actions">
+            <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Experience">
+              <span class="spacing-label" aria-hidden="true">Page spacing</span>
+              <button type="button" (click)="adjustSectionSpacing('experience', -1)" [disabled]="resume.sectionSpacing.experience === 0" aria-label="Decrease page spacing for Experience">-</button>
+              @if (resume.sectionSpacing.experience > 0) {
+                <span class="spacing-count" aria-label="Current page spacing for Experience">{{ resume.sectionSpacing.experience }}</span>
+              }
+              <button type="button" (click)="adjustSectionSpacing('experience', 1)" [disabled]="resume.sectionSpacing.experience === maxSectionSpacing" aria-label="Increase page spacing for Experience">+</button>
+            </div>
+            <button class="button small" type="button" (click)="addExperience()">Add role</button>
+          </div>
         </div>
 
         <div class="stack">
@@ -199,7 +227,17 @@
             <h2>Education</h2>
             <p>Add degrees, certifications, or training.</p>
           </div>
-          <button class="button small" type="button" (click)="addEducation()">Add education</button>
+          <div class="panel-actions">
+            <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Education">
+              <span class="spacing-label" aria-hidden="true">Page spacing</span>
+              <button type="button" (click)="adjustSectionSpacing('education', -1)" [disabled]="resume.sectionSpacing.education === 0" aria-label="Decrease page spacing for Education">-</button>
+              @if (resume.sectionSpacing.education > 0) {
+                <span class="spacing-count" aria-label="Current page spacing for Education">{{ resume.sectionSpacing.education }}</span>
+              }
+              <button type="button" (click)="adjustSectionSpacing('education', 1)" [disabled]="resume.sectionSpacing.education === maxSectionSpacing" aria-label="Increase page spacing for Education">+</button>
+            </div>
+            <button class="button small" type="button" (click)="addEducation()">Add education</button>
+          </div>
         </div>
 
         <div class="stack">
@@ -242,7 +280,17 @@
             <h2>Projects</h2>
             <p>Highlight portfolio work or important personal projects.</p>
           </div>
-          <button class="button small" type="button" (click)="addProject()">Add project</button>
+          <div class="panel-actions">
+            <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Projects">
+              <span class="spacing-label" aria-hidden="true">Page spacing</span>
+              <button type="button" (click)="adjustSectionSpacing('projects', -1)" [disabled]="resume.sectionSpacing.projects === 0" aria-label="Decrease page spacing for Projects">-</button>
+              @if (resume.sectionSpacing.projects > 0) {
+                <span class="spacing-count" aria-label="Current page spacing for Projects">{{ resume.sectionSpacing.projects }}</span>
+              }
+              <button type="button" (click)="adjustSectionSpacing('projects', 1)" [disabled]="resume.sectionSpacing.projects === maxSectionSpacing" aria-label="Increase page spacing for Projects">+</button>
+            </div>
+            <button class="button small" type="button" (click)="addProject()">Add project</button>
+          </div>
         </div>
 
         <div class="stack">
@@ -299,7 +347,17 @@
             <h2>Links</h2>
             <p>Portfolio, LinkedIn, GitHub, or other public links.</p>
           </div>
-          <button class="button small" type="button" (click)="addLink()">Add link</button>
+          <div class="panel-actions">
+            <div class="spacing-stepper" title="Page spacing" aria-label="Page spacing for Links">
+              <span class="spacing-label" aria-hidden="true">Page spacing</span>
+              <button type="button" (click)="adjustSectionSpacing('links', -1)" [disabled]="resume.sectionSpacing.links === 0" aria-label="Decrease page spacing for Links">-</button>
+              @if (resume.sectionSpacing.links > 0) {
+                <span class="spacing-count" aria-label="Current page spacing for Links">{{ resume.sectionSpacing.links }}</span>
+              }
+              <button type="button" (click)="adjustSectionSpacing('links', 1)" [disabled]="resume.sectionSpacing.links === maxSectionSpacing" aria-label="Increase page spacing for Links">+</button>
+            </div>
+            <button class="button small" type="button" (click)="addLink()">Add link</button>
+          </div>
         </div>
 
         <div class="stack">
@@ -343,7 +401,17 @@
             <article class="repeat-block">
               <div class="repeat-heading">
                 <h3>Custom section {{ sectionIndex + 1 }}</h3>
-                <button class="icon-button" type="button" (click)="removeCustomSection(sectionIndex)" aria-label="Remove custom section">Remove</button>
+                <div class="panel-actions">
+                  <div class="spacing-stepper" title="Page spacing" [attr.aria-label]="'Page spacing for custom section ' + (sectionIndex + 1)">
+                    <span class="spacing-label" aria-hidden="true">Page spacing</span>
+                    <button type="button" (click)="adjustCustomSectionSpacing(section, -1)" [disabled]="section.spacingBefore === 0" [attr.aria-label]="'Decrease page spacing for custom section ' + (sectionIndex + 1)">-</button>
+                    @if (section.spacingBefore > 0) {
+                      <span class="spacing-count" [attr.aria-label]="'Current page spacing for custom section ' + (sectionIndex + 1)">{{ section.spacingBefore }}</span>
+                    }
+                    <button type="button" (click)="adjustCustomSectionSpacing(section, 1)" [disabled]="section.spacingBefore === maxSectionSpacing" [attr.aria-label]="'Increase page spacing for custom section ' + (sectionIndex + 1)">+</button>
+                  </div>
+                  <button class="icon-button" type="button" (click)="removeCustomSection(sectionIndex)" aria-label="Remove custom section">Remove</button>
+                </div>
               </div>
 
               <div class="field-grid two">

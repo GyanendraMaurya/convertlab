@@ -11,6 +11,7 @@ import {
   ResumeExperience,
   ResumeProject,
   ResumeRequest,
+  ResumeSectionSpacingKey,
   ResumeTemplate
 } from '../../models/buildermodel';
 import { SeoService } from '../../../seo/seo.service';
@@ -18,6 +19,7 @@ import { SeoService } from '../../../seo/seo.service';
 type ResumeRequestKey = keyof ResumeRequest;
 type ResumeNotice = { type: 'success' | 'error' | 'info'; message: string };
 type CustomSectionPreset = { title: string; placement: ResumeCustomSectionPlacement; subtitle: string };
+type SpacingDirection = -1 | 1;
 
 @Component({
   selector: 'app-resume-builder',
@@ -27,6 +29,8 @@ type CustomSectionPreset = { title: string; placement: ResumeCustomSectionPlacem
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResumeBuilderComponent {
+  readonly maxSectionSpacing = 8;
+
   private readonly resumeBuilderService = inject(ResumeBuilderService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seoService = inject(SeoService);
@@ -63,6 +67,14 @@ export class ResumeBuilderComponent {
     location: 'Bangalore, India',
     summary: 'Full-stack developer with 4+ years of experience building reliable Angular applications, Spring Boot APIs, and document automation workflows. Strong focus on performance, clean UI implementation, and shipping production-ready features across the full product lifecycle.',
     photoDataUri: '',
+    sectionSpacing: {
+      skills: 0,
+      education: 0,
+      links: 0,
+      summary: 0,
+      experience: 0,
+      projects: 0
+    },
     skills: ['Angular', 'TypeScript', 'Spring Boot', 'Java', 'PostgreSQL', 'REST APIs', 'AWS S3', 'Docker', 'RxJS', 'Material UI'],
     experience: [
       {
@@ -151,6 +163,7 @@ export class ResumeBuilderComponent {
       {
         title: 'Certifications',
         placement: 'sidebar',
+        spacingBefore: 0,
         items: [
           {
             title: 'AWS Certified Cloud Practitioner',
@@ -167,6 +180,7 @@ export class ResumeBuilderComponent {
       {
         title: 'Achievements',
         placement: 'main',
+        spacingBefore: 0,
         items: [
           {
             title: 'Quarterly Engineering Excellence Award',
@@ -366,6 +380,14 @@ export class ResumeBuilderComponent {
     this.preview();
   }
 
+  adjustSectionSpacing(section: ResumeSectionSpacingKey, direction: SpacingDirection) {
+    this.resume.sectionSpacing[section] = this.clampSpacing(this.resume.sectionSpacing[section] + direction);
+  }
+
+  adjustCustomSectionSpacing(section: ResumeCustomSection, direction: SpacingDirection) {
+    section.spacingBefore = this.clampSpacing(section.spacingBefore + direction);
+  }
+
   private buildRequest(): ResumeRequest {
     return {
       ...this.resume,
@@ -375,6 +397,14 @@ export class ResumeBuilderComponent {
       phone: this.trim(this.resume.phone),
       location: this.trim(this.resume.location),
       summary: this.trim(this.resume.summary),
+      sectionSpacing: {
+        skills: this.clampSpacing(this.resume.sectionSpacing.skills),
+        education: this.clampSpacing(this.resume.sectionSpacing.education),
+        links: this.clampSpacing(this.resume.sectionSpacing.links),
+        summary: this.clampSpacing(this.resume.sectionSpacing.summary),
+        experience: this.clampSpacing(this.resume.sectionSpacing.experience),
+        projects: this.clampSpacing(this.resume.sectionSpacing.projects)
+      },
       skills: this.cleanStrings(this.resume.skills),
       experience: this.resume.experience.map(item => ({
         ...item,
@@ -407,6 +437,7 @@ export class ResumeBuilderComponent {
       customSections: this.resume.customSections.map(section => ({
         title: this.trim(section.title),
         placement: this.resolveCustomSectionPlacement(section.placement),
+        spacingBefore: this.clampSpacing(section.spacingBefore),
         items: section.items.map(item => ({
           title: this.trim(item.title),
           subtitle: this.trim(item.subtitle),
@@ -463,6 +494,12 @@ export class ResumeBuilderComponent {
     return values.map(value => this.trim(value)).filter(Boolean);
   }
 
+  private clampSpacing(value: number | null | undefined): number {
+    const spacing = Number.isFinite(value) ? Math.trunc(value as number) : 0;
+
+    return Math.min(this.maxSectionSpacing, Math.max(0, spacing));
+  }
+
   private trim(value: string | null | undefined): string {
     return value?.trim() ?? '';
   }
@@ -509,6 +546,7 @@ export class ResumeBuilderComponent {
     return {
       title: preset?.title ?? '',
       placement: this.resolveCustomSectionPlacement(preset?.placement),
+      spacingBefore: 0,
       items: [
         {
           title: '',

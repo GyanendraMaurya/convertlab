@@ -10,6 +10,7 @@ public record ResumeRequest(
         String location,
         String summary,
         String photoDataUri,
+        ResumeSectionSpacingRequest sectionSpacing,
         List<String> skills,
         List<ResumeExperienceRequest> experience,
         List<ResumeEducationRequest> education,

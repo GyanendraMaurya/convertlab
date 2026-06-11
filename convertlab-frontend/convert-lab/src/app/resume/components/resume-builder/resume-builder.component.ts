@@ -1,6 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ResumeBuilderService } from '../../services/resume-builder.service';
 import {
@@ -23,7 +24,7 @@ type SpacingDirection = -1 | 1;
 
 @Component({
   selector: 'app-resume-builder',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './resume-builder.component.html',
   styleUrl: './resume-builder.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -265,12 +266,20 @@ export class ResumeBuilderComponent {
     this.resume.skills.push('');
   }
 
+  addSkillAfter(index: number) {
+    this.resume.skills.splice(index + 1, 0, '');
+  }
+
   removeSkill(index: number) {
     this.resume.skills.splice(index, 1);
   }
 
   addExperience() {
     this.resume.experience.push(this.createExperience());
+  }
+
+  addExperienceAfter(index: number) {
+    this.resume.experience.splice(index + 1, 0, this.createExperience());
   }
 
   removeExperience(index: number) {
@@ -281,12 +290,20 @@ export class ResumeBuilderComponent {
     experience.points.push('');
   }
 
+  addExperiencePointAfter(experience: ResumeExperience, index: number) {
+    experience.points.splice(index + 1, 0, '');
+  }
+
   removeExperiencePoint(experience: ResumeExperience, index: number) {
     experience.points.splice(index, 1);
   }
 
   addEducation() {
     this.resume.education.push(this.createEducation());
+  }
+
+  addEducationAfter(index: number) {
+    this.resume.education.splice(index + 1, 0, this.createEducation());
   }
 
   removeEducation(index: number) {
@@ -297,12 +314,20 @@ export class ResumeBuilderComponent {
     this.resume.projects.push(this.createProject());
   }
 
+  addProjectAfter(index: number) {
+    this.resume.projects.splice(index + 1, 0, this.createProject());
+  }
+
   removeProject(index: number) {
     this.resume.projects.splice(index, 1);
   }
 
   addProjectPoint(project: ResumeProject) {
     project.points.push('');
+  }
+
+  addProjectPointAfter(project: ResumeProject, index: number) {
+    project.points.splice(index + 1, 0, '');
   }
 
   removeProjectPoint(project: ResumeProject, index: number) {
@@ -313,12 +338,20 @@ export class ResumeBuilderComponent {
     this.resume.links.push({ label: '', url: '' });
   }
 
+  addLinkAfter(index: number) {
+    this.resume.links.splice(index + 1, 0, { label: '', url: '' });
+  }
+
   removeLink(index: number) {
     this.resume.links.splice(index, 1);
   }
 
   addCustomSection(preset?: CustomSectionPreset) {
     this.resume.customSections.push(this.createCustomSection(preset));
+  }
+
+  addCustomSectionAfter(index: number) {
+    this.resume.customSections.splice(index + 1, 0, this.createCustomSection());
   }
 
   removeCustomSection(index: number) {
@@ -329,12 +362,20 @@ export class ResumeBuilderComponent {
     section.items.push(this.createCustomSectionItem());
   }
 
+  addCustomSectionItemAfter(section: ResumeCustomSection, index: number) {
+    section.items.splice(index + 1, 0, this.createCustomSectionItem());
+  }
+
   removeCustomSectionItem(section: ResumeCustomSection, index: number) {
     section.items.splice(index, 1);
   }
 
   addCustomSectionPoint(item: ResumeCustomSectionItem) {
     item.points.push('');
+  }
+
+  addCustomSectionPointAfter(item: ResumeCustomSectionItem, index: number) {
+    item.points.splice(index + 1, 0, '');
   }
 
   removeCustomSectionPoint(item: ResumeCustomSectionItem, index: number) {

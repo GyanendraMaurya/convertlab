@@ -134,7 +134,14 @@
                 <span class="inline-label" [id]="'skill-label-' + i">Skill {{ i + 1 }}</span>
                 <div class="inline-control-row">
                   <input type="text" [(ngModel)]="resume.skills[i]" [attr.aria-labelledby]="'skill-label-' + i" />
-                  <button class="icon-button" type="button" (click)="removeSkill(i)" aria-label="Remove skill">Remove</button>
+                  <div class="row-actions" aria-label="Skill actions">
+                    <button class="icon-button add" type="button" (click)="addSkillAfter(i)" aria-label="Add skill below" title="Add skill below">
+                      <mat-icon aria-hidden="true">add</mat-icon>
+                    </button>
+                    <button class="icon-button remove" type="button" (click)="removeSkill(i)" aria-label="Remove skill" title="Remove skill">
+                      <mat-icon aria-hidden="true">delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -166,7 +173,14 @@
             <article class="repeat-block">
               <div class="repeat-heading">
                 <h3>Role {{ i + 1 }}</h3>
-                <button class="icon-button" type="button" (click)="removeExperience(i)" aria-label="Remove role">Remove</button>
+                <div class="row-actions" aria-label="Role actions">
+                  <button class="icon-button add" type="button" (click)="addExperienceAfter(i)" aria-label="Add role below" title="Add role below">
+                    <mat-icon aria-hidden="true">add</mat-icon>
+                  </button>
+                  <button class="icon-button remove" type="button" (click)="removeExperience(i)" aria-label="Remove role" title="Remove role">
+                    <mat-icon aria-hidden="true">delete</mat-icon>
+                  </button>
+                </div>
               </div>
               <div class="field-grid two">
                 <label class="field">
@@ -210,7 +224,14 @@
                           [(ngModel)]="experience.points[pointIndex]"
                           [attr.aria-labelledby]="'experience-point-label-' + i + '-' + pointIndex"
                         />
-                        <button class="icon-button" type="button" (click)="removeExperiencePoint(experience, pointIndex)" aria-label="Remove bullet">Remove</button>
+                        <div class="row-actions" aria-label="Bullet actions">
+                          <button class="icon-button add" type="button" (click)="addExperiencePointAfter(experience, pointIndex)" aria-label="Add bullet below" title="Add bullet below">
+                            <mat-icon aria-hidden="true">add</mat-icon>
+                          </button>
+                          <button class="icon-button remove" type="button" (click)="removeExperiencePoint(experience, pointIndex)" aria-label="Remove bullet" title="Remove bullet">
+                            <mat-icon aria-hidden="true">delete</mat-icon>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -245,7 +266,14 @@
             <article class="repeat-block">
               <div class="repeat-heading">
                 <h3>Education {{ i + 1 }}</h3>
-                <button class="icon-button" type="button" (click)="removeEducation(i)" aria-label="Remove education">Remove</button>
+                <div class="row-actions" aria-label="Education actions">
+                  <button class="icon-button add" type="button" (click)="addEducationAfter(i)" aria-label="Add education below" title="Add education below">
+                    <mat-icon aria-hidden="true">add</mat-icon>
+                  </button>
+                  <button class="icon-button remove" type="button" (click)="removeEducation(i)" aria-label="Remove education" title="Remove education">
+                    <mat-icon aria-hidden="true">delete</mat-icon>
+                  </button>
+                </div>
               </div>
               <div class="field-grid two">
                 <label class="field">
@@ -298,7 +326,14 @@
             <article class="repeat-block">
               <div class="repeat-heading">
                 <h3>Project {{ i + 1 }}</h3>
-                <button class="icon-button" type="button" (click)="removeProject(i)" aria-label="Remove project">Remove</button>
+                <div class="row-actions" aria-label="Project actions">
+                  <button class="icon-button add" type="button" (click)="addProjectAfter(i)" aria-label="Add project below" title="Add project below">
+                    <mat-icon aria-hidden="true">add</mat-icon>
+                  </button>
+                  <button class="icon-button remove" type="button" (click)="removeProject(i)" aria-label="Remove project" title="Remove project">
+                    <mat-icon aria-hidden="true">delete</mat-icon>
+                  </button>
+                </div>
               </div>
               <div class="field-grid two">
                 <label class="field">
@@ -330,7 +365,14 @@
                           [(ngModel)]="project.points[pointIndex]"
                           [attr.aria-labelledby]="'project-point-label-' + i + '-' + pointIndex"
                         />
-                        <button class="icon-button" type="button" (click)="removeProjectPoint(project, pointIndex)" aria-label="Remove bullet">Remove</button>
+                        <div class="row-actions" aria-label="Bullet actions">
+                          <button class="icon-button add" type="button" (click)="addProjectPointAfter(project, pointIndex)" aria-label="Add bullet below" title="Add bullet below">
+                            <mat-icon aria-hidden="true">add</mat-icon>
+                          </button>
+                          <button class="icon-button remove" type="button" (click)="removeProjectPoint(project, pointIndex)" aria-label="Remove bullet" title="Remove bullet">
+                            <mat-icon aria-hidden="true">delete</mat-icon>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -371,7 +413,14 @@
                 <div class="inline-control-row link-controls">
                   <input type="text" [(ngModel)]="link.label" [attr.aria-labelledby]="'link-label-label-' + i" />
                   <input type="url" [(ngModel)]="link.url" [attr.aria-labelledby]="'link-url-label-' + i" />
-                  <button class="icon-button" type="button" (click)="removeLink(i)" aria-label="Remove link">Remove</button>
+                  <div class="row-actions" aria-label="Link actions">
+                    <button class="icon-button add" type="button" (click)="addLinkAfter(i)" aria-label="Add link below" title="Add link below">
+                      <mat-icon aria-hidden="true">add</mat-icon>
+                    </button>
+                    <button class="icon-button remove" type="button" (click)="removeLink(i)" aria-label="Remove link" title="Remove link">
+                      <mat-icon aria-hidden="true">delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -410,7 +459,14 @@
                     }
                     <button type="button" (click)="adjustCustomSectionSpacing(section, 1)" [disabled]="section.spacingBefore === maxSectionSpacing" [attr.aria-label]="'Increase page spacing for custom section ' + (sectionIndex + 1)">+</button>
                   </div>
-                  <button class="icon-button" type="button" (click)="removeCustomSection(sectionIndex)" aria-label="Remove custom section">Remove</button>
+                  <div class="row-actions" aria-label="Custom section actions">
+                    <button class="icon-button add" type="button" (click)="addCustomSectionAfter(sectionIndex)" aria-label="Add custom section below" title="Add custom section below">
+                      <mat-icon aria-hidden="true">add</mat-icon>
+                    </button>
+                    <button class="icon-button remove" type="button" (click)="removeCustomSection(sectionIndex)" aria-label="Remove custom section" title="Remove custom section">
+                      <mat-icon aria-hidden="true">delete</mat-icon>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -444,7 +500,14 @@
                   <article class="nested-block">
                     <div class="repeat-heading nested">
                       <h3>Item {{ itemIndex + 1 }}</h3>
-                      <button class="icon-button" type="button" (click)="removeCustomSectionItem(section, itemIndex)" aria-label="Remove custom section item">Remove</button>
+                      <div class="row-actions" aria-label="Custom item actions">
+                        <button class="icon-button add" type="button" (click)="addCustomSectionItemAfter(section, itemIndex)" aria-label="Add custom section item below" title="Add item below">
+                          <mat-icon aria-hidden="true">add</mat-icon>
+                        </button>
+                        <button class="icon-button remove" type="button" (click)="removeCustomSectionItem(section, itemIndex)" aria-label="Remove custom section item" title="Remove item">
+                          <mat-icon aria-hidden="true">delete</mat-icon>
+                        </button>
+                      </div>
                     </div>
 
                     <div class="field-grid two">
@@ -474,7 +537,14 @@
                                 [(ngModel)]="item.points[pointIndex]"
                                 [attr.aria-labelledby]="'custom-section-point-label-' + sectionIndex + '-' + itemIndex + '-' + pointIndex"
                               />
-                              <button class="icon-button" type="button" (click)="removeCustomSectionPoint(item, pointIndex)" aria-label="Remove custom section bullet">Remove</button>
+                              <div class="row-actions" aria-label="Custom bullet actions">
+                                <button class="icon-button add" type="button" (click)="addCustomSectionPointAfter(item, pointIndex)" aria-label="Add custom section bullet below" title="Add bullet below">
+                                  <mat-icon aria-hidden="true">add</mat-icon>
+                                </button>
+                                <button class="icon-button remove" type="button" (click)="removeCustomSectionPoint(item, pointIndex)" aria-label="Remove custom section bullet" title="Remove bullet">
+                                  <mat-icon aria-hidden="true">delete</mat-icon>
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>

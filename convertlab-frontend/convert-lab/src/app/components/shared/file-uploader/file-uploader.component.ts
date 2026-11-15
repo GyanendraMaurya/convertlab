@@ -7,6 +7,7 @@ import {
   viewChild,
   ElementRef,
   inject,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -151,22 +152,32 @@ export class FileUploaderComponent {
     if (files) this.handleFiles(files);
   }
 
-  /** Drag events */
-  onDragOver(event: DragEvent) {
+  /** Accept a file anywhere on the current tool page while dragging. */
+  @HostListener('document:dragover', ['$event'])
+  onDocumentDragOver(event: DragEvent) {
+    if (!this.hasFiles(event)) return;
     event.preventDefault();
     this.isDragging.set(true);
   }
 
-  onDragLeave() {
-    this.isDragging.set(false);
+  @HostListener('document:dragleave', ['$event'])
+  onDocumentDragLeave(event: DragEvent) {
+    if (event.relatedTarget === null) {
+      this.isDragging.set(false);
+    }
   }
 
-  onDrop(event: DragEvent) {
+  @HostListener('document:drop', ['$event'])
+  onDocumentDrop(event: DragEvent) {
     event.preventDefault();
     this.isDragging.set(false);
 
     const files = event.dataTransfer?.files;
     if (files) this.handleFiles(files);
+  }
+
+  private hasFiles(event: DragEvent): boolean {
+    return Array.from(event.dataTransfer?.types ?? []).includes('Files');
   }
 
   removeFile() {

@@ -1,16 +1,27 @@
-<div class="dropzone" [class.dragging]="isDragging()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()"
-  (drop)="onDrop($event)">
+@if (isDragging()) {
+<div class="page-drop-overlay" aria-hidden="true">
+  <div class="page-drop-message">
+    <mat-icon>move_to_inbox</mat-icon>
+    <span>Drop {{ multiple() ? 'files' : 'file' }} anywhere to upload</span>
+  </div>
+</div>
+}
 
-  <mat-icon class="upload-icon">upload</mat-icon>
+<div class="dropzone">
 
-  <p>Drag & Drop your {{ multiple() ? 'files' : 'file' }} here</p>
-  <p class="or">or</p>
+  <div class="dropzone-content">
+    <div class="upload-icon-wrap" aria-hidden="true">
+      <mat-icon class="upload-icon">upload</mat-icon>
+    </div>
 
-  <app-action-button label="Choose {{ multiple() ? 'Files' : 'File' }}" variant="filled" (onClick)="fileInput.click()">
-  </app-action-button>
+    <p class="upload-title">Drag &amp; drop your {{ multiple() ? 'files' : 'file' }} here</p>
+    <p class="upload-subtitle">or choose from your device</p>
 
-  <!-- Show validation constraints -->
-  <p class="validation-info">{{ validationInfo() }}</p>
+    <app-action-button label="Choose {{ multiple() ? 'Files' : 'File' }}" variant="filled" (onClick)="fileInput.click()">
+    </app-action-button>
+
+    <p class="validation-info">{{ validationInfo() }}</p>
+  </div>
 
   <input #fileInput type="file" hidden (change)="onFileInput($event)" [attr.accept]="allowedTypesAttr()"
     [attr.multiple]="multiple() ? true : null" />

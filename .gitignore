@@ -34,3 +34,6 @@ build/
 # Local deployment/helper scripts
 convertlab-backend/ec2-deploy-local-image.sh
 convertlab-frontend/convert-lab/deploy-s3.sh
+
+#agents
+RESUME_BUILDER.md
